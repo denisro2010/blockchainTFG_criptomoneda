@@ -41,9 +41,9 @@ public class Cartera {
 			
 	        for (Map.Entry<String, SalidaTransaccion> transacciones: ProgramaPrincipal.transaccionesNoGastadas.entrySet()){
 	        	SalidaTransaccion transaccionNoGastada = transacciones.getValue();
-	            if(transaccionNoGastada.miTransaccion(clavePublica)) { //si las monedas me pertenecen...
+	            if(transaccionNoGastada.misMonedas(clavePublica)) { //si las monedas me pertenecen...
 	            	transaccionesNoGastadas.put(transaccionNoGastada.id, transaccionNoGastada); //añadir transaccion a mi lista de transacciones no realizadas
-	            	total += transaccionNoGastada.value; 
+	            	total += transaccionNoGastada.cantidad; 
 	            }
 	        }  
 			return total;
@@ -68,7 +68,7 @@ public class Cartera {
 			}
 			
 			Transaccion nuevaTransaccion = new Transaccion(clavePublica, pReceptor , pCantidad, entrantes);
-			nuevaTransaccion.generateSignature(clavePrivada);
+			nuevaTransaccion.generarFirma(clavePrivada);
 			
 			for(EntradaTransaccion entrante: entrantes){
 				transaccionesNoGastadas.remove(entrante.IDsalidaTransaccion);

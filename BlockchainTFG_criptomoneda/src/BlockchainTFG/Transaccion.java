@@ -39,15 +39,15 @@ public class Transaccion {
 			}
 
 			//Comprueba la validez de la transaccion
-			if(getInputsValue() < ProgramaPrincipal.transaccionMin) {
-				System.out.println("El valor de la transacción es demasiado pequeño: " + getInputsValue());
+			if(getInputs() < ProgramaPrincipal.transaccionMin) {
+				System.out.println("El valor de la transacción es demasiado pequeño: " + getInputs());
 				System.out.println("Por favor, introduzca un valor mayor que " + ProgramaPrincipal.transaccionMin);
 				return false;
 			}
 			
 			//Genera las salidas de la transaccion:
 			float cambioSobrante = getInputs() - valor; //get valor de la transaccion y el cambio sobrante
-			IDtransaccion = calulateHash();
+			IDtransaccion = calularHash();
 			outputs.add(new SalidaTransaccion( this.receptor, valor, IDtransaccion)); //enviar fondos al receptor
 			outputs.add(new SalidaTransaccion( this.remitente, cambioSobrante, IDtransaccion)); //enviar el cambio sobrante de vuelta al remitente	
 					
@@ -69,7 +69,7 @@ public class Transaccion {
 			float total = 0;
 			for(EntradaTransaccion i : inputs) {
 				if(i.transaccionNoGastada == null) continue; //si la transaccion no se encuentra, omitirla
-				total += i.transaccionNoGastada.valor;
+				total += i.transaccionNoGastada.cantidad;
 			}
 			return total;
 		}
@@ -87,7 +87,7 @@ public class Transaccion {
 		public float getOutputs() {
 			float total = 0;
 			for(SalidaTransaccion o : outputs) {
-				total += o.valor;
+				total += o.cantidad;
 			}
 			return total;
 		}
