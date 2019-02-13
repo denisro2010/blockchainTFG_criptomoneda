@@ -1,4 +1,4 @@
-package BlockchainTFG;
+package blockchain;
 
 public class EntradaTransaccion {
 

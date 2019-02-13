@@ -1,4 +1,4 @@
-package BlockchainTFG;
+package blockchain;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
