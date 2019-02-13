@@ -74,25 +74,25 @@ public class StringUtils {
 		
 		//Devuelve la raiz del arbol merkle
 		public static String getMerkleRoot(ArrayList<Transaccion> pTransacciones) {
-			int count = pTransacciones.size();
+			int cont = pTransacciones.size();
 			
-			List<String> previousTreeLayer = new ArrayList<String>();
+			List<String> ramaAnteriorArbol = new ArrayList<String>();
 			for(Transaccion transaccion : pTransacciones) {
-				previousTreeLayer.add(pTransacciones.IDtransaccion);
+				ramaAnteriorArbol.add(transaccion.IDtransaccion);
 			}
-			List<String> treeLayer = previousTreeLayer;
+			List<String> ramaArbol = ramaAnteriorArbol;
 			
-			while(count > 1) {
-				treeLayer = new ArrayList<String>();
-				for(int i=1; i < previousTreeLayer.size(); i+=2) {
-					treeLayer.add(applySha256(previousTreeLayer.get(i-1) + previousTreeLayer.get(i)));
+			while(cont > 1) {
+				ramaArbol = new ArrayList<String>();
+				for(int i=1; i < ramaAnteriorArbol.size(); i+=2) {
+					ramaArbol.add(applySha256(ramaAnteriorArbol.get(i-1) + ramaAnteriorArbol.get(i)));
 				}
-				count = treeLayer.size();
-				previousTreeLayer = treeLayer;
+				cont = ramaArbol.size();
+				ramaAnteriorArbol = ramaArbol;
 			}
 			
-			String merkleRoot = (treeLayer.size() == 1) ? treeLayer.get(0) : "";
-			return merkleRoot;
+			String raizMerkle = (ramaArbol.size() == 1) ? ramaArbol.get(0) : "";
+			return raizMerkle;
 		}
 	
 }
