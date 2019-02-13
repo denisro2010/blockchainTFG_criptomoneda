@@ -2,7 +2,6 @@ package vista;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import java.awt.GridBagLayout;
 import javax.swing.JButton;
 import java.awt.GridBagConstraints;
@@ -68,7 +67,7 @@ public class VentanaPrincipal extends JFrame {
 
 	private void initialize() {
 		// setIconImage(Toolkit.getDefaultToolkit().getImage(VentanaPrincipal.class.getResource("/resources/radar.png")));
-		setTitle("UltimatePass");
+		setTitle("Blockchain TFG");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 800);
 		// panelBotones = new JPanel();
@@ -156,13 +155,13 @@ public class VentanaPrincipal extends JFrame {
 
 	private JButton getBtnJugar() {
 		if (btnJugar == null) {
-			btnJugar = new JButton("Create a new user");
+			btnJugar = new JButton("Crear una nueva cartera");
 			btnJugar.setHorizontalTextPosition(SwingConstants.CENTER);
 			buttonGroup.add(btnJugar);
 			btnJugar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					VentanaDatosEN v = new VentanaDatosEN();
-					v.setVisible(true);
+					//VentanaDatosEN v = new VentanaDatosEN();
+					//v.setVisible(true);
 				}
 			});
 		}
@@ -171,11 +170,11 @@ public class VentanaPrincipal extends JFrame {
 
 	private JButton getBtnAyuda() {
 		if (btnAyuda == null) {
-			btnAyuda = new JButton("Help");
+			btnAyuda = new JButton("Ayuda");
 			btnAyuda.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					VentanaAyudaEN vA = new VentanaAyudaEN();
-					vA.setVisible(true);
+					//VentanaAyudaEN vA = new VentanaAyudaEN();
+					//vA.setVisible(true);
 				}
 			});
 			buttonGroup.add(btnAyuda);
@@ -185,11 +184,11 @@ public class VentanaPrincipal extends JFrame {
 
 	private JButton getBtnCreditos() {
 		if (btnCreditos == null) {
-			btnCreditos = new JButton("Credits");
+			btnCreditos = new JButton("Créditos");
 			btnCreditos.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					VentanaCreditosEN vC = new VentanaCreditosEN();
-					vC.setVisible(true);
+					//VentanaCreditosEN vC = new VentanaCreditosEN();
+					//vC.setVisible(true);
 					//dispose();
 				}
 			});
@@ -228,30 +227,12 @@ public class VentanaPrincipal extends JFrame {
 
 	private JButton getButtonStart() {
 		if (buttonStart == null) {
-			buttonStart = new JButton("Start");
+			buttonStart = new JButton("Acceder a mi cartera");
 			buttonStart.setHorizontalTextPosition(SwingConstants.CENTER);
 			buttonStart.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-						boolean emptyDB = true;
-						
-						try {
-							emptyDB = filesControl.checkEmptyUsers();
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						}
-						
-			            if(emptyDB) {
-			            	JOptionPane.showMessageDialog(null, "No user found. Please create a new user.");
-			            	/*filesControl.getFileContras().delete();		            	
-			            	if(filesControl.getFileUsers().exists())
-			            		filesControl.getFileUsers().delete();*/
-			            }
-			            else {
-			            VentanaIntroduceMasterPassEN v = new VentanaIntroduceMasterPassEN();
-						v.setVisible(true);
-			            }
-
-					}
+					//TO-DO
+				}
 			});
 				
 				
@@ -261,7 +242,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 	private JButton getBtnNewButton() {
 		if (btnNewButton == null) {
-			btnNewButton = new JButton("Exit");
+			btnNewButton = new JButton("Cerrar el programa");
 		}
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
