@@ -17,7 +17,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import javax.swing.Box;
 import javax.swing.border.LineBorder;
-import controlador.filesControl;
 
 
 public class VentanaPrincipal extends JFrame {
