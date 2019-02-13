@@ -7,7 +7,7 @@ public class ProgramaPrincipal {
 
 	public static ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
 	public static HashMap<String, SalidaTransaccion> transaccionesNoGastadas = new HashMap<String, SalidaTransaccion>();
-	public static int dificultad = 4;
+	public static int dificultad = 3;
 	public static float transaccionMin = 0.1f;
 	public static Cartera cartera1;
 	public static Cartera cartera2;
@@ -57,7 +57,6 @@ public class ProgramaPrincipal {
 				System.out.println("El balance de la cartera 1 es de: " + cartera2.getBalanceCartera());
 				
 				esCadenaValida();
-				
 			}
 	
 	public static Boolean esCadenaValida() {
