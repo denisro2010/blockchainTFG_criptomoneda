@@ -14,8 +14,8 @@ public class Bloque {
 	public ArrayList<Transaccion> transacciones = new ArrayList<Transaccion>();
 
 	//Constructor
-	public Bloque(String hashAnterior ) {
-		this.hashAnterior = hashAnterior;
+	public Bloque(String pHashAnterior ) {
+		this.hashAnterior = pHashAnterior;
 		this.marcaTemporal = new Date().getTime();
 		this.hash = calcularHash(); 
 	}
@@ -58,5 +58,15 @@ public class Bloque {
 			System.out.println("La transacción se ha añadido correctamente al bloque.");
 			return true;
 		}
+
+		public long getMarcaTemporal() {
+			return marcaTemporal;
+		}
+
+		public int getNonce() {
+			return nonce;
+		}
+		
+		
 
 }

@@ -3,6 +3,8 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import bd.databaseControl;
+
 public class ProgramaPrincipal {
 
 	public static ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
@@ -26,7 +28,8 @@ public class ProgramaPrincipal {
 				transaccionGenesis = new Transaccion(coinbase.clavePublica, cartera1.clavePublica, 100f, null);
 				transaccionGenesis.generarFirma(coinbase.clavePrivada);	 //firma manual de la transaccion genesis	
 				transaccionGenesis.IDtransaccion = "0"; //id de la transaccion manual
-				transaccionGenesis.outputs.add(new SalidaTransaccion(transaccionGenesis.receptor, transaccionGenesis.valor, transaccionGenesis.IDtransaccion)); //anadir el output manualmente
+				SalidaTransaccion outputManual = new SalidaTransaccion(transaccionGenesis.receptor, transaccionGenesis.valor, transaccionGenesis.IDtransaccion);
+				transaccionGenesis.outputs.add(outputManual); //anadir el output manualmente
 				transaccionesNoGastadas.put(transaccionGenesis.outputs.get(0).id, transaccionGenesis.outputs.get(0)); //guarda la primera transaccion en la lista de transacciones no gastadas
 				
 				System.out.println("Creando y minando el bloque génesis... ");
@@ -34,6 +37,10 @@ public class ProgramaPrincipal {
 				genesis.anadirTransaccion(transaccionGenesis);
 				anadirBloque(genesis);
 				
+				System.out.println("\nEl balance de la cartera 1 es de: " + cartera1.getBalanceCartera());
+				System.out.println("El balance de la cartera 2 es de: " + cartera2.getBalanceCartera());
+				
+				/*
 				//testing
 				Bloque bloque1 = new Bloque(genesis.hash);
 				System.out.println("\nEl balance de la cartera 1 es de: " + cartera1.getBalanceCartera());
@@ -56,8 +63,39 @@ public class ProgramaPrincipal {
 				System.out.println("\nEl balance de la cartera 1 es de: " + cartera1.getBalanceCartera());
 				System.out.println("El balance de la cartera 1 es de: " + cartera2.getBalanceCartera());
 				
+				*/
+				
 				esCadenaValida();
-			}
+				
+				//testing DB - crea transacción y bloque genesis - añade 100 coins a la cartera1
+				try {
+					databaseControl.crearCartera("usuario001", "qwerty123", cartera1.clavePublica.toString(), cartera1.clavePrivada.toString());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				try {
+					databaseControl.crearTransaccion(transaccionGenesis.IDtransaccion, transaccionGenesis.remitente.toString(), transaccionGenesis.receptor.toString(), transaccionGenesis.valor, transaccionGenesis.firma.toString(), Transaccion.getSecuencia());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				try {
+					databaseControl.crearBloque(genesis.hash, genesis.hashAnterior, genesis.getMarcaTemporal(), genesis.getNonce(), genesis.merkleRoot, genesis.transacciones.get(0).IDtransaccion);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				try {
+					databaseControl.crearOutput(outputManual.id, outputManual.receptor.toString(), outputManual.cantidad, outputManual.IDtransaccion);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} //FIN MAIN()
 	
 	public static Boolean esCadenaValida() {
 		Bloque bloqueActual; 

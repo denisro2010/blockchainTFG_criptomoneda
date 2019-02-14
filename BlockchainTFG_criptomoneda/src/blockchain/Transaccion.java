@@ -100,5 +100,11 @@ public class Transaccion {
 					Float.toString(valor) + secuencia
 					);
 		}
+
+		public static int getSecuencia() {
+			return secuencia;
+		}
+		
+		
 }
 
