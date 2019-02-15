@@ -3,8 +3,11 @@ package bd;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.swing.JOptionPane;
 
 import blockchain.StringUtils;
  
@@ -113,7 +116,11 @@ public class databaseControl {
 		            conn.close();
 		            
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	        	JOptionPane.showMessageDialog(null,
+					    "Este usuario ya existe.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+	        	//System.out.println(e.getMessage());
 	        }
 	    }
 	 
@@ -177,6 +184,25 @@ public class databaseControl {
 	            System.out.println(e.getMessage());
 	        }
 	    }
+	 
+	 public static String getPass(String pUsuario) throws Exception {
+	   	 String pass = null;
+	   	 String sql = "SELECT contrasena FROM cartera WHERE usuario='" + pUsuario + "';";
+	   	 
+		        try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 pass = rs.getString("contasena");	
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {
+		            System.out.println(se.getMessage());
+		        }
+		        return pass;
+	   }
     
 	/* 
     public static void cifrarContras() throws Exception {

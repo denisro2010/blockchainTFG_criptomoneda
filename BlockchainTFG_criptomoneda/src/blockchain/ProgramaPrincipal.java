@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import bd.databaseControl;
+import vista.VentanaPrincipal;
 
 public class ProgramaPrincipal {
 
@@ -18,6 +19,11 @@ public class ProgramaPrincipal {
 	public static void main(String[] args) {
 				//Añadir los bloques a la lista de bloques
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
+				
+				VentanaPrincipal v = new VentanaPrincipal();
+				v.setVisible(true);
+				
+				/*
 				
 				//Create wallets:
 				cartera1 = new Cartera();
@@ -41,6 +47,8 @@ public class ProgramaPrincipal {
 				System.out.println("El balance de la cartera 2 es de: " + cartera2.getBalanceCartera());
 				
 				System.out.println(cartera1.clavePublica);
+				
+				*/
 				
 				/*
 				//testing
@@ -66,6 +74,8 @@ public class ProgramaPrincipal {
 				System.out.println("El balance de la cartera 1 es de: " + cartera2.getBalanceCartera());
 				
 				*/
+				
+				/*
 				
 				esCadenaValida();
 				
@@ -96,6 +106,7 @@ public class ProgramaPrincipal {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				*/
 				
 			} //FIN MAIN()
 	

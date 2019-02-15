@@ -160,8 +160,8 @@ public class VentanaPrincipal extends JFrame {
 			buttonGroup.add(btnJugar);
 			btnJugar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					//VentanaDatosEN v = new VentanaDatosEN();
-					//v.setVisible(true);
+					VentanaRegistro v = new VentanaRegistro();
+					v.setVisible(true);
 				}
 			});
 		}
