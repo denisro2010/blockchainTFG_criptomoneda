@@ -18,11 +18,12 @@ public class databaseControl {
 	            String url = "jdbc:sqlite:blockchainTFG.db";
 	            conn = DriverManager.getConnection(url);
 	            
-	          //  System.out.println("La conexión a la base de datos se ha realizado con éxito.");
+	           // System.out.println("La conexión a la base de datos se ha realizado con éxito.");
 	            
 	        } catch (SQLException e) {
 	            System.out.println(e.getMessage());
-	        } finally {
+	        }
+	        /*finally {
 	            try {
 	                if (conn != null) {
 	                    conn.close();
@@ -30,8 +31,8 @@ public class databaseControl {
 	            } catch (SQLException ex) {
 	                System.out.println(ex.getMessage());
 	            }
-
-	        }
+	        }*/
+	        
 			return conn;
 	}
 	
@@ -67,7 +68,7 @@ public class databaseControl {
 	 
 	 public static void tablaOutputs() throws Exception {
 	    	
-	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS outputs (IDoutput STRING PRIMARY KEY NOT NULL UNIQUE, pkey_receptor STRING NOT NULL, cantidad DOUBLE NOT NULL, IDtransaccion STRING NOT NULL, IDcartera REFERENCES cartera (clavePublica) NOT NULL);";
+	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS outputs (IDoutput STRING PRIMARY KEY NOT NULL UNIQUE, cantidad DOUBLE NOT NULL, IDtransaccion STRING NOT NULL, IDcartera REFERENCES cartera (clavePublica) NOT NULL);";
 	    	
 	    	 try (Connection conn = connect();
 	    	    Statement stmt = conn.createStatement()){
@@ -158,16 +159,16 @@ public class databaseControl {
 	        }
 	    }
 	 
-	 public static void crearOutput(String pID, String pReceptor, float pCant, String pIDtran) throws Exception {
-	        String sql = "INSERT INTO outputs(IDoutput, pkey_receptor, cantidad, IDtransaccion) VALUES(?,?,?,?)";
+	 public static void crearOutput(String pID, float pCant, String pIDtran, String pIDcartera) throws Exception {
+	        String sql = "INSERT INTO outputs(IDoutput, cantidad, IDtransaccion, IDcartera) VALUES(?,?,?,?)";
 	        
 	        try (Connection conn =  connect();
 	            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        	
 		            pstmt.setString(1, pID);
-		            pstmt.setString(2, pReceptor);
-		            pstmt.setDouble(3, pCant);
-		            pstmt.setString(4, pIDtran);
+		            pstmt.setDouble(2, pCant);
+		            pstmt.setString(3, pIDtran);
+		            pstmt.setString(4, pIDcartera);
 		            pstmt.executeUpdate();
 		            pstmt.close();
 		            conn.close();

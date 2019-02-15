@@ -40,6 +40,8 @@ public class ProgramaPrincipal {
 				System.out.println("\nEl balance de la cartera 1 es de: " + cartera1.getBalanceCartera());
 				System.out.println("El balance de la cartera 2 es de: " + cartera2.getBalanceCartera());
 				
+				System.out.println(cartera1.clavePublica);
+				
 				/*
 				//testing
 				Bloque bloque1 = new Bloque(genesis.hash);
@@ -89,7 +91,7 @@ public class ProgramaPrincipal {
 				}
 				
 				try {
-					databaseControl.crearOutput(outputManual.id, outputManual.receptor.toString(), outputManual.cantidad, outputManual.IDtransaccion);
+					databaseControl.crearOutput(outputManual.id, outputManual.cantidad, outputManual.IDtransaccion, outputManual.receptor.toString());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

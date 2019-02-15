@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="gson-2.6.2.jar"/>
 	<classpathentry kind="lib" path="bcprov-jdk15on-159.jar"/>
-	<classpathentry kind="lib" path="sqlite-jdbc-3.23.1.jar"/>
+	<classpathentry kind="lib" path="sqlite-jdbc-3.23.1.jar" sourcepath="sqlite-jdbc-3.23.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
