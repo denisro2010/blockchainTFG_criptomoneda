@@ -149,7 +149,7 @@ public class VentanaRegistro extends JDialog {
 						try {
 							String u = databaseControl.getUsuario(txtNombre.getText().toString().trim());
 							if(u == null) {
-								databaseControl.crearCartera(txtNombre.getText().toString().trim(), passwordField.getText().toString(), c.clavePublica.toString(), c.clavePrivada.toString());
+								databaseControl.crearCartera(txtNombre.getText().toString().trim(), passwordField.getText().toString(), c.clavePublica, c.clavePrivada);
 								carteras.add(c);
 								JOptionPane.showMessageDialog(null, "Su cartera se ha creado correctamente.");
 								dispose();

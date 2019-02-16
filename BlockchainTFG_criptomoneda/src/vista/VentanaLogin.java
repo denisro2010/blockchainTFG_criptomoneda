@@ -16,6 +16,7 @@ import java.awt.Insets;
 import javax.swing.border.TitledBorder;
 
 import bd.databaseControl;
+import blockchain.Cartera;
 import blockchain.StringUtils;
 
 import java.awt.event.ActionListener;
@@ -30,9 +31,19 @@ public class VentanaLogin extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 5735550625691210170L;
-	//protected static User usuario;
 	private JPasswordField passwordField;
 	private JTextField textField;
+	private static Cartera carteraActual;
+
+	public static Cartera getCarteraActual() {
+		return carteraActual;
+	}
+
+
+	public static void setCarteraActual(Cartera pCarteraActual) {
+		carteraActual = pCarteraActual;
+	}
+
 
 	/**
 	 * Launch the application.
@@ -164,8 +175,21 @@ public class VentanaLogin extends JDialog {
 						}
 						
 						if(passBD != null && passBD.equals(contra)) {
-							/*VentanaCartera v = new VentanaCartera();
-							v.setVisible(true);*/ //TOOOOOOOOOOOOOOOOOOOOOOOOOOODOOOOOOOOOOOOOOOO
+							VentanaDatos v = new VentanaDatos();
+							v.setVisible(true);
+							dispose();
+							carteraActual = new Cartera();
+							Cartera carteraDB = null;
+							try {
+								carteraDB = databaseControl.getCartera(textField.getText().toString().trim());
+							} catch (Exception e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							carteraActual.setClavePublica(carteraDB.clavePublica);
+							carteraActual.setClavePrivada(carteraDB.getClavePrivada());
+							//carteraActual.getTransaccionesNoGastadas().put(key, value);
+							carteraDB = null;
 						}
 						else
 							JOptionPane.showMessageDialog(null,

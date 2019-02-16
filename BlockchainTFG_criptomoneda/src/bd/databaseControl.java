@@ -1,14 +1,15 @@
 package bd;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.swing.JOptionPane;
-
+import blockchain.Cartera;
 import blockchain.StringUtils;
  
 public class databaseControl {
@@ -99,18 +100,20 @@ public class databaseControl {
 	         }
 	    }
 	 
-	 public static void crearCartera(String pUsuario, String pContra, String pClavePublica, String pClavePrivada) throws Exception {
+	 public static void crearCartera(String pUsuario, String pContra, PublicKey pClavePublica, PrivateKey pClavePrivada) throws Exception {
 	        String sql = "INSERT INTO cartera(usuario, contrasena, clavePublica, clavePrivada) VALUES(?,?,?,?)";
 	 
 	        String contraHash = StringUtils.applySha256(pContra);
+	        String publica = StringUtils.getStringClave(pClavePublica);
+	        String privada = StringUtils.getStringClave(pClavePrivada);
 	        
 	        try (Connection conn =  connect();
 	            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        	
 		            pstmt.setString(1, pUsuario);
 		            pstmt.setString(2, contraHash);
-		            pstmt.setString(3, pClavePublica);
-		            pstmt.setString(4, pClavePrivada);
+		            pstmt.setString(3, publica);
+		            pstmt.setString(4, privada);
 		            pstmt.executeUpdate();
 		            pstmt.close();
 		            conn.close();
@@ -217,6 +220,26 @@ public class databaseControl {
 		            //System.out.println(se.getMessage());
 		        }
 		 return usr;
+	   }
+	 
+	 public static Cartera getCartera(String pUsuario) throws Exception {
+		 Cartera cartera = new Cartera();
+		 String sql = "SELECT clavePublica, clavePrivada FROM cartera WHERE usuario='" + pUsuario + "';";
+	   	 
+		        try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 cartera.setClavePublica((PublicKey) StringUtils.getClaveDesdeString(rs.getString("clavePublica"), true));	
+		        		 cartera.setClavePrivada((PrivateKey) StringUtils.getClaveDesdeString(rs.getString("clavePrivada"), false));	
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {
+		            //System.out.println(se.getMessage());
+		        }
+		 return cartera;
 	   }
     
 	/* 

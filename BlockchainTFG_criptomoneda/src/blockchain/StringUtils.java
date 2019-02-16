@@ -1,9 +1,14 @@
 package blockchain;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import com.google.gson.GsonBuilder;
 import java.util.List;
+
+import javax.crypto.spec.SecretKeySpec;
 
 public class StringUtils {
 		
@@ -70,6 +75,37 @@ public class StringUtils {
 		
 		public static String getStringClave(Key pClave) {
 			return Base64.getEncoder().encodeToString(pClave.getEncoded());
+		}
+		
+		public static Key getClaveDesdeString(String pClave, boolean pPublica) {
+			byte[] decodedKey = Base64.getDecoder().decode(pClave);
+			
+			Key key = null;
+			
+			if(pPublica == true) {
+				try {
+					key = KeyFactory.getInstance("ECDSA").generatePublic(new X509EncodedKeySpec(decodedKey));
+				} catch (InvalidKeySpecException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else {
+				try {
+					key = KeyFactory.getInstance("ECDSA").generatePrivate(new PKCS8EncodedKeySpec(decodedKey));
+				} catch (InvalidKeySpecException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+				
+			return key; 
 		}
 		
 		//Devuelve la raiz del arbol merkle

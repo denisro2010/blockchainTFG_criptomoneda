@@ -2,6 +2,7 @@ package blockchain;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,5 +77,31 @@ public class Cartera {
 			
 			return nuevaTransaccion;
 		}
+
+		public PrivateKey getClavePrivada() {
+			return clavePrivada;
+		}
+
+		public void setClavePrivada(PrivateKey clavePrivada) {
+			this.clavePrivada = clavePrivada;
+		}
+
+		public PublicKey getClavePublica() {
+			return clavePublica;
+		}
+
+		public void setClavePublica(PublicKey clavePublica) {
+			this.clavePublica = clavePublica;
+		}
+
+		public HashMap<String, SalidaTransaccion> getTransaccionesNoGastadas() {
+			return transaccionesNoGastadas;
+		}
+
+		public void setTransaccionesNoGastadas(HashMap<String, SalidaTransaccion> transaccionesNoGastadas) {
+			this.transaccionesNoGastadas = transaccionesNoGastadas;
+		}
+		
+		
 		
 }
