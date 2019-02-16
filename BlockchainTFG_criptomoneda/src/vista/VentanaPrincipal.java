@@ -231,7 +231,8 @@ public class VentanaPrincipal extends JFrame {
 			buttonStart.setHorizontalTextPosition(SwingConstants.CENTER);
 			buttonStart.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					//TO-DO
+					VentanaLogin v = new VentanaLogin();
+					v.setVisible(true);
 				}
 			});
 				

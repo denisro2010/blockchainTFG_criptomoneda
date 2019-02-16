@@ -155,7 +155,7 @@ public class VentanaLogin extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						String passBD = null;
 						String usuario = textField.getText().toString().trim();
-						String contra = StringUtils.applySha256(passwordField.getPassword().toString());
+						String contra = StringUtils.applySha256(passwordField.getText().toString());
 						
 						try {
 							passBD = databaseControl.getPass(usuario);
@@ -163,7 +163,7 @@ public class VentanaLogin extends JDialog {
 							e1.printStackTrace();
 						}
 						
-						if(passBD.equals(contra)) {
+						if(passBD != null && passBD.equals(contra)) {
 							/*VentanaCartera v = new VentanaCartera();
 							v.setVisible(true);*/ //TOOOOOOOOOOOOOOOOOOOOOOOOOOODOOOOOOOOOOOOOOOO
 						}

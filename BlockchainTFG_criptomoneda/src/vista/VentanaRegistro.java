@@ -144,12 +144,26 @@ public class VentanaRegistro extends JDialog {
 				btnAceptar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						Cartera c = new Cartera();
-						carteras.add(c);
+						
+						if(!(txtNombre.getText().toString().trim().equals("")) && !(passwordField.getText().toString().trim().equals(""))) {
 						try {
-							databaseControl.crearCartera(txtNombre.getText().toString().trim(), StringUtils.applySha256(passwordField.getPassword().toString()), c.clavePublica.toString(), c.clavePrivada.toString());
+							String u = databaseControl.getUsuario(txtNombre.getText().toString().trim());
+							if(u == null) {
+								databaseControl.crearCartera(txtNombre.getText().toString().trim(), passwordField.getText().toString(), c.clavePublica.toString(), c.clavePrivada.toString());
+								carteras.add(c);
+								JOptionPane.showMessageDialog(null, "Su cartera se ha creado correctamente.");
+								dispose();
+							}
+							else
+								JOptionPane.showMessageDialog(null, "Este usuario ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+							
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
+						
+						}
+						else 
+							JOptionPane.showMessageDialog(null, "El nombre de usuario o la contraseña no pueden estar vacíos.", "Error", JOptionPane.ERROR_MESSAGE);
 					}});
 			}
 

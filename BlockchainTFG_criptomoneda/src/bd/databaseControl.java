@@ -116,11 +116,7 @@ public class databaseControl {
 		            conn.close();
 		            
 	        } catch (SQLException e) {
-	        	JOptionPane.showMessageDialog(null,
-					    "Este usuario ya existe.",
-					    "Error",
-					    JOptionPane.ERROR_MESSAGE);
-	        	//System.out.println(e.getMessage());
+	        	System.out.println(e.getMessage());
 	        }
 	    }
 	 
@@ -193,7 +189,7 @@ public class databaseControl {
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
-		        		 pass = rs.getString("contasena");	
+		        		 pass = rs.getString("contrasena");	
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
@@ -201,7 +197,26 @@ public class databaseControl {
 		        } catch (SQLException se) {
 		            System.out.println(se.getMessage());
 		        }
-		        return pass;
+		 return pass;
+	   }
+	 
+	 public static String getUsuario(String pUsuario) throws Exception {
+	   	 String usr = null;
+		 String sql = "SELECT usuario FROM cartera WHERE usuario='" + pUsuario + "';";
+	   	 
+		        try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 usr = rs.getString("usuario");	
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {
+		            //System.out.println(se.getMessage());
+		        }
+		 return usr;
 	   }
     
 	/* 
