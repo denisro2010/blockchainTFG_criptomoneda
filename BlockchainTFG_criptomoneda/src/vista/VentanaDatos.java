@@ -167,14 +167,24 @@ public class VentanaDatos extends JDialog {
 			{
 				JButton btnBorrarCuenta = new JButton("Borrar cuenta");
 				panelBotones.add(btnBorrarCuenta);
+				btnBorrarCuenta.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						try {
+							databaseControl.borrarCartera(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
+							JOptionPane.showMessageDialog(null, "Su cartera se ha borrado correctamente.");
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						dispose();
+					}
+				});
 			}
 			{
 				JButton btnCancelar = new JButton("Salir (log out)");
 				panelBotones.add(btnCancelar);
 				btnCancelar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						/*VentanaPrincipalEN v = new VentanaPrincipalEN();
-						v.setVisible(true);*/
 						VentanaLogin.setCarteraActual(null);
 						dispose();
 					}

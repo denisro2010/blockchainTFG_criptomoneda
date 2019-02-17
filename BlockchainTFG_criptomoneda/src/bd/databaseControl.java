@@ -241,6 +241,40 @@ public class databaseControl {
 		        }
 		 return cartera;
 	   }
+	 
+	 public static void borrarCartera(String pIDcartera) throws Exception {
+	    	String sql = "DELETE FROM cartera WHERE clavePublica='"+pIDcartera+"';";
+	    	
+	    	borrarOutputs(pIDcartera); 
+	    	
+	        try (Connection conn =  connect();
+	                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	 
+	            // execute the delete statement
+	            pstmt.executeUpdate();
+	            pstmt.close();
+	            conn.close();
+	            
+	        } catch (SQLException e) {
+	            System.out.println(e.getMessage());
+	        }
+	      }
+	 
+	 public static void borrarOutputs(String pIDcartera) throws Exception {
+		 String sql = "DELETE FROM outputs WHERE IDcartera='"+pIDcartera+"';";
+    	 
+	        try (Connection conn =  connect();
+	                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	 
+	            // execute the delete statement
+	            pstmt.executeUpdate();
+	            pstmt.close();
+	            conn.close();
+	            
+	        } catch (SQLException e) {
+	            System.out.println(e.getMessage());
+	        }
+	 }
     
 	/* 
     public static void cifrarContras() throws Exception {
