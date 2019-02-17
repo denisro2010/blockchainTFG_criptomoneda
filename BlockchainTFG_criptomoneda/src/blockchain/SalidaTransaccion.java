@@ -13,7 +13,7 @@ public class SalidaTransaccion {
 		this.receptor = pReceptor;
 		this.cantidad = pCantidad;
 		this.IDtransaccion = pTransaccion;
-		this.id = StringUtils.applySha256(StringUtils.getStringClave(pReceptor)+ Float.toString(pCantidad)+ pTransaccion);
+		this.id = StringUtils.applySha256(StringUtils.getStringClave(pReceptor) + Float.toString(pCantidad) + pTransaccion);
 	}
 
 		//Comprueba que los fondos me pertenecen

@@ -174,9 +174,7 @@ public class VentanaLogin extends JDialog {
 							e1.printStackTrace();
 						}
 						
-						if(passBD != null && passBD.equals(contra)) {
-							VentanaDatos v = new VentanaDatos();
-							v.setVisible(true);
+						if(passBD != null && passBD.equals(contra)) {						
 							dispose();
 							carteraActual = new Cartera();
 							Cartera carteraDB = null;
@@ -190,6 +188,8 @@ public class VentanaLogin extends JDialog {
 							carteraActual.setClavePrivada(carteraDB.getClavePrivada());
 							//carteraActual.getTransaccionesNoGastadas().put(key, value);
 							carteraDB = null;
+							VentanaDatos v = new VentanaDatos();
+							v.setVisible(true);
 						}
 						else
 							JOptionPane.showMessageDialog(null,

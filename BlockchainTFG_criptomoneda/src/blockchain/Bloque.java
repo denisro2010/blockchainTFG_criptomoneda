@@ -66,6 +66,24 @@ public class Bloque {
 		public int getNonce() {
 			return nonce;
 		}
+
+		public String getHash() {
+			return hash;
+		}
+
+		public String getHashAnterior() {
+			return hashAnterior;
+		}
+
+		public String getMerkleRoot() {
+			return merkleRoot;
+		}
+
+		public ArrayList<Transaccion> getTransacciones() {
+			return transacciones;
+		}
+		
+		
 		
 		
 

@@ -36,6 +36,9 @@ public class VentanaDatos extends JDialog {
 	 */
 	private static final long serialVersionUID = 5735550625691210170L;
 	private JTextField textField;
+	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera();
+	JLabel lblMonedas;
+	JSpinner spinner;
 
 	/**
 	 * Launch the application.
@@ -90,15 +93,20 @@ public class VentanaDatos extends JDialog {
 			gbl_panelDatos.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
 			panelDatos.setLayout(gbl_panelDatos);
 			{
-				JLabel lblMandar = new JLabel("Mandar");
-				GridBagConstraints gbc_lblMandar = new GridBagConstraints();
-				gbc_lblMandar.insets = new Insets(0, 0, 5, 5);
-				gbc_lblMandar.gridx = 1;
-				gbc_lblMandar.gridy = 3;
-				panelDatos.add(lblMandar, gbc_lblMandar);
+				JButton btnMandar = new JButton("Mandar");
+				GridBagConstraints gbc_btnMandar = new GridBagConstraints();
+				gbc_btnMandar.insets = new Insets(0, 0, 5, 5);
+				gbc_btnMandar.gridx = 1;
+				gbc_btnMandar.gridy = 3;
+				panelDatos.add(btnMandar, gbc_btnMandar);
+				btnMandar.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+					}
+				});
 			}
 			{
-				JSpinner spinner = new JSpinner();
+				spinner = new JSpinner();
 				GridBagConstraints gbc_spinner = new GridBagConstraints();
 				gbc_spinner.gridwidth = 3;
 				gbc_spinner.insets = new Insets(0, 0, 5, 5);
@@ -142,7 +150,7 @@ public class VentanaDatos extends JDialog {
 				panelDatos.add(lblMiSaldo, gbc_lblMiSaldo);
 			}
 			{
-				JLabel lblMonedas = new JLabel("monedas");
+				lblMonedas = new JLabel((int) balance + " monedas");
 				GridBagConstraints gbc_lblMonedas = new GridBagConstraints();
 				gbc_lblMonedas.insets = new Insets(0, 0, 5, 5);
 				gbc_lblMonedas.gridx = 6;
@@ -161,6 +169,7 @@ public class VentanaDatos extends JDialog {
 						Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 						StringSelection stringSelection = new StringSelection(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 						clipboard.setContents(stringSelection, null);
+						lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas.");
 					}
 				});
 			}

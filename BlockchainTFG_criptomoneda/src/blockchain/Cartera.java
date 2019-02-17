@@ -6,6 +6,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
+import bd.databaseControl;
+
 public class Cartera {
 
 		public PrivateKey clavePrivada;
@@ -54,6 +58,10 @@ public class Cartera {
 			
 			if(getBalanceCartera() < pCantidad) {
 				System.out.println("No hay fondos suficientes como para enviar esta cantidad. La transacción se ha descartado.");
+				JOptionPane.showMessageDialog(null,
+					    "No hay fondos suficientes como para enviar esta cantidad. La transacción se ha descartado.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
 				return null;
 			}
 			
@@ -68,7 +76,13 @@ public class Cartera {
 					break;
 			}
 			
-			Transaccion nuevaTransaccion = new Transaccion(clavePublica, pReceptor , pCantidad, entrantes);
+			Transaccion nuevaTransaccion = null;
+			try {
+				nuevaTransaccion = new Transaccion(clavePublica, pReceptor , pCantidad, entrantes, databaseControl.getSecuenciaMayor());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			nuevaTransaccion.generarFirma(clavePrivada);
 			
 			for(EntradaTransaccion entrante: entrantes){

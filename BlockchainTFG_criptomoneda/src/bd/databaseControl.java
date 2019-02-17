@@ -8,8 +8,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+
 import javax.swing.JOptionPane;
+
+import blockchain.Bloque;
 import blockchain.Cartera;
+import blockchain.ProgramaPrincipal;
+import blockchain.SalidaTransaccion;
 import blockchain.StringUtils;
  
 public class databaseControl {
@@ -275,7 +281,112 @@ public class databaseControl {
 	            System.out.println(e.getMessage());
 	        }
 	 }
+	 
+	 public static boolean checkTablaBloquesVacia() {
+		 int numFilas = -1;
+		 
+		 String sql = "SELECT count(*) AS total FROM bloque;";
+	   	 
+	        try (Connection conn =  connect();
+	             PreparedStatement stmt  = conn.prepareStatement(sql);
+	             ResultSet rs    = stmt.executeQuery()){
+	        	 while (rs.next()) {
+	        		numFilas = rs.getInt("total");
+	        	 }
+	        	 rs.close();
+	        	 stmt.close();
+	             conn.close();
+	             
+	        } catch (SQLException se) {
+	            System.out.println(se.getMessage());
+	        }
+	    if(numFilas == 0)
+	    	return true;
+	    else
+	    	return false;
+	 }
+	 
+	 public static void getOutputsMain() throws Exception {
+		 	String id;
+		 	String sql = "SELECT * FROM outputs;";
+	   	 
+		        try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 id = rs.getString("IDoutput");
+		        		 SalidaTransaccion salida = new SalidaTransaccion((PublicKey) StringUtils.getClaveDesdeString(rs.getString("IDcartera"), true), rs.getFloat("cantidad"), rs.getString("IDtransaccion"));	
+		        		 ProgramaPrincipal.transaccionesNoGastadas.put(id, salida);
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {
+		            System.out.println(se.getMessage());
+		        }
+	   }
+	 
+	 public static int getSecuenciaMayor() throws Exception {
+		 	String sql = "SELECT MAX(secuencia) AS sec FROM transaccion;";
+		 	int secuencia = -1;
+	   	 
+		        try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		secuencia = rs.getInt("sec");
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {
+		            System.out.println(se.getMessage());
+		        }
+		    return secuencia;
+	   }
+	 
+	 public static String getHashUltimoBloque() throws Exception {
+		 	String hash = null;
+		 	String sql = "SELECT MAX(rowid), hashAnterior FROM bloque;";
+	   	 
+		        try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 hash = rs.getString("hashAnterior");
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {
+		            System.out.println(se.getMessage());
+		        }
+		        
+		    if(hash == null)
+		        return "0";
+		    else
+		    	return hash;
+	   }
     
+	 public static void insertarBloque(Bloque pBloque) throws Exception {
+	        String sql = "INSERT INTO bloque(hash, hashAnterior, marcaTemporal, nonce, merkleRoot, transaccion) VALUES(?,?,?,?,?,?)";
+	        
+	        try (Connection conn =  connect();
+	                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	            pstmt.setString(1, pBloque.getHash());
+	            pstmt.setString(2, pBloque.hashAnterior);
+	            pstmt.setLong(3, pBloque.getMarcaTemporal());
+	            pstmt.setInt(4, pBloque.getNonce());
+	            pstmt.setString(5, pBloque.getMerkleRoot());
+	            pstmt.setString(6, pBloque.getTransacciones().get(0).getIDtransaccion());
+	            pstmt.executeUpdate();
+	            pstmt.close();
+	            conn.close();
+	        } catch (SQLException e) {
+	            System.out.println(e.getMessage());
+	        }
+	    }
+	 
 	/* 
     public static void cifrarContras() throws Exception {
     	String nomUser = UserActual.getNombreUser();

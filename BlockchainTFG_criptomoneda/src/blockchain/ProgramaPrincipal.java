@@ -20,6 +20,19 @@ public class ProgramaPrincipal {
 				//Añadir los bloques a la lista de bloques
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
 				
+				try {
+					databaseControl.getOutputsMain();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				try {
+					System.out.println(databaseControl.getSecuenciaMayor() + " " + databaseControl.getHashUltimoBloque());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				VentanaPrincipal v = new VentanaPrincipal();
 				v.setVisible(true);
 				
@@ -78,37 +91,10 @@ public class ProgramaPrincipal {
 				/*
 				
 				esCadenaValida();
-				
-				//testing DB - crea transacción y bloque genesis - añade 100 coins a la cartera1
-				try {
-					databaseControl.crearCartera("usuario001", "qwerty123", cartera1.clavePublica.toString(), cartera1.clavePrivada.toString());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				try {
-					databaseControl.crearTransaccion(transaccionGenesis.IDtransaccion, transaccionGenesis.remitente.toString(), transaccionGenesis.receptor.toString(), transaccionGenesis.valor, transaccionGenesis.firma.toString(), Transaccion.getSecuencia());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				try {
-					databaseControl.crearBloque(genesis.hash, genesis.hashAnterior, genesis.getMarcaTemporal(), genesis.getNonce(), genesis.merkleRoot, genesis.transacciones.get(0).IDtransaccion);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				try {
-					databaseControl.crearOutput(outputManual.id, outputManual.cantidad, outputManual.IDtransaccion, outputManual.receptor.toString());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
 				*/
 				
-			} //FIN MAIN()
+			} //FIN MAIN
 	
 	public static Boolean esCadenaValida() {
 		Bloque bloqueActual; 

@@ -16,14 +16,15 @@ public class Transaccion {
 		public ArrayList<EntradaTransaccion> inputs = new ArrayList<EntradaTransaccion>();
 		public ArrayList<SalidaTransaccion> outputs = new ArrayList<SalidaTransaccion>();
 		
-		private static int secuencia = 0; //Contador de cuantas transacciones se han generado
+		private int secuencia; //Contador de cuantas transacciones se han generado
 		
 		// Constructor: 
-		public Transaccion(PublicKey pRemitente, PublicKey pReceptor, float pValor,  ArrayList<EntradaTransaccion> pInputs) {
+		public Transaccion(PublicKey pRemitente, PublicKey pReceptor, float pValor,  ArrayList<EntradaTransaccion> pInputs, int pSecuencia) {
 			this.remitente = pRemitente;
 			this.receptor = pReceptor;
 			this.valor = pValor;
 			this.inputs = pInputs;
+			this.secuencia = pSecuencia;
 		}
 		
 		public boolean procesarTransaccion() {
@@ -101,8 +102,12 @@ public class Transaccion {
 					);
 		}
 
-		public static int getSecuencia() {
+		public int getSecuencia() {
 			return secuencia;
+		}
+
+		public String getIDtransaccion() {
+			return IDtransaccion;
 		}
 		
 		
