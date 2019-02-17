@@ -17,6 +17,7 @@ import javax.swing.border.TitledBorder;
 
 import bd.databaseControl;
 import blockchain.Cartera;
+import blockchain.ProgramaPrincipal;
 import blockchain.StringUtils;
 
 import java.awt.event.ActionListener;
@@ -190,6 +191,14 @@ public class VentanaLogin extends JDialog {
 							carteraDB = null;
 							VentanaDatos v = new VentanaDatos();
 							v.setVisible(true);
+							
+							//testing
+							if((contra.equals("bd7785cf5566da10712df500aa445051f2b32fc0165fffde3b7a646d5263c5d8")) && (ProgramaPrincipal.transaccionGenesis == null)) {
+								if(ProgramaPrincipal.t1.getIDtransaccion() == null)
+									ProgramaPrincipal.transGenesis(); 
+								else
+									ProgramaPrincipal.transaccionGenesis = ProgramaPrincipal.t1;
+							}
 						}
 						else
 							JOptionPane.showMessageDialog(null,

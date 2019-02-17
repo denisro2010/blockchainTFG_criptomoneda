@@ -20,6 +20,8 @@ public class Bloque {
 		this.hash = calcularHash(); 
 	}
 	
+	public Bloque() {}
+	
 	public String calcularHash() {
 		String hash;
 		
@@ -82,8 +84,30 @@ public class Bloque {
 		public ArrayList<Transaccion> getTransacciones() {
 			return transacciones;
 		}
-		
-		
+
+		public void setHash(String hash) {
+			this.hash = hash;
+		}
+
+		public void setHashAnterior(String hashAnterior) {
+			this.hashAnterior = hashAnterior;
+		}
+
+		public void setMarcaTemporal(long marcaTemporal) {
+			this.marcaTemporal = marcaTemporal;
+		}
+
+		public void setNonce(int nonce) {
+			this.nonce = nonce;
+		}
+
+		public void setMerkleRoot(String merkleRoot) {
+			this.merkleRoot = merkleRoot;
+		}
+
+		public void setTransacciones(ArrayList<Transaccion> transacciones) {
+			this.transacciones = transacciones;
+		}
 		
 		
 

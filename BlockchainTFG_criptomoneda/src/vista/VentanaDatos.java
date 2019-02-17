@@ -19,9 +19,12 @@ import java.awt.Insets;
 import javax.swing.border.TitledBorder;
 
 import bd.databaseControl;
+import blockchain.Bloque;
+import blockchain.ProgramaPrincipal;
 import blockchain.StringUtils;
 
 import java.awt.event.ActionListener;
+import java.security.PublicKey;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 import javax.swing.WindowConstants;
@@ -37,8 +40,9 @@ public class VentanaDatos extends JDialog {
 	private static final long serialVersionUID = 5735550625691210170L;
 	private JTextField textField;
 	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera();
-	JLabel lblMonedas;
-	JSpinner spinner;
+	private static JLabel lblMonedas;
+	private JSpinner spinner;
+
 
 	/**
 	 * Launch the application.
@@ -101,6 +105,29 @@ public class VentanaDatos extends JDialog {
 				panelDatos.add(btnMandar, gbc_btnMandar);
 				btnMandar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						int cantidad = (int) spinner.getValue();
+						
+						if(databaseControl.comprobarCartera((textField.getText().toString().trim()))) {
+							if(textField.getText().toString().trim().toLowerCase().equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())))
+								JOptionPane.showMessageDialog(null, "Usted no puede mandarse monedas a sí mismo.", "Error", JOptionPane.ERROR_MESSAGE);
+							else if(cantidad < 1)
+								JOptionPane.showMessageDialog(null, "La cantidad de monedas que desea mandar no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
+							else {
+								Bloque bl = null;
+								try {
+									bl = new Bloque(databaseControl.getHashUltimoBloque());
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+								bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText(), true), cantidad));
+								ProgramaPrincipal.anadirBloque(bl);
+								ProgramaPrincipal.esCadenaValida();
+								lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
+							}
+						}
+						else{
+							JOptionPane.showMessageDialog(null, "La cartera que ha introducido no existe.", "Error", JOptionPane.ERROR_MESSAGE);
+						}
 						
 					}
 				});
@@ -203,5 +230,8 @@ public class VentanaDatos extends JDialog {
 		}
 	}
 	
+	public static void setLblMonedasText(String pTexto) {
+		lblMonedas.setText(pTexto);
+	}
 
 }

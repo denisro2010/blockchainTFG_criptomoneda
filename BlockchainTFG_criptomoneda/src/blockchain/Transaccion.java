@@ -3,6 +3,9 @@ package blockchain;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
+
+import bd.databaseControl;
+
 import java.security.*;
 
 public class Transaccion {
@@ -27,6 +30,8 @@ public class Transaccion {
 			this.secuencia = pSecuencia;
 		}
 		
+		public Transaccion() {}
+
 		public boolean procesarTransaccion() {
 			
 			if(verificarFirma() == false) {
@@ -55,12 +60,22 @@ public class Transaccion {
 			//Add outputs to Unspent list
 			for(SalidaTransaccion o : outputs) {
 				ProgramaPrincipal.transaccionesNoGastadas.put(o.id , o);
+				try {
+					databaseControl.crearOutput(o.getId(), o.getCantidad(), o.getIDtransaccion(), StringUtils.getStringClave(remitente));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			
 			//Remove transaction inputs from UTXO lists as spent:
 			for(EntradaTransaccion i : inputs) {
 				if(i.transaccionNoGastada == null) continue; //if Transaction can't be found skip it 
-				ProgramaPrincipal.transaccionesNoGastadas.remove(i.transaccionNoGastada.id);
+					ProgramaPrincipal.transaccionesNoGastadas.remove(i.transaccionNoGastada.id);
+					try {
+						databaseControl.borrarOutput(i.transaccionNoGastada.id);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 			}
 			
 			return true;
@@ -109,6 +124,47 @@ public class Transaccion {
 		public String getIDtransaccion() {
 			return IDtransaccion;
 		}
+
+		public PublicKey getRemitente() {
+			return remitente;
+		}
+
+		public PublicKey getReceptor() {
+			return receptor;
+		}
+
+		public float getValor() {
+			return valor;
+		}
+
+		public byte[] getFirma() {
+			return firma;
+		}
+
+		public void setIDtransaccion(String iDtransaccion) {
+			IDtransaccion = iDtransaccion;
+		}
+
+		public void setRemitente(PublicKey remitente) {
+			this.remitente = remitente;
+		}
+
+		public void setReceptor(PublicKey receptor) {
+			this.receptor = receptor;
+		}
+
+		public void setValor(float valor) {
+			this.valor = valor;
+		}
+
+		public void setFirma(byte[] firma) {
+			this.firma = firma;
+		}
+
+		public void setSecuencia(int secuencia) {
+			this.secuencia = secuencia;
+		}
+		
 		
 		
 }

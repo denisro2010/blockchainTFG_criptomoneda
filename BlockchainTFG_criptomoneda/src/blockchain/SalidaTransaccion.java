@@ -20,5 +20,23 @@ public class SalidaTransaccion {
 		public boolean misMonedas(PublicKey pClavePublica) {
 			return (pClavePublica.equals(receptor));
 		}
+
+		public String getId() {
+			return id;
+		}
+
+		public PublicKey getReceptor() {
+			return receptor;
+		}
+
+		public float getCantidad() {
+			return cantidad;
+		}
+
+		public String getIDtransaccion() {
+			return IDtransaccion;
+		}
+		
+		
 		
 }

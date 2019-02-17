@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import bd.databaseControl;
+import vista.VentanaDatos;
+import vista.VentanaLogin;
 import vista.VentanaPrincipal;
 
 public class ProgramaPrincipal {
@@ -11,14 +13,16 @@ public class ProgramaPrincipal {
 	public static ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
 	public static HashMap<String, SalidaTransaccion> transaccionesNoGastadas = new HashMap<String, SalidaTransaccion>();
 	public static int dificultad = 3;
-	public static float transaccionMin = 0.1f;
+	public static float transaccionMin = 1;
 	public static Cartera cartera1;
 	public static Cartera cartera2;
 	public static Transaccion transaccionGenesis;
+	public static Transaccion t1;
 	
 	public static void main(String[] args) {
-				//Añadir los bloques a la lista de bloques
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
+				
+				t1 = databaseControl.getTranGenesis();
 				
 				try {
 					databaseControl.getOutputsMain();
@@ -27,41 +31,14 @@ public class ProgramaPrincipal {
 				}
 				
 				try {
-					System.out.println(databaseControl.getSecuenciaMayor() + " " + databaseControl.getHashUltimoBloque());
+					blockchain = databaseControl.getBloques();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				VentanaPrincipal v = new VentanaPrincipal();
-				v.setVisible(true);
+				v.setVisible(true);		
 				
-				/*
-				
-				//Create wallets:
-				cartera1 = new Cartera();
-				cartera2 = new Cartera();		
-				Cartera coinbase = new Cartera();
-				
-				// Transaccion genesis, mandar 100 coins a la cartera 1: 
-				transaccionGenesis = new Transaccion(coinbase.clavePublica, cartera1.clavePublica, 100f, null);
-				transaccionGenesis.generarFirma(coinbase.clavePrivada);	 //firma manual de la transaccion genesis	
-				transaccionGenesis.IDtransaccion = "0"; //id de la transaccion manual
-				SalidaTransaccion outputManual = new SalidaTransaccion(transaccionGenesis.receptor, transaccionGenesis.valor, transaccionGenesis.IDtransaccion);
-				transaccionGenesis.outputs.add(outputManual); //anadir el output manualmente
-				transaccionesNoGastadas.put(transaccionGenesis.outputs.get(0).id, transaccionGenesis.outputs.get(0)); //guarda la primera transaccion en la lista de transacciones no gastadas
-				
-				System.out.println("Creando y minando el bloque génesis... ");
-				Bloque genesis = new Bloque("0");
-				genesis.anadirTransaccion(transaccionGenesis);
-				anadirBloque(genesis);
-				
-				System.out.println("\nEl balance de la cartera 1 es de: " + cartera1.getBalanceCartera());
-				System.out.println("El balance de la cartera 2 es de: " + cartera2.getBalanceCartera());
-				
-				System.out.println(cartera1.clavePublica);
-				
-				*/
 				
 				/*
 				//testing
@@ -95,6 +72,34 @@ public class ProgramaPrincipal {
 				*/
 				
 			} //FIN MAIN
+	
+	public static void transGenesis() {
+		//Create wallets:
+		cartera1 = VentanaLogin.getCarteraActual();		
+		Cartera coinbase = new Cartera();
+		
+		// Transaccion genesis, mandar 100 coins a la cartera 1: 
+		transaccionGenesis = new Transaccion(coinbase.clavePublica, cartera1.clavePublica, 100, null, 0);
+		transaccionGenesis.generarFirma(coinbase.clavePrivada);	 //firma manual de la transaccion genesis	
+		transaccionGenesis.IDtransaccion = "0"; //id de la transaccion manual
+		SalidaTransaccion outputManual = new SalidaTransaccion(transaccionGenesis.receptor, transaccionGenesis.valor, transaccionGenesis.IDtransaccion);
+		transaccionGenesis.outputs.add(outputManual); //anadir el output manualmente
+		transaccionesNoGastadas.put(transaccionGenesis.outputs.get(0).id, transaccionGenesis.outputs.get(0)); //guarda la primera transaccion en la lista de transacciones no gastadas
+		
+		System.out.println("Creando y minando el bloque génesis... ");
+		Bloque genesis = new Bloque("0");
+		genesis.anadirTransaccion(transaccionGenesis);
+		anadirBloque(genesis);
+		
+		VentanaDatos.setLblMonedasText(VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
+		try {
+			databaseControl.crearTransaccion(transaccionGenesis.getIDtransaccion(), StringUtils.getStringClave(transaccionGenesis.getRemitente()), StringUtils.getStringClave(transaccionGenesis.getReceptor()), transaccionGenesis.getValor(), transaccionGenesis.getFirma().toString(), transaccionGenesis.getSecuencia());
+			databaseControl.crearOutput(outputManual.getId(), outputManual.getCantidad(), outputManual.getIDtransaccion(), StringUtils.getStringClave(outputManual.getReceptor()));
+			databaseControl.insertarBloque(genesis);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static Boolean esCadenaValida() {
 		Bloque bloqueActual; 
