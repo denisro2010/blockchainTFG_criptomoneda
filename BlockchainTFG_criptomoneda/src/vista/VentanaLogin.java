@@ -193,7 +193,7 @@ public class VentanaLogin extends JDialog {
 							v.setVisible(true);
 							
 							//testing
-							if((contra.equals("bd7785cf5566da10712df500aa445051f2b32fc0165fffde3b7a646d5263c5d8")) && (ProgramaPrincipal.transaccionGenesis == null)) {
+							if(ProgramaPrincipal.transaccionGenesis == null) {
 								if(ProgramaPrincipal.t1.getIDtransaccion() == null)
 									ProgramaPrincipal.transGenesis(); 
 								else

@@ -21,7 +21,9 @@ import javax.swing.border.TitledBorder;
 import bd.databaseControl;
 import blockchain.Bloque;
 import blockchain.ProgramaPrincipal;
+import blockchain.SalidaTransaccion;
 import blockchain.StringUtils;
+import blockchain.Transaccion;
 
 import java.awt.event.ActionListener;
 import java.security.PublicKey;
@@ -108,7 +110,7 @@ public class VentanaDatos extends JDialog {
 						int cantidad = (int) spinner.getValue();
 						
 						if(databaseControl.comprobarCartera((textField.getText().toString().trim()))) {
-							if(textField.getText().toString().trim().toLowerCase().equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())))
+							if(textField.getText().toString().trim().equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())))
 								JOptionPane.showMessageDialog(null, "Usted no puede mandarse monedas a sí mismo.", "Error", JOptionPane.ERROR_MESSAGE);
 							else if(cantidad < 1)
 								JOptionPane.showMessageDialog(null, "La cantidad de monedas que desea mandar no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -119,9 +121,29 @@ public class VentanaDatos extends JDialog {
 								} catch (Exception e1) {
 									e1.printStackTrace();
 								}
-								bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText(), true), cantidad));
+								Transaccion tranTemp = VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), cantidad);
+								if(tranTemp != null)
+									bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), cantidad));
+								else
+									bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), 0));
 								ProgramaPrincipal.anadirBloque(bl);
 								ProgramaPrincipal.esCadenaValida();
+
+									
+									
+									
+										
+								try {
+									databaseControl.insertarTransaccion(bl.getTransacciones().get(0));
+									SalidaTransaccion o = bl.getTransacciones().get(0).getSalidas().get(bl.getTransacciones().get(0).getSalidas().size()-1);
+									databaseControl.crearOutput(o.getId(), o.getCantidad(), o.getIDtransaccion(), StringUtils.getStringClave(o.getReceptor()));
+									databaseControl.insertarBloque(bl);
+								} catch (Exception exc) {
+									exc.printStackTrace();
+								}
+								if(bl.getTransacciones().size() > 0)
+									ProgramaPrincipal.transacciones.add(bl.getTransacciones().get(0));
+								
 								lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
 							}
 						}

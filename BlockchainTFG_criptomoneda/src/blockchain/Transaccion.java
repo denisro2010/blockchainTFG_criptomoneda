@@ -165,7 +165,13 @@ public class Transaccion {
 			this.secuencia = secuencia;
 		}
 		
-		
+		public ArrayList<SalidaTransaccion> getSalidas(){
+			return this.outputs;
+		}
+
+		public void setSalidas(ArrayList<SalidaTransaccion> outputs) {
+			this.outputs = outputs;
+		}
 		
 }
 

@@ -16,6 +16,10 @@ public class SalidaTransaccion {
 		this.id = StringUtils.applySha256(StringUtils.getStringClave(pReceptor) + Float.toString(pCantidad) + pTransaccion);
 	}
 
+		public SalidaTransaccion() {
+		// TODO Auto-generated constructor stub
+	}
+
 		//Comprueba que los fondos me pertenecen
 		public boolean misMonedas(PublicKey pClavePublica) {
 			return (pClavePublica.equals(receptor));

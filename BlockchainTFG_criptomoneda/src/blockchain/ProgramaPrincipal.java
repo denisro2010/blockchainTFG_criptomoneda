@@ -2,7 +2,7 @@ package blockchain;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.Map;
 import bd.databaseControl;
 import vista.VentanaDatos;
 import vista.VentanaLogin;
@@ -13,11 +13,11 @@ public class ProgramaPrincipal {
 	public static ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
 	public static HashMap<String, SalidaTransaccion> transaccionesNoGastadas = new HashMap<String, SalidaTransaccion>();
 	public static int dificultad = 3;
-	public static float transaccionMin = 1;
+	public static float transaccionMin = 0;
 	public static Cartera cartera1;
-	public static Cartera cartera2;
 	public static Transaccion transaccionGenesis;
 	public static Transaccion t1;
+	public static ArrayList<Transaccion> transacciones;
 	
 	public static void main(String[] args) {
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
@@ -29,6 +29,20 @@ public class ProgramaPrincipal {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+
+				SalidaTransaccion out = new SalidaTransaccion();
+				transacciones = databaseControl.getTransacciones();
+				
+			    for (Map.Entry<String, SalidaTransaccion> it : transaccionesNoGastadas.entrySet()) {
+			    	out = it.getValue();
+			       for(Transaccion tr: transacciones) {
+			    	   if(tr.getIDtransaccion().equals(out.getIDtransaccion()))
+			    		   tr.getSalidas().add(out);
+			       }
+			    }
+			    
+			    if(transacciones.size() > 0)
+			    	transaccionGenesis = transacciones.get(0);
 				
 				try {
 					blockchain = databaseControl.getBloques();
@@ -122,7 +136,7 @@ public class ProgramaPrincipal {
 			
 			//comparar el hash anterior registrado con el anterior calculado
 			if(!bloqueAnterior.hash.equals(bloqueActual.hashAnterior) ) {
-				System.out.println("Las funciones hash anteriores no coinciden.");
+				System.out.println("Las funciones hash anteriores no coinciden. " + bloqueActual.hashAnterior);
 				return false;
 			}
 			

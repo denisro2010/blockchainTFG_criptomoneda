@@ -364,13 +364,13 @@ public class databaseControl {
 	 
 	 public static String getHashUltimoBloque() throws Exception {
 		 	String hash = null;
-		 	String sql = "SELECT MAX(rowid), hashAnterior FROM bloque;";
+		 	String sql = "SELECT MAX(rowid), hash FROM bloque;";
 	   	 
 		        try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
-		        		 hash = rs.getString("hashAnterior");
+		        		 hash = rs.getString("hash");
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
@@ -505,6 +505,33 @@ public class databaseControl {
 			return t;
 		}
 		
+		public static ArrayList<Transaccion> getTransacciones() {
+			String sql = "SELECT * FROM transaccion;";
+			ArrayList<Transaccion> transacciones = new ArrayList<Transaccion>();
+			Transaccion t = new Transaccion();
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		t.setIDtransaccion(rs.getString("IDtran"));
+		        		t.setRemitente((PublicKey) StringUtils.getClaveDesdeString(rs.getString("remitente"), true));
+		        		t.setReceptor((PublicKey) StringUtils.getClaveDesdeString(rs.getString("receptor"), true));
+		        		t.setValor(rs.getFloat("valor"));
+		        		t.setFirma(rs.getBytes("firma"));
+		        		t.setSecuencia(rs.getInt("secuencia"));
+		        		transacciones.add(t);
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {
+		            System.out.println(se.getMessage());
+		        }
+
+			return transacciones;
+		}
+		
 		public static Transaccion getTranGenesis() {
 			String sql = "SELECT * FROM transaccion WHERE rowid = 1;";
 			Transaccion t = new Transaccion();
@@ -529,224 +556,5 @@ public class databaseControl {
 
 			return t;
 		}
-	 
-	 
-	/* 
-    public static void cifrarContras() throws Exception {
-    	String nomUser = UserActual.getNombreUser();
-    	String masterPass = UserActual.getMasterPassUser();
-    	String sql = "update contrasenas set passSitio = AES_ENCRYPT(:passSitio,'"+masterPass+"') WHERE usuario='"+nomUser+"';";
-    	try (Connection conn =  ConnectorMXJObject.main();
-	        PreparedStatement pst = conn.prepareStatement(sql)) {
-	        pst.executeUpdate();
-	        pst.close();
-	        conn.close();
-    	}
-	     catch (SQLException e) {
-	        System.out.println(e.getMessage());
-	    }
-    }
- 
-
-    public static void insertUser(int pDia, int pMes, int pAnio, String pNombre, String pPass, int pLongitud) throws Exception {
-        String sql = "INSERT INTO usuarios(dia, mes, anio, nombre, pass, longitud) VALUES(?,?,?,?,?,?)";
- 
-        pPass = Hash.aplicarSha512(pPass);
-        
-        try (Connection conn =  ConnectorMXJObject.main();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, pDia);
-            pstmt.setInt(2, pMes);
-            pstmt.setInt(3, pAnio);
-            pstmt.setString(4, pNombre);
-            pstmt.setString(5, pPass);
-            pstmt.setInt(6, pLongitud);
-            pstmt.executeUpdate();
-            pstmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    
-    public static void insertPass(String nomSitio, String pass) throws Exception {
-    	String masterPass = UserActual.getMasterPassUser();
-        String sql = "INSERT INTO contrasenas(nombreSitio, passSitio, usuario) VALUES(?, AES_ENCRYPT(?, '"+ masterPass +"') ,?)";
-        
-        try (Connection conn =  ConnectorMXJObject.main();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        	pstmt.setString(1, nomSitio);
-        	pstmt.setString(2, pass);
-            pstmt.setString(3, UserActual.getNombreUser()); //!!!
-            pstmt.executeUpdate();
-            pstmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    
-    public static void deleteAllUsr() throws Exception {
-        String sql = "DELETE FROM usuarios";
- 
-        try (Connection conn =  ConnectorMXJObject.main();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
- 
-            // execute the delete statement
-            pstmt.executeUpdate();
-            pstmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            //System.out.println(e.getMessage());
-        }
-    }
-    
-    public static void deleteAllPass(String nomUser) throws Exception {
-        String sql = "DELETE FROM contrasenas WHERE usuario='" + nomUser + "';" ;
- 
-        try (Connection conn =  ConnectorMXJObject.main();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
- 
-            // execute the delete statement
-            pstmt.executeUpdate();
-            pstmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            //System.out.println(e.getMessage());
-        }
-    }
-    
-    public static void deleteOnePass(String value) throws Exception {
-    	String masterPass = UserActual.getMasterPassUser();
-        String sql = "DELETE FROM contrasenas WHERE passSitio = AES_ENCRYPT(?, '"+ masterPass +"')";
- 
-        try (Connection conn =  ConnectorMXJObject.main();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
- 
-            // set the corresponding param
-            pstmt.setString(1, value);
-            // execute the delete statement
-            pstmt.executeUpdate();
-            pstmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }  
-    
-    public static void actualizaTablaContras() throws Exception {
-    	 String masterPass = UserActual.getMasterPassUser();
-    	 
-    	 String sql2 = "SELECT nombreSitio,  CAST(AES_DECRYPT(passSitio, '"+ masterPass +"') AS CHAR(255)) AS passSitio FROM contrasenas WHERE usuario='"+UserActual.getNombreUser()+"';";
-	       
-    	 	try (Connection conn = ConnectorMXJObject.main();
-	             PreparedStatement stmt  = conn.prepareStatement(sql2);
-	             ResultSet rs    = stmt.executeQuery()){
-	        	 VentanaContrasEN.getTable().setModel(DbUtils.resultSetToTableModel(rs));
-	        	 rs.close();
-	        	 stmt.close();
-	             conn.close();
-	        } catch (SQLException se) {
-	            System.out.println(se.getMessage());
-	        }
-    }
-    
-    public static String getMasterPass(String nomUser) throws Exception {
-   	 String masterPass=null;
-   	 String sql2 = "SELECT pass FROM usuarios WHERE nombre='" + nomUser + "';";
-   	 
-	        try (Connection conn =  ConnectorMXJObject.main();
-	             PreparedStatement stmt  = conn.prepareStatement(sql2);
-	             ResultSet rs    = stmt.executeQuery()){
-	        	 while (rs.next()) {
-	        		 masterPass = rs.getString("pass");	
-	        	 }
-	        	 rs.close();
-	        	 stmt.close();
-	             conn.close();
-	        } catch (SQLException se) {
-	            System.out.println(se.getMessage());
-	        }
-	        return masterPass;
-   }
-    
-    public static void deleteOneUser() throws Exception {
-    	String masterPass = UserActual.getMasterPassUser();
-    	String sql = "DELETE FROM usuarios WHERE nombre='"+UserActual.getNombreUser()+"' and pass='"+Hash.aplicarSha512(masterPass)+"';";
-    	 
-        try (Connection conn =  ConnectorMXJObject.main();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
- 
-            // execute the delete statement
-            pstmt.executeUpdate();
-            deleteUserPasswords();
-            pstmt.close();
-            conn.close();
-            
-        } catch (SQLException e) {
-            //System.out.println(e.getMessage());
-        }
-      }
-    
-    private static void deleteUserPasswords() throws Exception {
-    	String sql = "DELETE FROM contrasenas WHERE usuario='"+UserActual.getNombreUser()+"';";
-    	
-    	try (Connection conn =  ConnectorMXJObject.main();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
- 
-            // execute the delete statement
-            pstmt.executeUpdate();
-            
-            pstmt.close();
-            conn.close();
-            
-        } catch (SQLException e) {
-            //System.out.println(e.getMessage());
-        }
-    }
-    
-    public static boolean nameSeRepite(String nomUser) throws Exception {
-      	 boolean seRepite = false;
-      	 String sql2 = "SELECT nombre FROM usuarios";
-      	 
-   	        try (Connection conn =  ConnectorMXJObject.main();
-   	             PreparedStatement stmt  = conn.prepareStatement(sql2);
-   	             ResultSet rs    = stmt.executeQuery()){
-   	        	 while (rs.next()) {
-   	        		 if(rs.getString("nombre").equals(nomUser)) {
-   	        			 seRepite = true;
-   	        		 }
-   	        	 }
-   	        	 rs.close();
-   	        	 stmt.close();
-   	             conn.close();
-   	        } catch (SQLException se) {
-   	            System.out.println(se.getMessage());
-   	        }
-   	        return seRepite;
-      }
-    
-    public static void setOtrosDatosUserActual(String nomUser, String masterPass) throws Exception {
-
-      	 String sql2 = "SELECT * FROM usuarios WHERE nombre='" + nomUser + "' and pass ='" + Hash.aplicarSha512(masterPass) + "';";
-      	 
-   	        try (Connection conn =  ConnectorMXJObject.main();
-   	             PreparedStatement stmt  = conn.prepareStatement(sql2);
-   	             ResultSet rs    = stmt.executeQuery()){
-   	        	 while (rs.next()) {
-   	        		UserActual.setDiaNac(rs.getInt("dia")); 
-   	        		UserActual.setMesNac(rs.getInt("mes")); 
-   	        		UserActual.setAnioNac(rs.getInt("anio")); 
-   	        		UserActual.setLongPass(rs.getInt("longitud"));  
-   	        	 }
-   	        	 rs.close();
-   	        	 stmt.close();
-   	             conn.close();
-   	        } catch (SQLException se) {
-   	            System.out.println(se.getMessage());
-   	        }
-    }
-    
-     */
     
 } 
