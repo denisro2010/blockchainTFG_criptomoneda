@@ -449,7 +449,7 @@ public class databaseControl {
 	 
 	 public static ArrayList<Bloque> getBloques() throws Exception {
 		 	String sql = "SELECT * FROM bloque;";
-		 	Bloque b = new Bloque();
+		 	Bloque b;
 		 	ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
 		 	ArrayList<Transaccion> transacciones = new ArrayList<Transaccion>();
 	   	 
@@ -457,6 +457,7 @@ public class databaseControl {
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
+		        		 b = new Bloque();
 		        		if(blockchain.size() == 0) {
 		        			b.setHashAnterior("0");
 		        		}

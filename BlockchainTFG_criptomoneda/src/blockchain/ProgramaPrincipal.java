@@ -49,6 +49,10 @@ public class ProgramaPrincipal {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
+				for(int x = 0; x < blockchain.size(); x++) {
+					System.out.println(blockchain.get(x).getHash());
+				}
 
 				VentanaPrincipal v = new VentanaPrincipal();
 				v.setVisible(true);		
