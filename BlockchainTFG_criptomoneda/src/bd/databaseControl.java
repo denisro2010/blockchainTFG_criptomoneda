@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
+import blockchain.Aes;
 import blockchain.Bloque;
 import blockchain.Cartera;
 import blockchain.ProgramaPrincipal;
@@ -33,7 +34,7 @@ public class databaseControl {
 	           // System.out.println("La conexión a la base de datos se ha realizado con éxito.");
 	            
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	            //System.out.println(e.getMessage());
 	        }
 	        /*finally {
 	            try {
@@ -59,7 +60,7 @@ public class databaseControl {
 	    	    conn.close();
 	    	    
 	    	 } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	            //System.out.println(e.getMessage());
 	         }
 	    }
 	 
@@ -74,10 +75,10 @@ public class databaseControl {
 	    	    conn.close();
 	    	    
 	    	 } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	            //System.out.println(e.getMessage());
 	         }
 	    }
-	 
+
 	 public static void tablaOutputs() throws Exception {
 	    	
 	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS outputs (IDoutput STRING PRIMARY KEY NOT NULL UNIQUE, cantidad DOUBLE NOT NULL, IDtransaccion STRING NOT NULL, IDcartera REFERENCES cartera (clavePublica) NOT NULL);";
@@ -89,9 +90,9 @@ public class databaseControl {
 	    	    conn.close();
 	    	    
 	    	 } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	            //System.out.println(e.getMessage());
 	         }
-	    }
+	 }
 	 
 	 public static void tablaTransaccion() throws Exception {
 	    	
@@ -104,7 +105,7 @@ public class databaseControl {
 	    	    conn.close();
 	    	    
 	    	 } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	           // System.out.println(e.getMessage());
 	         }
 	    }
 	 
@@ -113,7 +114,7 @@ public class databaseControl {
 	 
 	        String contraHash = StringUtils.applySha256(pContra);
 	        String publica = StringUtils.getStringClave(pClavePublica);
-	        String privada = StringUtils.getStringClave(pClavePrivada);
+	        String privada = Aes.encrypt(StringUtils.getStringClave(pClavePrivada), pContra);
 	        
 	        try (Connection conn =  connect();
 	            PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -127,7 +128,7 @@ public class databaseControl {
 		            conn.close();
 		            
 	        } catch (SQLException e) {
-	        	System.out.println(e.getMessage());
+	        	//System.out.println(e.getMessage());
 	        }
 	    }
 	 
@@ -148,7 +149,7 @@ public class databaseControl {
 		            conn.close();
 		            
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	            //System.out.println(e.getMessage());
 	        }
 	    }
 	 
@@ -169,7 +170,7 @@ public class databaseControl {
 		            conn.close();
 		            
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	        	// System.out.println(e.getMessage());
 	        }
 	    }
 	 
@@ -188,7 +189,7 @@ public class databaseControl {
 		            conn.close();
 		            
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	        	// System.out.println(e.getMessage());
 	        }
 	    }
 	 
@@ -206,7 +207,7 @@ public class databaseControl {
 		        	 stmt.close();
 		             conn.close();
 		        } catch (SQLException se) {
-		            System.out.println(se.getMessage());
+		        	// System.out.println(se.getMessage());
 		        }
 		 return pass;
 	   }
@@ -230,7 +231,7 @@ public class databaseControl {
 		 return usr;
 	   }
 	 
-	 public static Cartera getCartera(String pUsuario) throws Exception {
+	 public static Cartera getCartera(String pUsuario, String pContra) throws Exception {
 		 Cartera cartera = new Cartera();
 		 String sql = "SELECT clavePublica, clavePrivada FROM cartera WHERE usuario='" + pUsuario + "';";
 	   	 
@@ -239,7 +240,7 @@ public class databaseControl {
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
 		        		 cartera.setClavePublica((PublicKey) StringUtils.getClaveDesdeString(rs.getString("clavePublica"), true));	
-		        		 cartera.setClavePrivada((PrivateKey) StringUtils.getClaveDesdeString(rs.getString("clavePrivada"), false));	
+		        		 cartera.setClavePrivada((PrivateKey) StringUtils.getClaveDesdeString(Aes.decrypt(rs.getString("clavePrivada"), pContra), false));	
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
@@ -264,7 +265,7 @@ public class databaseControl {
 	            conn.close();
 	            
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	        	// System.out.println(e.getMessage());
 	        }
 	      }
 	 
@@ -279,7 +280,7 @@ public class databaseControl {
 	            conn.close();
 	            
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	        	//  System.out.println(e.getMessage());
 	        }
 	 }
 	 
@@ -295,7 +296,7 @@ public class databaseControl {
 	            conn.close();
 	            
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	        	//  System.out.println(e.getMessage());
 	        }
 	 }
 	 
@@ -315,7 +316,7 @@ public class databaseControl {
 	             conn.close();
 	             
 	        } catch (SQLException se) {
-	            System.out.println(se.getMessage());
+	        	//  System.out.println(se.getMessage());
 	        }
 	    if(numFilas == 0)
 	    	return true;
@@ -339,7 +340,7 @@ public class databaseControl {
 		        	 stmt.close();
 		             conn.close();
 		        } catch (SQLException se) {
-		            System.out.println(se.getMessage());
+		        	//  System.out.println(se.getMessage());
 		        }
 	   }
 	 
@@ -357,7 +358,7 @@ public class databaseControl {
 		        	 stmt.close();
 		             conn.close();
 		        } catch (SQLException se) {
-		            System.out.println(se.getMessage());
+		        	//   System.out.println(se.getMessage());
 		        }
 		    return secuencia;
 	   }
@@ -376,7 +377,7 @@ public class databaseControl {
 		        	 stmt.close();
 		             conn.close();
 		        } catch (SQLException se) {
-		            System.out.println(se.getMessage());
+		        	//  System.out.println(se.getMessage());
 		        }
 		        
 		    if(hash == null)
@@ -400,7 +401,7 @@ public class databaseControl {
 	            pstmt.close();
 	            conn.close();
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	        	// System.out.println(e.getMessage());
 	        }
 	    }
 	 
@@ -438,7 +439,7 @@ public class databaseControl {
 	             conn.close();
 	             
 	        } catch (SQLException se) {
-	            System.out.println(se.getMessage());
+	        	//  System.out.println(se.getMessage());
 	        } 
 	    
 	    if(clave == null)
@@ -457,7 +458,7 @@ public class databaseControl {
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
-		        		 b = new Bloque();
+		        		b = new Bloque();
 		        		if(blockchain.size() == 0) {
 		        			b.setHashAnterior("0");
 		        		}
@@ -476,19 +477,20 @@ public class databaseControl {
 		        	 stmt.close();
 		             conn.close();
 		        } catch (SQLException se) {
-		            System.out.println(se.getMessage());
+		        	// System.out.println(se.getMessage());
 		        }
 		    return blockchain;
 	    }
 
 		public static Transaccion getTransaccion(String pIDtransaccion) {
 			String sql = "SELECT * FROM transaccion WHERE IDtran = '" + pIDtransaccion + "';";
-			Transaccion t = new Transaccion();
+			Transaccion t = null;
 			
 			 try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
+		        		t  = new Transaccion();
 		        		t.setIDtransaccion(rs.getString("IDtran"));
 		        		t.setRemitente((PublicKey) StringUtils.getClaveDesdeString(rs.getString("remitente"), true));
 		        		t.setReceptor((PublicKey) StringUtils.getClaveDesdeString(rs.getString("receptor"), true));
@@ -500,7 +502,7 @@ public class databaseControl {
 		        	 stmt.close();
 		             conn.close();
 		        } catch (SQLException se) {
-		            System.out.println(se.getMessage());
+		        	//  System.out.println(se.getMessage());
 		        }
 
 			return t;
@@ -509,12 +511,13 @@ public class databaseControl {
 		public static ArrayList<Transaccion> getTransacciones() {
 			String sql = "SELECT * FROM transaccion;";
 			ArrayList<Transaccion> transacciones = new ArrayList<Transaccion>();
-			Transaccion t = new Transaccion();
+			Transaccion t; 
 			
 			 try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
+		        		t = new Transaccion();
 		        		t.setIDtransaccion(rs.getString("IDtran"));
 		        		t.setRemitente((PublicKey) StringUtils.getClaveDesdeString(rs.getString("remitente"), true));
 		        		t.setReceptor((PublicKey) StringUtils.getClaveDesdeString(rs.getString("receptor"), true));
@@ -527,7 +530,7 @@ public class databaseControl {
 		        	 stmt.close();
 		             conn.close();
 		        } catch (SQLException se) {
-		            System.out.println(se.getMessage());
+		        	//  System.out.println(se.getMessage());
 		        }
 
 			return transacciones;
@@ -552,10 +555,9 @@ public class databaseControl {
 		        	 stmt.close();
 		             conn.close();
 		        } catch (SQLException se) {
-		            System.out.println(se.getMessage());
+		        	//  System.out.println(se.getMessage());
 		        }
 
 			return t;
 		}
-    
 } 

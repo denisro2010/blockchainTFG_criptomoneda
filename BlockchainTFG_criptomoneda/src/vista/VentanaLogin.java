@@ -180,7 +180,7 @@ public class VentanaLogin extends JDialog {
 							carteraActual = new Cartera();
 							Cartera carteraDB = null;
 							try {
-								carteraDB = databaseControl.getCartera(textField.getText().toString().trim());
+								carteraDB = databaseControl.getCartera(textField.getText().toString().trim(), passwordField.getText().toString());
 							} catch (Exception e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();

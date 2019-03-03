@@ -61,7 +61,7 @@ public class Transaccion {
 			for(SalidaTransaccion o : outputs) {
 				ProgramaPrincipal.transaccionesNoGastadas.put(o.id , o);
 				try {
-					databaseControl.crearOutput(o.getId(), o.getCantidad(), o.getIDtransaccion(), StringUtils.getStringClave(remitente));
+					databaseControl.crearOutput(o.getId(), o.getCantidad(), o.getIDtransaccion(), StringUtils.getStringClave(o.getReceptor()));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -92,7 +92,7 @@ public class Transaccion {
 		
 		public void generarFirma(PrivateKey pClavePrivada) {
 			String datos = StringUtils.getStringClave(remitente) + StringUtils.getStringClave(receptor) + Float.toString(valor)	;
-			firma = StringUtils.applyECDSASig(pClavePrivada, datos);		
+			firma = StringUtils.applyECDSASig(pClavePrivada, datos);
 		}
 		
 		public boolean verificarFirma() {

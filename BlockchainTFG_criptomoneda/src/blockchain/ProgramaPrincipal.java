@@ -18,6 +18,7 @@ public class ProgramaPrincipal {
 	public static Transaccion transaccionGenesis;
 	public static Transaccion t1;
 	public static ArrayList<Transaccion> transacciones;
+	private static int posBlockchain; //despues de abrir y cerrar el programa solo recorre la lista a partir de los nuevos bloques que se crean en esa ejecución
 	
 	public static void main(String[] args) {
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
@@ -30,7 +31,7 @@ public class ProgramaPrincipal {
 					e.printStackTrace();
 				}
 
-				SalidaTransaccion out = new SalidaTransaccion();
+				SalidaTransaccion out; //= new SalidaTransaccion();
 				transacciones = databaseControl.getTransacciones();
 				
 			    for (Map.Entry<String, SalidaTransaccion> it : transaccionesNoGastadas.entrySet()) {
@@ -42,7 +43,7 @@ public class ProgramaPrincipal {
 			    }
 			    
 			    if(transacciones.size() > 0)
-			    	transaccionGenesis = transacciones.get(0);
+			    	transaccionGenesis = transacciones.get(transacciones.size()-1);
 				
 				try {
 					blockchain = databaseControl.getBloques();
@@ -50,44 +51,13 @@ public class ProgramaPrincipal {
 					e.printStackTrace();
 				}
 				
-				for(int x = 0; x < blockchain.size(); x++) {
-					System.out.println(blockchain.get(x).getHash());
-				}
+				if(blockchain.size() > 1)
+					posBlockchain = blockchain.size();
+				else
+					posBlockchain = 1;
 
 				VentanaPrincipal v = new VentanaPrincipal();
 				v.setVisible(true);		
-				
-				
-				/*
-				//testing
-				Bloque bloque1 = new Bloque(genesis.hash);
-				System.out.println("\nEl balance de la cartera 1 es de: " + cartera1.getBalanceCartera());
-				System.out.println("\nLa cartera 1 quiere enviar 40 monedas a cartera 2...");
-				bloque1.anadirTransaccion(cartera1.enviarFondos(cartera2.clavePublica, 40f));
-				anadirBloque(bloque1);
-				System.out.println("\nEl balance de la cartera 1 es de: " + cartera1.getBalanceCartera());
-				System.out.println("El balance de la cartera 2 es de: " + cartera2.getBalanceCartera());
-				
-				Bloque bloque2 = new Bloque(bloque1.hash);
-				System.out.println("\nLa cartera 1 está intentando mandar más monedas de las que tiene (1000)...");
-				bloque2.anadirTransaccion(cartera1.enviarFondos(cartera2.clavePublica, 1000f));
-				anadirBloque(bloque2);
-				System.out.println("\nEl balance de la cartera 1 es de: " + cartera1.getBalanceCartera());
-				System.out.println("El balance de la cartera 2 es de: " + cartera2.getBalanceCartera());
-				
-				Bloque block3 = new Bloque(bloque2.hash);
-				System.out.println("\nLa cartera 2 quiere enviar 20 monedas a cartera 1...");
-				block3.anadirTransaccion(cartera2.enviarFondos( cartera1.clavePublica, 20));
-				System.out.println("\nEl balance de la cartera 1 es de: " + cartera1.getBalanceCartera());
-				System.out.println("El balance de la cartera 1 es de: " + cartera2.getBalanceCartera());
-				
-				*/
-				
-				/*
-				
-				esCadenaValida();
-
-				*/
 				
 			} //FIN MAIN
 	
@@ -127,20 +97,19 @@ public class ProgramaPrincipal {
 		tranSinGastarTemp.put(transaccionGenesis.outputs.get(0).id, transaccionGenesis.outputs.get(0));
 		
 		//comprobar hashes del blockchain
-		for(int i=1; i < blockchain.size(); i++) {
+		for(int i=posBlockchain; i < blockchain.size(); i++) {
 			
 			bloqueActual = blockchain.get(i);
 			bloqueAnterior = blockchain.get(i-1);
 			
-			//comparar el hash registrado con el que se ha calculado
-			if(!bloqueActual.hash.equals(bloqueActual.calcularHash()) ){
-				System.out.println("Las funciones hash actuales no coinciden.");
-				return false;
-			}
-			
 			//comparar el hash anterior registrado con el anterior calculado
 			if(!bloqueAnterior.hash.equals(bloqueActual.hashAnterior) ) {
 				System.out.println("Las funciones hash anteriores no coinciden. " + bloqueActual.hashAnterior);
+				return false;
+			}
+			
+			if(!bloqueActual.hash.equals(bloqueActual.calcularHash()) ) {
+				System.out.println("Las funciones hash actuales no coinciden.");
 				return false;
 			}
 			
@@ -165,6 +134,7 @@ public class ProgramaPrincipal {
 				}
 				
 				for(EntradaTransaccion input: transaccionActual.inputs) {	
+					tranSinGastarTemp.put(transaccionActual.getSalidas().get(0).getId(), transaccionActual.getSalidas().get(0));
 					tempOutput = tranSinGastarTemp.get(input.IDsalidaTransaccion);
 					
 					if(tempOutput == null) {
@@ -203,6 +173,7 @@ public class ProgramaPrincipal {
 	public static void anadirBloque(Bloque pNuevoBloque) {
 		pNuevoBloque.minarBloque(dificultad);
 		blockchain.add(pNuevoBloque);
+		esCadenaValida();
 	}
 
 

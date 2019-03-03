@@ -13,7 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.border.TitledBorder;
@@ -21,18 +20,13 @@ import javax.swing.border.TitledBorder;
 import bd.databaseControl;
 import blockchain.Bloque;
 import blockchain.ProgramaPrincipal;
-import blockchain.SalidaTransaccion;
 import blockchain.StringUtils;
 import blockchain.Transaccion;
 
 import java.awt.event.ActionListener;
 import java.security.PublicKey;
 import java.awt.event.ActionEvent;
-import javax.swing.JPasswordField;
-import javax.swing.WindowConstants;
-import java.awt.Color;
 import javax.swing.JSpinner;
-import javax.swing.JComboBox;
 
 public class VentanaDatos extends JDialog {
 
@@ -127,16 +121,11 @@ public class VentanaDatos extends JDialog {
 								else
 									bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), 0));
 								ProgramaPrincipal.anadirBloque(bl);
-								ProgramaPrincipal.esCadenaValida();
-
-									
-									
-									
 										
 								try {
 									databaseControl.insertarTransaccion(bl.getTransacciones().get(0));
-									SalidaTransaccion o = bl.getTransacciones().get(0).getSalidas().get(bl.getTransacciones().get(0).getSalidas().size()-1);
-									databaseControl.crearOutput(o.getId(), o.getCantidad(), o.getIDtransaccion(), StringUtils.getStringClave(o.getReceptor()));
+									//SalidaTransaccion o = bl.getTransacciones().get(0).getSalidas().get(bl.getTransacciones().get(0).getSalidas().size()-1);
+									//databaseControl.crearOutput(o.getId(), o.getCantidad(), o.getIDtransaccion(), StringUtils.getStringClave(o.getReceptor()));
 									databaseControl.insertarBloque(bl);
 								} catch (Exception exc) {
 									exc.printStackTrace();
@@ -218,7 +207,7 @@ public class VentanaDatos extends JDialog {
 						Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 						StringSelection stringSelection = new StringSelection(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 						clipboard.setContents(stringSelection, null);
-						lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas.");
+						lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
 					}
 				});
 			}
@@ -231,7 +220,7 @@ public class VentanaDatos extends JDialog {
 							databaseControl.borrarCartera(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 							JOptionPane.showMessageDialog(null, "Su cartera se ha borrado correctamente.");
 						} catch (Exception e1) {
-							// TODO Auto-generated catch block
+							
 							e1.printStackTrace();
 						}
 						dispose();

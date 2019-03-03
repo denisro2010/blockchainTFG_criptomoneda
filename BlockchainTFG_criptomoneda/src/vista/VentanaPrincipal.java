@@ -2,6 +2,8 @@ package vista;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import java.awt.GridBagLayout;
 import javax.swing.JButton;
 import java.awt.GridBagConstraints;
@@ -231,8 +233,12 @@ public class VentanaPrincipal extends JFrame {
 			buttonStart.setHorizontalTextPosition(SwingConstants.CENTER);
 			buttonStart.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					VentanaLogin v = new VentanaLogin();
-					v.setVisible(true);
+					if(VentanaLogin.getCarteraActual() == null) {
+						VentanaLogin v = new VentanaLogin();
+						v.setVisible(true);
+					}
+					else
+						JOptionPane.showMessageDialog(null, "Cierre sesión en la cartera activa e inténtelo de nuevo.", "Aviso", JOptionPane.ERROR_MESSAGE);
 				}
 			});
 				
