@@ -51,7 +51,7 @@ public class databaseControl {
 	
 	 public static void tablaBloque() throws Exception {
 	    	
-	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS bloque (hash STRING PRIMARY KEY NOT NULL, hashAnterior STRING NOT NULL UNIQUE, marcaTemporal BIGINT NOT NULL, nonce INTEGER NOT NULL, merkleRoot STRING, transaccion STRING REFERENCES transaccion (IDtran) NOT NULL);";
+	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS bloque (hash TEXT PRIMARY KEY NOT NULL, hashAnterior TEXT NOT NULL UNIQUE, marcaTemporal BIGINT NOT NULL, nonce INTEGER NOT NULL, merkleRoot STRING, transaccion STRING REFERENCES transaccion (IDtran) NOT NULL);";
 	    	
 	    	 try (Connection conn = connect();
 	    	    Statement stmt = conn.createStatement()){
@@ -66,7 +66,7 @@ public class databaseControl {
 	 
 	 public static void tablaCartera() throws Exception {
 	    	
-	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS cartera (usuario STRING NOT NULL UNIQUE PRIMARY KEY, contrasena STRING NOT NULL, clavePublica STRING NOT NULL UNIQUE, clavePrivada STRING NOT NULL);";
+	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS cartera (usuario STRING NOT NULL PRIMARY KEY, contrasena TEXT NOT NULL, clavePublica TEXT NOT NULL UNIQUE, clavePrivada TEXT NOT NULL);";
 	    	
 	    	 try (Connection conn = connect();
 	    	    Statement stmt = conn.createStatement()){
@@ -81,7 +81,7 @@ public class databaseControl {
 
 	 public static void tablaOutputs() throws Exception {
 	    	
-	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS outputs (IDoutput STRING PRIMARY KEY NOT NULL UNIQUE, cantidad DOUBLE NOT NULL, IDtransaccion STRING NOT NULL, IDcartera REFERENCES cartera (clavePublica) NOT NULL);";
+	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS outputs (IDoutput TEXT NOT NULL PRIMARY KEY, cantidad DOUBLE NOT NULL, IDtransaccion TEXT NOT NULL, IDcartera TEXT REFERENCES cartera (clavePublica) NOT NULL);";
 	    	
 	    	 try (Connection conn = connect();
 	    	    Statement stmt = conn.createStatement()){
@@ -96,7 +96,7 @@ public class databaseControl {
 	 
 	 public static void tablaTransaccion() throws Exception {
 	    	
-	    	String sqlUsers = "CREATE TABLE transaccion (IDtran STRING PRIMARY KEY, remitente STRING NOT NULL, receptor STRING NOT NULL, valor DOUBLE NOT NULL, firma STRING NOT NULL, secuencia INTEGER);";
+	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS transaccion (IDtran TEXT PRIMARY KEY, remitente TEXT NOT NULL, receptor TEXT NOT NULL, valor DOUBLE NOT NULL, firma TEXT NOT NULL, secuencia INTEGER);";
 	    	
 	    	 try (Connection conn = connect();
 	    	    Statement stmt = conn.createStatement()){

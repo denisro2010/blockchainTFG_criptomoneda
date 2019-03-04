@@ -219,6 +219,7 @@ public class VentanaDatos extends JDialog {
 						try {
 							databaseControl.borrarCartera(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 							JOptionPane.showMessageDialog(null, "Su cartera se ha borrado correctamente.");
+							VentanaLogin.setCarteraActual(null);
 						} catch (Exception e1) {
 							
 							e1.printStackTrace();

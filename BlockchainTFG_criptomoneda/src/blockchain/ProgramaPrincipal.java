@@ -23,6 +23,15 @@ public class ProgramaPrincipal {
 	public static void main(String[] args) {
 				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
 				
+				try {
+					databaseControl.tablaBloque();
+					databaseControl.tablaCartera();
+					databaseControl.tablaOutputs();
+					databaseControl.tablaTransaccion();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 				t1 = databaseControl.getTranGenesis();
 				
 				try {
@@ -95,7 +104,7 @@ public class ProgramaPrincipal {
 		String meta = new String(new char[dificultad]).replace('\0', '0');
 		HashMap<String,SalidaTransaccion> tranSinGastarTemp = new HashMap<String,SalidaTransaccion>(); //lista temporal de transacciones sin gastar
 		tranSinGastarTemp.put(transaccionGenesis.outputs.get(0).id, transaccionGenesis.outputs.get(0));
-		
+
 		//comprobar hashes del blockchain
 		for(int i=posBlockchain; i < blockchain.size(); i++) {
 			
