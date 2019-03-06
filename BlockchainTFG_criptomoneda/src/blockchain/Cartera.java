@@ -57,7 +57,7 @@ public class Cartera {
 		public Transaccion enviarFondos(PublicKey pReceptor, float pCantidad) {
 			
 			if(getBalanceCartera() < pCantidad) {
-				System.out.println("No hay fondos suficientes como para enviar esta cantidad. La transacción se ha descartado.");
+				//System.out.println("No hay fondos suficientes como para enviar esta cantidad. La transacción se ha descartado.");
 				JOptionPane.showMessageDialog(null,
 					    "No hay fondos suficientes como para enviar esta cantidad. La transacción se ha descartado.",
 					    "Error",

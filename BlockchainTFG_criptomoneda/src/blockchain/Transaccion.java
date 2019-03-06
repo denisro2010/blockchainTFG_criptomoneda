@@ -4,6 +4,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import bd.databaseControl;
 
 import java.security.*;
@@ -35,7 +37,8 @@ public class Transaccion {
 		public boolean procesarTransaccion() {
 			
 			if(verificarFirma() == false) {
-				System.out.println("La firma no se ha podido verificar.");
+				//System.out.println("La firma no se ha podido verificar.");
+				JOptionPane.showMessageDialog(null, "La firma de la transacción no se ha podido verificar.", "Error", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 					

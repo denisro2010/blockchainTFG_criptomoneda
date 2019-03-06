@@ -115,26 +115,51 @@ public class VentanaDatos extends JDialog {
 								} catch (Exception e1) {
 									e1.printStackTrace();
 								}
-								Transaccion tranTemp = VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), cantidad);
-								if(tranTemp != null)
-									bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), cantidad));
-								else
-									bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), 0));
-								ProgramaPrincipal.anadirBloque(bl);
-										
-								try {
-									databaseControl.insertarTransaccion(bl.getTransacciones().get(0));
-									//SalidaTransaccion o = bl.getTransacciones().get(0).getSalidas().get(bl.getTransacciones().get(0).getSalidas().size()-1);
-									//databaseControl.crearOutput(o.getId(), o.getCantidad(), o.getIDtransaccion(), StringUtils.getStringClave(o.getReceptor()));
-									databaseControl.insertarBloque(bl);
-								} catch (Exception exc) {
-									exc.printStackTrace();
-								}
-								if(bl.getTransacciones().size() > 0)
-									ProgramaPrincipal.transacciones.add(bl.getTransacciones().get(0));
 								
-								lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
-							}
+								Transaccion tranTemp = VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), cantidad);
+								if(tranTemp != null) { //Si la transaccion es correcta
+									bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), cantidad));
+								
+									if(bl.getTransacciones().size() > 0) //anadir tran a la lista de transacciones
+										ProgramaPrincipal.transacciones.add(bl.getTransacciones().get(0));
+									
+									if(ProgramaPrincipal.anadirBloque(bl)) { //si la cadena es valida, anadir todo a la BD
+										try {
+											databaseControl.insertarTransaccion(bl.getTransacciones().get(0));
+											databaseControl.insertarBloque(bl);
+										} catch (Exception exc) {
+											exc.printStackTrace();
+										}
+									}
+									else { //si no es valida, no añadir a la bd y borrar bloque y tran de las listas en tiempo de ejecucion
+										ProgramaPrincipal.transacciones.remove(bl.getTransacciones().get(0));
+										ProgramaPrincipal.blockchain.remove(bl);
+									}
+								}
+								else { //si la transaccion NO es correcta (supera el saldo de la cartera...)
+									bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) 
+											StringUtils.getClaveDesdeString(textField.getText().toString(), true), 0)); //enviar cero
+								
+									if(bl.getTransacciones().size() > 0) //anadir tran a la lista de transacciones
+										ProgramaPrincipal.transacciones.add(bl.getTransacciones().get(0));
+									
+									if(ProgramaPrincipal.anadirBloque(bl)) { //si la cadena es valida, anadir todo a la BD
+										try {
+											databaseControl.insertarTransaccion(bl.getTransacciones().get(0));
+											databaseControl.insertarBloque(bl);
+										} catch (Exception exc) {
+											exc.printStackTrace();
+										}
+									}
+									else { //si no es valida, no añadir a la bd y borrar bloque y tran de las listas en tiempo de ejecucion
+										ProgramaPrincipal.transacciones.remove(bl.getTransacciones().get(0));
+										ProgramaPrincipal.blockchain.remove(bl);
+									}					
+								}
+								
+								lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas"); //actualizar saldo
+								
+							} // FIN ELSE PRINCIPAL
 						}
 						else{
 							JOptionPane.showMessageDialog(null, "La cartera que ha introducido no existe.", "Error", JOptionPane.ERROR_MESSAGE);

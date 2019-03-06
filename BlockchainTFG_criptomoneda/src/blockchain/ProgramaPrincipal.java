@@ -3,6 +3,9 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.JOptionPane;
+
 import bd.databaseControl;
 import vista.VentanaDatos;
 import vista.VentanaLogin;
@@ -113,18 +116,21 @@ public class ProgramaPrincipal {
 			
 			//comparar el hash anterior registrado con el anterior calculado
 			if(!bloqueAnterior.hash.equals(bloqueActual.hashAnterior) ) {
-				System.out.println("Las funciones hash anteriores no coinciden. " + bloqueActual.hashAnterior);
+				//System.out.println("Las funciones hash anteriores no coinciden. " + bloqueActual.hashAnterior);
+				JOptionPane.showMessageDialog(null, "Las funciones hash anteriores no coinciden.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 			
 			if(!bloqueActual.hash.equals(bloqueActual.calcularHash()) ) {
-				System.out.println("Las funciones hash actuales no coinciden.");
+				//System.out.println("Las funciones hash actuales no coinciden.");
+				JOptionPane.showMessageDialog(null, "Las funciones hash actuales no coinciden.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 			
 			//comprobar que la función hash cumple las condiciones
 			if(!bloqueActual.hash.substring( 0, dificultad).equals(meta)) {
-				System.out.println("Este bloque NO se ha minado.");
+				//System.out.println("Este bloque NO se ha minado.");
+				JOptionPane.showMessageDialog(null, "Este bloque no se ha minado.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 			
@@ -134,11 +140,13 @@ public class ProgramaPrincipal {
 				Transaccion transaccionActual = bloqueActual.transacciones.get(t);
 				
 				if(!transaccionActual.verificarFirma()) {
-					System.out.println("La firma de la transacción (" + t + ") NO es válida.");
+					//System.out.println("La firma de la transacción (" + t + ") NO es válida.");
+					JOptionPane.showMessageDialog(null, "La firma de la transacción no es válida.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 					return false; 
 				}
 				if(transaccionActual.getInputs() != transaccionActual.getOutputs()) {
-					System.out.println("Los inputs de la transacción (" + t + ") no coinciden con los outputs.");
+					//System.out.println("Los inputs de la transacción (" + t + ") no coinciden con los outputs.");
+					JOptionPane.showMessageDialog(null, "Los inputs de la transacción no coinciden con los outputs.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 					return false; 
 				}
 				
@@ -146,14 +154,18 @@ public class ProgramaPrincipal {
 					tranSinGastarTemp.put(transaccionActual.getSalidas().get(0).getId(), transaccionActual.getSalidas().get(0));
 					tempOutput = tranSinGastarTemp.get(input.IDsalidaTransaccion);
 					
-					if(tempOutput == null) {
-						System.out.println("El input de la transacción (" + t + ") no se ha podido encontrar.");
+					/*if(tempOutput == null) {
+						//System.out.println("El input de la transacción (" + t + ") no se ha podido encontrar.");
+						JOptionPane.showMessageDialog(null, "El input de la transacción no se ha podido encontrar.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 						return false;
-					}
+					}*/
 					
-					if(input.transaccionNoGastada.cantidad != tempOutput.cantidad) {
-						System.out.println("La entrada (input) de la transacción (" + t + ") no es válida.");
-						return false;
+					if(tempOutput != null) {
+						if(input.transaccionNoGastada.cantidad != tempOutput.cantidad) {
+							//System.out.println("La entrada (input) de la transacción (" + t + ") no es válida.");
+							JOptionPane.showMessageDialog(null, "El input de la transacción no es válido.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
+							return false;
+						}
 					}
 					
 					tranSinGastarTemp.remove(input.IDsalidaTransaccion);
@@ -164,25 +176,29 @@ public class ProgramaPrincipal {
 				}
 				
 				if( transaccionActual.outputs.get(0).receptor != transaccionActual.receptor) {
-					System.out.println("El receptor de la transacción (" + t + ") no es quien debería ser.");
+					//System.out.println("El receptor de la transacción (" + t + ") no es quien debería ser.");
+					JOptionPane.showMessageDialog(null, "El receptor de la transacción no es quien debería ser.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
 				if( transaccionActual.outputs.get(1).receptor != transaccionActual.remitente) {
-					System.out.println("El que recibe el cambio sobrante de la transacción (" + t + ") NO es el remitente.");
+					//System.out.println("El que recibe el cambio sobrante de la transacción (" + t + ") NO es el remitente.");
+					JOptionPane.showMessageDialog(null, "El que recibe el cambio sobrante de la transacción NO es el remitente.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
 				
 			}
 			
 		}
-		System.out.println("El blockchain es válido.");
+		JOptionPane.showMessageDialog(null, "El blockchain es válido.", "", JOptionPane.PLAIN_MESSAGE);
 		return true;
 	}
 	
-	public static void anadirBloque(Bloque pNuevoBloque) {
+	public static boolean anadirBloque(Bloque pNuevoBloque) {
 		pNuevoBloque.minarBloque(dificultad);
 		blockchain.add(pNuevoBloque);
-		esCadenaValida();
+		
+		if(esCadenaValida());
+			return true;
 	}
 
 
