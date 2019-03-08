@@ -1,13 +1,10 @@
 package blockchain;
 import java.security.*;
-import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.JOptionPane;
-
+import org.bouncycastle.pqc.jcajce.spec.QTESLAParameterSpec;
 import bd.databaseControl;
 
 public class Cartera {
@@ -22,7 +19,31 @@ public class Cartera {
 		}
 			
 		public void generarParClaves() {
+			
+			 KeyPairGenerator kpg = null;
 			try {
+				kpg = KeyPairGenerator.getInstance("qTESLA", "BCPQC");
+			} catch (NoSuchAlgorithmException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (NoSuchProviderException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		        try {
+					kpg.initialize(new QTESLAParameterSpec(QTESLAParameterSpec.HEURISTIC_I), new SecureRandom());
+				} catch (InvalidAlgorithmParameterException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+		        KeyPair kp = kpg.generateKeyPair();
+
+		        clavePrivada = kp.getPrivate();
+		        clavePublica = kp.getPublic();
+			
+			/*try {
 				KeyPairGenerator generadorClaves = KeyPairGenerator.getInstance("ECDSA","BC");
 				SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
 				ECGenParameterSpec ecSpec = new ECGenParameterSpec("prime192v1");
@@ -37,7 +58,8 @@ public class Cartera {
 		        	
 			}catch(Exception e) {
 				throw new RuntimeException(e);
-			}
+			}*/
+			
 		}
 		
 		public float getBalanceCartera() {

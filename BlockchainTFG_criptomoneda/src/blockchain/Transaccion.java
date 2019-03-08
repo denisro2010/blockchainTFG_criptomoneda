@@ -95,12 +95,12 @@ public class Transaccion {
 		
 		public void generarFirma(PrivateKey pClavePrivada) {
 			String datos = StringUtils.getStringClave(remitente) + StringUtils.getStringClave(receptor) + Float.toString(valor)	;
-			firma = StringUtils.applyECDSASig(pClavePrivada, datos);
+			firma = StringUtils.applyQTESLASig(pClavePrivada, datos);
 		}
 		
 		public boolean verificarFirma() {
 			String datos = StringUtils.getStringClave(remitente) + StringUtils.getStringClave(receptor) + Float.toString(valor)	;
-			return StringUtils.verifyECDSASig(remitente, datos, firma);
+			return StringUtils.verifyQTESLASig(remitente, datos, firma);
 		}
 		
 		public float getOutputs() {

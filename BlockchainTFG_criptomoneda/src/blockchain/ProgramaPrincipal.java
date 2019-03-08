@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
+
 import bd.databaseControl;
 import vista.VentanaDatos;
 import vista.VentanaLogin;
@@ -24,7 +26,7 @@ public class ProgramaPrincipal {
 	private static int posBlockchain; //despues de abrir y cerrar el programa solo recorre la lista a partir de los nuevos bloques que se crean en esa ejecución
 	
 	public static void main(String[] args) {
-				Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
+				Security.addProvider(new BouncyCastlePQCProvider()); //Setup Bouncey castle as a Security Provider
 				
 				try {
 					databaseControl.tablaBloque();

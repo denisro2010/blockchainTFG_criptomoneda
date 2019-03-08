@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import org.bouncycastle.pqc.crypto.qtesla.QTESLASigner;
+
 public class StringUtils {
 		
 		//Aplica SHA256 a un string y devuelve el resultado
@@ -35,11 +37,11 @@ public class StringUtils {
 		}
 		
 		//Aplica ECDSA y devuelve el resultado como bytes
-		public static byte[] applyECDSASig(PrivateKey pClavePrivada, String pCadena) {
+		public static byte[] applyQTESLASig(PrivateKey pClavePrivada, String pCadena) {
 			Signature dsa;
 			byte[] resultado = new byte[0];
 			try {
-				dsa = Signature.getInstance("ECDSA", "BC");
+				dsa = Signature.getInstance("qTESLA", "BCPQC");
 				dsa.initSign(pClavePrivada);
 				byte[] strByte = pCadena.getBytes();
 				dsa.update(strByte);
@@ -52,9 +54,11 @@ public class StringUtils {
 		}
 		
 		//Verifica una firma
-		public static boolean verifyECDSASig(PublicKey pCalvePublica, String pDatos, byte[] pFirma) {
+		public static boolean verifyQTESLASig(PublicKey pCalvePublica, String pDatos, byte[] pFirma) {
+			QTESLASigner signer = new QTESLASigner();
+			
 			try {
-				Signature ecdsaVerify = Signature.getInstance("ECDSA", "BC");
+				Signature ecdsaVerify = Signature.getInstance("qTESLA", "BCPQC");
 				ecdsaVerify.initVerify(pCalvePublica);
 				ecdsaVerify.update(pDatos.getBytes());
 				return ecdsaVerify.verify(pFirma);
@@ -84,7 +88,7 @@ public class StringUtils {
 			
 			if(pPublica == true) {
 				try {
-					key = KeyFactory.getInstance("ECDSA").generatePublic(new X509EncodedKeySpec(decodedKey));
+					key = KeyFactory.getInstance("qTESLA").generatePublic(new X509EncodedKeySpec(decodedKey));
 				} catch (InvalidKeySpecException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -95,7 +99,7 @@ public class StringUtils {
 			}
 			else {
 				try {
-					key = KeyFactory.getInstance("ECDSA").generatePrivate(new PKCS8EncodedKeySpec(decodedKey));
+					key = KeyFactory.getInstance("qTESLA").generatePrivate(new PKCS8EncodedKeySpec(decodedKey));
 				} catch (InvalidKeySpecException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
