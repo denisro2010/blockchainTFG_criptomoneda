@@ -6,20 +6,21 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 
 import java.security.*;
 
 public class Transaccion {
 
-		public String IDtransaccion; //Hash de una transaccion
-		public PublicKey remitente; //Clave publica del remitente
-		public PublicKey receptor; //clave publica del receptor
-		public float valor; //valor que se desea enviar 
-		public byte[] firma; //Para prevenir que otra persona gaste nuestros fondos
+		protected String IDtransaccion; //Hash de una transaccion
+		private PublicKey remitente; //Clave publica del remitente
+		private PublicKey receptor; //clave publica del receptor
+		private float valor; //valor que se desea enviar 
+		private byte[] firma; //Para prevenir que otra persona gaste nuestros fondos
 		
-		public ArrayList<EntradaTransaccion> inputs = new ArrayList<EntradaTransaccion>();
-		public ArrayList<SalidaTransaccion> outputs = new ArrayList<SalidaTransaccion>();
+		private ArrayList<EntradaTransaccion> inputs = new ArrayList<EntradaTransaccion>();
+		private ArrayList<SalidaTransaccion> outputs = new ArrayList<SalidaTransaccion>();
 		
 		private int secuencia; //Contador de cuantas transacciones se han generado
 		
@@ -44,7 +45,7 @@ public class Transaccion {
 					
 			//Recoge los inputs de la transaccion (asegurarse de que no se han gastado ya):
 			for(EntradaTransaccion i : inputs) {
-				i.transaccionNoGastada = ProgramaPrincipal.transaccionesNoGastadas.get(i.IDsalidaTransaccion);
+				i.transaccionNoGastada = ProgramaPrincipal.getTransaccionesNoGastadas().get(i.IDsalidaTransaccion);
 			}
 
 			//Comprueba la validez de la transaccion
@@ -62,7 +63,7 @@ public class Transaccion {
 					
 			//Add outputs to Unspent list
 			for(SalidaTransaccion o : outputs) {
-				ProgramaPrincipal.transaccionesNoGastadas.put(o.id , o);
+				ProgramaPrincipal.getTransaccionesNoGastadas().put(o.getId() , o);
 				try {
 					databaseControl.crearOutput(o.getId(), o.getCantidad(), o.getIDtransaccion(), StringUtils.getStringClave(o.getReceptor()));
 				} catch (Exception e) {
@@ -73,9 +74,9 @@ public class Transaccion {
 			//Remove transaction inputs from UTXO lists as spent:
 			for(EntradaTransaccion i : inputs) {
 				if(i.transaccionNoGastada == null) continue; //if Transaction can't be found skip it 
-					ProgramaPrincipal.transaccionesNoGastadas.remove(i.transaccionNoGastada.id);
+					ProgramaPrincipal.getTransaccionesNoGastadas().remove(i.transaccionNoGastada.getId());
 					try {
-						databaseControl.borrarOutput(i.transaccionNoGastada.id);
+						databaseControl.borrarOutput(i.transaccionNoGastada.getId());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -88,7 +89,7 @@ public class Transaccion {
 			float total = 0;
 			for(EntradaTransaccion i : inputs) {
 				if(i.transaccionNoGastada == null) continue; //si la transaccion no se encuentra, omitirla
-				total += i.transaccionNoGastada.cantidad;
+				total += i.transaccionNoGastada.getCantidad();
 			}
 			return total;
 		}
@@ -106,14 +107,14 @@ public class Transaccion {
 		public float getOutputs() {
 			float total = 0;
 			for(SalidaTransaccion o : outputs) {
-				total += o.cantidad;
+				total += o.getCantidad();
 			}
 			return total;
 		}
 		
 		private String calularHash() {
 			secuencia++; //evitar que dos transacciones tengan el mismo hash
-			return StringUtils.applySha256(
+			return StringUtils.applySha3_256(
 					StringUtils.getStringClave(remitente) +
 					StringUtils.getStringClave(receptor) +
 					Float.toString(valor) + secuencia
@@ -174,6 +175,10 @@ public class Transaccion {
 
 		public void setSalidas(ArrayList<SalidaTransaccion> outputs) {
 			this.outputs = outputs;
+		}
+		
+		public ArrayList<EntradaTransaccion> getEntradas(){
+			return inputs;
 		}
 		
 }

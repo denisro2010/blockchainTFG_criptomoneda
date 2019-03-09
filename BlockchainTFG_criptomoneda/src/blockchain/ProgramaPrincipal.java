@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
 
+import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 import vista.VentanaDatos;
 import vista.VentanaLogin;
@@ -15,18 +16,18 @@ import vista.VentanaPrincipal;
 
 public class ProgramaPrincipal {
 
-	public static ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
-	public static HashMap<String, SalidaTransaccion> transaccionesNoGastadas = new HashMap<String, SalidaTransaccion>();
-	public static int dificultad = 3;
+	private static ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
+	private static HashMap<String, SalidaTransaccion> transaccionesNoGastadas = new HashMap<String, SalidaTransaccion>();
+	private static int dificultad = 3;
 	public static float transaccionMin = 0;
-	public static Cartera cartera1;
+	private static Cartera cartera1;
 	public static Transaccion transaccionGenesis;
-	public static Transaccion t1;
-	public static ArrayList<Transaccion> transacciones;
+	private static Transaccion t1;
+	private static ArrayList<Transaccion> transacciones;
 	private static int posBlockchain; //despues de abrir y cerrar el programa solo recorre la lista a partir de los nuevos bloques que se crean en esa ejecución
 	
 	public static void main(String[] args) {
-				Security.addProvider(new BouncyCastlePQCProvider()); //Setup Bouncey castle as a Security Provider
+				Security.addProvider(new BouncyCastlePQCProvider()); //Setup Bouncey castle as a Security Provider (POST-QUANTUM SUPPORT)
 				
 				try {
 					databaseControl.tablaBloque();
@@ -81,12 +82,12 @@ public class ProgramaPrincipal {
 		Cartera coinbase = new Cartera();
 		
 		// Transaccion genesis, mandar 100 coins a la cartera 1: 
-		transaccionGenesis = new Transaccion(coinbase.clavePublica, cartera1.clavePublica, 100, null, 0);
-		transaccionGenesis.generarFirma(coinbase.clavePrivada);	 //firma manual de la transaccion genesis	
+		transaccionGenesis = new Transaccion(coinbase.getClavePublica(), cartera1.getClavePublica(), 100, null, 0);
+		transaccionGenesis.generarFirma(coinbase.getClavePrivada());	 //firma manual de la transaccion genesis	
 		transaccionGenesis.IDtransaccion = "0"; //id de la transaccion manual
-		SalidaTransaccion outputManual = new SalidaTransaccion(transaccionGenesis.receptor, transaccionGenesis.valor, transaccionGenesis.IDtransaccion);
-		transaccionGenesis.outputs.add(outputManual); //anadir el output manualmente
-		transaccionesNoGastadas.put(transaccionGenesis.outputs.get(0).id, transaccionGenesis.outputs.get(0)); //guarda la primera transaccion en la lista de transacciones no gastadas
+		SalidaTransaccion outputManual = new SalidaTransaccion(transaccionGenesis.getReceptor(), transaccionGenesis.getValor(), transaccionGenesis.getIDtransaccion());
+		transaccionGenesis.getSalidas().add(outputManual); //anadir el output manualmente
+		transaccionesNoGastadas.put(transaccionGenesis.getSalidas().get(0).getId(), transaccionGenesis.getSalidas().get(0)); //guarda la primera transaccion en la lista de transacciones no gastadas
 		
 		System.out.println("Creando y minando el bloque génesis... ");
 		Bloque genesis = new Bloque("0");
@@ -108,7 +109,7 @@ public class ProgramaPrincipal {
 		Bloque bloqueAnterior;
 		String meta = new String(new char[dificultad]).replace('\0', '0');
 		HashMap<String,SalidaTransaccion> tranSinGastarTemp = new HashMap<String,SalidaTransaccion>(); //lista temporal de transacciones sin gastar
-		tranSinGastarTemp.put(transaccionGenesis.outputs.get(0).id, transaccionGenesis.outputs.get(0));
+		tranSinGastarTemp.put(transaccionGenesis.getSalidas().get(0).getId(), transaccionGenesis.getSalidas().get(0));
 
 		//comprobar hashes del blockchain
 		for(int i=posBlockchain; i < blockchain.size(); i++) {
@@ -117,20 +118,20 @@ public class ProgramaPrincipal {
 			bloqueAnterior = blockchain.get(i-1);
 			
 			//comparar el hash anterior registrado con el anterior calculado
-			if(!bloqueAnterior.hash.equals(bloqueActual.hashAnterior) ) {
+			if(!bloqueAnterior.getHash().equals(bloqueActual.getHashAnterior()) ) {
 				//System.out.println("Las funciones hash anteriores no coinciden. " + bloqueActual.hashAnterior);
 				JOptionPane.showMessageDialog(null, "Las funciones hash anteriores no coinciden.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 			
-			if(!bloqueActual.hash.equals(bloqueActual.calcularHash()) ) {
+			if(!bloqueActual.getHash().equals(bloqueActual.calcularHash()) ) {
 				//System.out.println("Las funciones hash actuales no coinciden.");
 				JOptionPane.showMessageDialog(null, "Las funciones hash actuales no coinciden.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 			
 			//comprobar que la función hash cumple las condiciones
-			if(!bloqueActual.hash.substring( 0, dificultad).equals(meta)) {
+			if(!bloqueActual.getHash().substring( 0, dificultad).equals(meta)) {
 				//System.out.println("Este bloque NO se ha minado.");
 				JOptionPane.showMessageDialog(null, "Este bloque no se ha minado.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 				return false;
@@ -138,8 +139,8 @@ public class ProgramaPrincipal {
 			
 			//loop sobre las transacciones
 			SalidaTransaccion tempOutput;
-			for(int t=0; t <bloqueActual.transacciones.size(); t++) {
-				Transaccion transaccionActual = bloqueActual.transacciones.get(t);
+			for(int t=0; t <bloqueActual.getTransacciones().size(); t++) {
+				Transaccion transaccionActual = bloqueActual.getTransacciones().get(t);
 				
 				if(!transaccionActual.verificarFirma()) {
 					//System.out.println("La firma de la transacción (" + t + ") NO es válida.");
@@ -152,7 +153,7 @@ public class ProgramaPrincipal {
 					return false; 
 				}
 				
-				for(EntradaTransaccion input: transaccionActual.inputs) {	
+				for(EntradaTransaccion input: transaccionActual.getEntradas()) {	
 					tranSinGastarTemp.put(transaccionActual.getSalidas().get(0).getId(), transaccionActual.getSalidas().get(0));
 					tempOutput = tranSinGastarTemp.get(input.IDsalidaTransaccion);
 					
@@ -163,7 +164,7 @@ public class ProgramaPrincipal {
 					}*/
 					
 					if(tempOutput != null) {
-						if(input.transaccionNoGastada.cantidad != tempOutput.cantidad) {
+						if(input.transaccionNoGastada.getCantidad() != tempOutput.getCantidad()) {
 							//System.out.println("La entrada (input) de la transacción (" + t + ") no es válida.");
 							JOptionPane.showMessageDialog(null, "El input de la transacción no es válido.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 							return false;
@@ -173,16 +174,16 @@ public class ProgramaPrincipal {
 					tranSinGastarTemp.remove(input.IDsalidaTransaccion);
 				}
 				
-				for(SalidaTransaccion output: transaccionActual.outputs) {
-					tranSinGastarTemp.put(output.id, output);
+				for(SalidaTransaccion output: transaccionActual.getSalidas()) {
+					tranSinGastarTemp.put(output.getId(), output);
 				}
 				
-				if( transaccionActual.outputs.get(0).receptor != transaccionActual.receptor) {
+				if( transaccionActual.getSalidas().get(0).getReceptor() != transaccionActual.getReceptor()) {
 					//System.out.println("El receptor de la transacción (" + t + ") no es quien debería ser.");
 					JOptionPane.showMessageDialog(null, "El receptor de la transacción no es quien debería ser.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
-				if( transaccionActual.outputs.get(1).receptor != transaccionActual.remitente) {
+				if( transaccionActual.getSalidas().get(1).getReceptor() != transaccionActual.getRemitente()) {
 					//System.out.println("El que recibe el cambio sobrante de la transacción (" + t + ") NO es el remitente.");
 					JOptionPane.showMessageDialog(null, "El que recibe el cambio sobrante de la transacción NO es el remitente.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 					return false;
@@ -203,6 +204,22 @@ public class ProgramaPrincipal {
 			return true;
 	}
 
+	public static HashMap<String, SalidaTransaccion> getTransaccionesNoGastadas() {
+		return transaccionesNoGastadas;
+	}
+
+	public static Transaccion getT1() {
+		return t1;
+	}
+
+	public static ArrayList<Transaccion> getTransacciones() {
+		return transacciones;
+	}
+
+	public static ArrayList<Bloque> getBlockchain() {
+		return blockchain;
+	}
+	
 
 }
 

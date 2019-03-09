@@ -1,4 +1,4 @@
-package blockchain;
+package algoritmosCriptograficos;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -6,18 +6,34 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import com.google.gson.GsonBuilder;
+
+import blockchain.Transaccion;
+
 import java.util.List;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import org.bouncycastle.crypto.digests.SHA3Digest;
 import org.bouncycastle.pqc.crypto.qtesla.QTESLASigner;
+import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
 public class StringUtils {
 		
 		//Aplica SHA256 a un string y devuelve el resultado
-		public static String applySha256(String pCadena){
+		public static String applySha3_256(String data){
 			
-			try {
+			    String trimmedData = data.trim();
+			    byte[] dataBytes = trimmedData.getBytes();
+			    SHA3Digest md = new SHA3Digest(256);
+			    md.reset();
+			    md.update(dataBytes, 0, dataBytes.length);
+			    byte[] hashedBytes = new byte[256 / 8];
+			    md.doFinal(hashedBytes, 0);
+			    String sha3Hash = ByteUtils.toHexString(hashedBytes);
+			    return sha3Hash;
+			
+			
+			/*try {
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		        
 				//Aplica SHA256 a la cadena de entrada 
@@ -33,7 +49,7 @@ public class StringUtils {
 			}
 			catch(Exception e) {
 				throw new RuntimeException(e);
-			}
+			}*/
 		}
 		
 		//Aplica ECDSA y devuelve el resultado como bytes
@@ -118,14 +134,14 @@ public class StringUtils {
 			
 			List<String> ramaAnteriorArbol = new ArrayList<String>();
 			for(Transaccion transaccion : pTransacciones) {
-				ramaAnteriorArbol.add(transaccion.IDtransaccion);
+				ramaAnteriorArbol.add(transaccion.getIDtransaccion());
 			}
 			List<String> ramaArbol = ramaAnteriorArbol;
 			
 			while(cont > 1) {
 				ramaArbol = new ArrayList<String>();
 				for(int i=1; i < ramaAnteriorArbol.size(); i+=2) {
-					ramaArbol.add(applySha256(ramaAnteriorArbol.get(i-1) + ramaAnteriorArbol.get(i)));
+					ramaArbol.add(applySha3_256(ramaAnteriorArbol.get(i-1) + ramaAnteriorArbol.get(i)));
 				}
 				cont = ramaArbol.size();
 				ramaAnteriorArbol = ramaArbol;

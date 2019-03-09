@@ -9,15 +9,16 @@ import bd.databaseControl;
 
 public class Cartera {
 
-		public PrivateKey clavePrivada;
-		public PublicKey clavePublica;
+		private PrivateKey clavePrivada;
+		private PublicKey clavePublica;
 		
-		public HashMap<String, SalidaTransaccion> transaccionesNoGastadas = new HashMap<String, SalidaTransaccion>();
+		private HashMap<String, SalidaTransaccion> transaccionesNoGastadas = new HashMap<String, SalidaTransaccion>();
 		
 		public Cartera(){
 			generarParClaves();	
 		}
 			
+		//Genera un par de claves con qTESLA, el algoritmo post cuántico
 		public void generarParClaves() {
 			
 			 KeyPairGenerator kpg = null;
@@ -66,11 +67,11 @@ public class Cartera {
 			
 			float total = 0;
 			
-	        for (Map.Entry<String, SalidaTransaccion> transacciones: ProgramaPrincipal.transaccionesNoGastadas.entrySet()){
+	        for (Map.Entry<String, SalidaTransaccion> transacciones: ProgramaPrincipal.getTransaccionesNoGastadas().entrySet()){
 	        	SalidaTransaccion transaccionNoGastada = transacciones.getValue();
 	            if(transaccionNoGastada.misMonedas(clavePublica)) { //si las monedas me pertenecen...
-	            	transaccionesNoGastadas.put(transaccionNoGastada.id, transaccionNoGastada); //añadir transaccion a mi lista de transacciones no realizadas
-	            	total += transaccionNoGastada.cantidad; 
+	            	transaccionesNoGastadas.put(transaccionNoGastada.getId(), transaccionNoGastada); //añadir transaccion a mi lista de transacciones no realizadas
+	            	total += transaccionNoGastada.getCantidad(); 
 	            }
 	        }  
 			return total;
@@ -92,8 +93,8 @@ public class Cartera {
 			float total = 0;
 			for (Map.Entry<String, SalidaTransaccion> item: transaccionesNoGastadas.entrySet()){
 				SalidaTransaccion transaccionNoGastada = item.getValue();
-				total += transaccionNoGastada.cantidad;
-				entrantes.add(new EntradaTransaccion(transaccionNoGastada.id));
+				total += transaccionNoGastada.getCantidad();
+				entrantes.add(new EntradaTransaccion(transaccionNoGastada.getId()));
 				if(total > pCantidad) 
 					break;
 			}

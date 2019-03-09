@@ -5,15 +5,17 @@ import java.util.Date;
 
 import javax.swing.JOptionPane;
 
+import algoritmosCriptograficos.StringUtils;
+
 //
 public class Bloque {
 
-	public String hash; //La "firma" del bloque
-	public String hashAnterior; //La funcion hash del bloque anterior
+	private String hash; //La "firma" del bloque
+	private String hashAnterior; //La funcion hash del bloque anterior
 	private long marcaTemporal; //numero en milisegundos desde el 01/01/1970
 	private int nonce; //"number used once"
-	public String merkleRoot;
-	public ArrayList<Transaccion> transacciones = new ArrayList<Transaccion>();
+	private String merkleRoot;
+	private ArrayList<Transaccion> transacciones = new ArrayList<Transaccion>();
 
 	//Constructor
 	public Bloque(String pHashAnterior ) {
@@ -31,7 +33,7 @@ public class Bloque {
 		 * Debemos calcular el hash de todas las partes del bloque que no queremos que se alteren. 
 		 * Entonces, para nuestro bloque incluiremos el Hash del bloque anterior, los datos y la marca temporal.
 		 */
-		hash = StringUtils.applySha256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + merkleRoot);
+		hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + merkleRoot);
 		
 		return hash;
 	}

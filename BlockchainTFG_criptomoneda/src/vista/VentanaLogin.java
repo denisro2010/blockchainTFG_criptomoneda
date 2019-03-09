@@ -15,10 +15,10 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.border.TitledBorder;
 
+import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 import blockchain.Cartera;
 import blockchain.ProgramaPrincipal;
-import blockchain.StringUtils;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -167,7 +167,7 @@ public class VentanaLogin extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						String passBD = null;
 						String usuario = textField.getText().toString().trim();
-						String contra = StringUtils.applySha256(passwordField.getText().toString());
+						String contra = StringUtils.applySha3_256(passwordField.getText().toString());
 						
 						try {
 							passBD = databaseControl.getPass(usuario);
@@ -185,7 +185,7 @@ public class VentanaLogin extends JDialog {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
-							carteraActual.setClavePublica(carteraDB.clavePublica);
+							carteraActual.setClavePublica(carteraDB.getClavePublica());
 							carteraActual.setClavePrivada(carteraDB.getClavePrivada());
 							//carteraActual.getTransaccionesNoGastadas().put(key, value);
 							carteraDB = null;
@@ -194,10 +194,10 @@ public class VentanaLogin extends JDialog {
 							
 							//testing
 							if(ProgramaPrincipal.transaccionGenesis == null) {
-								if(ProgramaPrincipal.t1.getIDtransaccion() == null)
+								if(ProgramaPrincipal.getT1().getIDtransaccion() == null)
 									ProgramaPrincipal.transGenesis(); 
 								else
-									ProgramaPrincipal.transaccionGenesis = ProgramaPrincipal.t1;
+									ProgramaPrincipal.transaccionGenesis = ProgramaPrincipal.getT1();
 							}
 						}
 						else

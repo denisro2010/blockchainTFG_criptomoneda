@@ -17,10 +17,10 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.border.TitledBorder;
 
+import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 import blockchain.Bloque;
 import blockchain.ProgramaPrincipal;
-import blockchain.StringUtils;
 import blockchain.Transaccion;
 
 import java.awt.event.ActionListener;
@@ -121,7 +121,7 @@ public class VentanaDatos extends JDialog {
 									bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), cantidad));
 								
 									if(bl.getTransacciones().size() > 0) //anadir tran a la lista de transacciones
-										ProgramaPrincipal.transacciones.add(bl.getTransacciones().get(0));
+										ProgramaPrincipal.getTransacciones().add(bl.getTransacciones().get(0));
 									
 									if(ProgramaPrincipal.anadirBloque(bl)) { //si la cadena es valida, anadir todo a la BD
 										try {
@@ -132,8 +132,8 @@ public class VentanaDatos extends JDialog {
 										}
 									}
 									else { //si no es valida, no añadir a la bd y borrar bloque y tran de las listas en tiempo de ejecucion
-										ProgramaPrincipal.transacciones.remove(bl.getTransacciones().get(0));
-										ProgramaPrincipal.blockchain.remove(bl);
+										ProgramaPrincipal.getTransacciones().remove(bl.getTransacciones().get(0));
+										ProgramaPrincipal.getBlockchain().remove(bl);
 									}
 								}
 								else { //si la transaccion NO es correcta (supera el saldo de la cartera...)
@@ -141,7 +141,7 @@ public class VentanaDatos extends JDialog {
 											StringUtils.getClaveDesdeString(textField.getText().toString(), true), 0)); //enviar cero
 								
 									if(bl.getTransacciones().size() > 0) //anadir tran a la lista de transacciones
-										ProgramaPrincipal.transacciones.add(bl.getTransacciones().get(0));
+										ProgramaPrincipal.getTransacciones().add(bl.getTransacciones().get(0));
 									
 									if(ProgramaPrincipal.anadirBloque(bl)) { //si la cadena es valida, anadir todo a la BD
 										try {
@@ -152,8 +152,8 @@ public class VentanaDatos extends JDialog {
 										}
 									}
 									else { //si no es valida, no añadir a la bd y borrar bloque y tran de las listas en tiempo de ejecucion
-										ProgramaPrincipal.transacciones.remove(bl.getTransacciones().get(0));
-										ProgramaPrincipal.blockchain.remove(bl);
+										ProgramaPrincipal.getTransacciones().remove(bl.getTransacciones().get(0));
+										ProgramaPrincipal.getBlockchain().remove(bl);
 									}					
 								}
 								

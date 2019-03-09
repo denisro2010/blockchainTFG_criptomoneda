@@ -8,15 +8,12 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.border.TitledBorder;
-import java.security.Security;
 import bd.databaseControl;
 import blockchain.Cartera;
-import blockchain.StringUtils;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
@@ -149,7 +146,7 @@ public class VentanaRegistro extends JDialog {
 						try {
 							String u = databaseControl.getUsuario(txtNombre.getText().toString().trim());
 							if(u == null) {
-								databaseControl.crearCartera(txtNombre.getText().toString().trim(), passwordField.getText().toString(), c.clavePublica, c.clavePrivada);
+								databaseControl.crearCartera(txtNombre.getText().toString().trim(), passwordField.getText().toString(), c.getClavePublica(), c.getClavePrivada());
 								carteras.add(c);
 								JOptionPane.showMessageDialog(null, "Su cartera se ha creado correctamente.");
 								dispose();

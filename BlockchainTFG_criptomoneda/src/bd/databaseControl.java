@@ -13,12 +13,12 @@ import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
-import blockchain.Aes;
+import algoritmosCriptograficos.Aes;
+import algoritmosCriptograficos.StringUtils;
 import blockchain.Bloque;
 import blockchain.Cartera;
 import blockchain.ProgramaPrincipal;
 import blockchain.SalidaTransaccion;
-import blockchain.StringUtils;
 import blockchain.Transaccion;
  
 public class databaseControl {
@@ -112,7 +112,7 @@ public class databaseControl {
 	 public static void crearCartera(String pUsuario, String pContra, PublicKey pClavePublica, PrivateKey pClavePrivada) throws Exception {
 	        String sql = "INSERT INTO cartera(usuario, contrasena, clavePublica, clavePrivada) VALUES(?,?,?,?)";
 	 
-	        String contraHash = StringUtils.applySha256(pContra);
+	        String contraHash = StringUtils.applySha3_256(pContra);
 	        String publica = StringUtils.getStringClave(pClavePublica);
 	        String privada = Aes.encrypt(StringUtils.getStringClave(pClavePrivada), pContra);
 	        
@@ -334,7 +334,7 @@ public class databaseControl {
 		        	 while (rs.next()) {
 		        		 id = rs.getString("IDoutput");
 		        		 SalidaTransaccion salida = new SalidaTransaccion((PublicKey) StringUtils.getClaveDesdeString(rs.getString("IDcartera"), true), rs.getFloat("cantidad"), rs.getString("IDtransaccion"));	
-		        		 ProgramaPrincipal.transaccionesNoGastadas.put(id, salida);
+		        		 ProgramaPrincipal.getTransaccionesNoGastadas().put(id, salida);
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
@@ -392,7 +392,7 @@ public class databaseControl {
 	        try (Connection conn =  connect();
 	                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	            pstmt.setString(1, pBloque.getHash());
-	            pstmt.setString(2, pBloque.hashAnterior);
+	            pstmt.setString(2, pBloque.getHashAnterior());
 	            pstmt.setLong(3, pBloque.getMarcaTemporal());
 	            pstmt.setInt(4, pBloque.getNonce());
 	            pstmt.setString(5, pBloque.getMerkleRoot());
