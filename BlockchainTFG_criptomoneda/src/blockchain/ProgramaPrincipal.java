@@ -1,20 +1,22 @@
 package blockchain;
+
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
-
 import org.bouncycastle.pqc.jcajce.provider.BouncyCastlePQCProvider;
-
 import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 import vista.VentanaDatos;
 import vista.VentanaLogin;
 import vista.VentanaPrincipal;
 
-public class ProgramaPrincipal {
+public class ProgramaPrincipal{
 
 	private static ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
 	private static HashMap<String, SalidaTransaccion> transaccionesNoGastadas = new HashMap<String, SalidaTransaccion>();
@@ -28,6 +30,13 @@ public class ProgramaPrincipal {
 	
 	public static void main(String[] args) {
 				Security.addProvider(new BouncyCastlePQCProvider()); //Setup Bouncey castle as a Security Provider (POST-QUANTUM SUPPORT)
+				
+				//Comprobar smart contracts cada minuto
+				ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+		        Runnable task = new SmartContract();
+		        int initialDelay = 0;
+		        int periodicDelay = 1;
+		        scheduler.scheduleAtFixedRate(task, initialDelay, periodicDelay, TimeUnit.MINUTES);
 				
 				try {
 					databaseControl.tablaBloque();
@@ -219,7 +228,6 @@ public class ProgramaPrincipal {
 	public static ArrayList<Bloque> getBlockchain() {
 		return blockchain;
 	}
-	
 
 }
 
