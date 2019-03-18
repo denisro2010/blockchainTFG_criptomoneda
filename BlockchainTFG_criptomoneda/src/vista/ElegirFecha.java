@@ -78,7 +78,7 @@ public class ElegirFecha extends JFrame {
         timeSettings.setColor(TimeArea.TimePickerTextValidTime, Color.blue);
         timeSettings.setAllowEmptyTimes(false);
         timeSettings.setAllowKeyboardEditing(false);
-        timeSettings.initialTime = LocalTime.now();
+        timeSettings.initialTime = LocalTime.of(00, 00);
         TimePicker timePicker2 = new TimePicker(timeSettings);
         add(timePicker2);
     }
