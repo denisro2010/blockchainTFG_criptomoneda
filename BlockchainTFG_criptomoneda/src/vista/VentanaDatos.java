@@ -64,7 +64,7 @@ public class VentanaDatos extends JDialog {
 	private void initialize() {
 		setIconImage(
 				Toolkit.getDefaultToolkit().getImage(VentanaDatos.class.getResource("/resources/ico32.png")));
-		setSize(new Dimension(600, 160));
+		setSize(new Dimension(700, 160));
 		setTitle("Mi cartera");
 		setResizable(false);
 		// setBounds(100, 100, 800, 800);
@@ -237,19 +237,42 @@ public class VentanaDatos extends JDialog {
 				});
 			}
 			{
+				JButton btnCrearSmartContract = new JButton("Crear contrato");
+				btnCrearSmartContract.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						VentanaContracts vC = new VentanaContracts();
+						vC.setVisible(true);
+					}
+				});
+				panelBotones.add(btnCrearSmartContract);
+			}
+			{
+				JButton btnVerMisContratos = new JButton("Ver mis contratos");
+				btnVerMisContratos.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						//TODO
+					}
+				});
+				panelBotones.add(btnVerMisContratos);
+			}
+			{
 				JButton btnBorrarCuenta = new JButton("Borrar cuenta");
 				panelBotones.add(btnBorrarCuenta);
 				btnBorrarCuenta.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						try {
-							databaseControl.borrarCartera(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
-							JOptionPane.showMessageDialog(null, "Su cartera se ha borrado correctamente.");
-							VentanaLogin.setCarteraActual(null);
-						} catch (Exception e1) {
-							
-							e1.printStackTrace();
+						int opcion = JOptionPane.showConfirmDialog(null, "¿Estás seguro? Esta acción no es reversible.", "Aviso", JOptionPane.YES_NO_OPTION);
+
+						if (opcion == 0) {
+							try {
+								databaseControl.borrarCartera(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
+								JOptionPane.showMessageDialog(null, "Su cartera se ha borrado correctamente.");
+								VentanaLogin.setCarteraActual(null);
+							} catch (Exception e1) {
+								
+								e1.printStackTrace();
+							}
+							dispose();
 						}
-						dispose();
 					}
 				});
 			}
