@@ -575,7 +575,7 @@ public class databaseControl {
 
 		public static void crearContrato(String ID, String pK_receptor, int cantidad, String pK_remitente, long marcaTemp, byte[] pFirma) {
 			
-			String sql = "INSERT INTO smartContract(IDsc, Fecha, Cantidad, [Remitente(PK)], [Receptor(PK)], FirmaTransaccion) VALUES(?,?,?,?,?,?)";
+			String sql = "INSERT INTO smartContract(IDsc, Fecha, Cantidad, Remitente, Receptor, FirmaTransaccion) VALUES(?,?,?,?,?,?)";
 	        
 	        try (Connection conn =  connect();
 	                PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -604,8 +604,8 @@ public class databaseControl {
 		        	 while (rs.next()) {
 		        		sc = new SmartContract();
 		        		sc.setIDsmartContract(rs.getString("IDsc"));
-		        		sc.setPK_remitente(rs.getString("Remitente(PK)"));
-		        		sc.setPK_receptor(rs.getString("Receptor(PK)"));
+		        		sc.setPK_remitente(rs.getString("Remitente"));
+		        		sc.setPK_receptor(rs.getString("Receptor"));
 		        		sc.setFecha(rs.getLong("Fecha"));
 		        		sc.setCantidad(rs.getInt("Cantidad"));
 		        		sc.setFirmaTransaccion(rs.getBytes("FirmaTransaccion"));
@@ -638,7 +638,7 @@ public class databaseControl {
 		 }
 		
 		public static boolean existePK(String pID) {
-			String sql = "SELECT [Remitente(PK)], [Receptor(PK)] FROM smartContract WHERE IDsc ='"+ pID +"';";
+			String sql = "SELECT Remitente, Receptor FROM smartContract WHERE IDsc ='"+ pID +"';";
 			String remitente = ""; 
 			String receptor = "";
 			
