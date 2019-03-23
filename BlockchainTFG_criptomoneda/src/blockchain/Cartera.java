@@ -44,6 +44,7 @@ public class Cartera {
 		        clavePrivada = kp.getPrivate();
 		        clavePublica = kp.getPublic();
 			
+		        //ECDSA
 			/*try {
 				KeyPairGenerator generadorClaves = KeyPairGenerator.getInstance("ECDSA","BC");
 				SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
@@ -114,7 +115,56 @@ public class Cartera {
 			
 			return nuevaTransaccion;
 		}
-
+		
+		public Transaccion enviarFondosSmartContract(PublicKey pReceptor, float pCantidad, byte[] pFirma, String pIDcontrato) {
+			
+			if(getBalanceCartera() < pCantidad) {
+				JOptionPane.showMessageDialog(null,
+					    "El remitente del smart contract no tiene suficientes fondos. El contrato se ha descartado.",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
+				
+				try { 
+					databaseControl.borrarContrato(pIDcontrato); 
+				} 
+				catch (Exception e) {}
+				
+				for(int i=0; i < ProgramaPrincipal.getContratos().size(); i++) {
+					if(ProgramaPrincipal.getContratos().get(i).getIDsmartContract().equals(pIDcontrato)) {
+						ProgramaPrincipal.getContratos().remove(i);
+					}
+				}
+				
+				return null;
+			}
+			
+			ArrayList<EntradaTransaccion> entrantes = new ArrayList<EntradaTransaccion>();
+			
+			float total = 0;
+			for (Map.Entry<String, SalidaTransaccion> item: transaccionesNoGastadas.entrySet()){
+				SalidaTransaccion transaccionNoGastada = item.getValue();
+				total += transaccionNoGastada.getCantidad();
+				entrantes.add(new EntradaTransaccion(transaccionNoGastada.getId()));
+				if(total > pCantidad) 
+					break;
+			}
+			
+			Transaccion nuevaTransaccion = null;
+			try {
+				nuevaTransaccion = new Transaccion(clavePublica, pReceptor , pCantidad, entrantes, databaseControl.getSecuenciaMayor());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			nuevaTransaccion.setFirma(pFirma);
+			
+			for(EntradaTransaccion entrante: entrantes){
+				transaccionesNoGastadas.remove(entrante.IDsalidaTransaccion);
+			}
+			
+			return nuevaTransaccion;
+		}
+		
 		public PrivateKey getClavePrivada() {
 			return clavePrivada;
 		}

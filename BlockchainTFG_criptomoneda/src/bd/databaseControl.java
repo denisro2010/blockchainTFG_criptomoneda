@@ -9,10 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.swing.JOptionPane;
-
 import algoritmosCriptograficos.Aes;
 import algoritmosCriptograficos.StringUtils;
 import blockchain.Bloque;
@@ -98,6 +94,21 @@ public class databaseControl {
 	 public static void tablaTransaccion() throws Exception {
 	    	
 	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS transaccion (IDtran TEXT PRIMARY KEY, remitente TEXT NOT NULL, receptor TEXT NOT NULL, valor DOUBLE NOT NULL, firma TEXT NOT NULL, secuencia INTEGER);";
+	    	
+	    	 try (Connection conn = connect();
+	    	    Statement stmt = conn.createStatement()){
+	    	    stmt.executeUpdate(sqlUsers);
+	    	    stmt.close();
+	    	    conn.close();
+	    	    
+	    	 } catch (SQLException e) {
+	           // System.out.println(e.getMessage());
+	         }
+	    }
+	 
+	 public static void tablaSmartContracts() throws Exception {
+	    	
+	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS smartContract (IDsc TEXT PRIMARY KEY, Fecha BIGINT NOT NULL, Cantidad INT NOT NULL, Remitente TEXT REFERENCES cartera (clavePublica), Receptor TEXT REFERENCES cartera (clavePublica), FirmaTransaccion TEXT UNIQUE NOT NULL);";
 	    	
 	    	 try (Connection conn = connect();
 	    	    Statement stmt = conn.createStatement()){
@@ -562,9 +573,9 @@ public class databaseControl {
 			return t;
 		}
 
-		public static void crearContrato(String ID, String pK_receptor, int cantidad, String pK_remitente, long marcaTemp) {
+		public static void crearContrato(String ID, String pK_receptor, int cantidad, String pK_remitente, long marcaTemp, byte[] pFirma) {
 			
-			String sql = "INSERT INTO smartContract(IDsc, Fecha, Cantidad, Remitente(PK), Receptor(PK)) VALUES(?,?,?,?,?)";
+			String sql = "INSERT INTO smartContract(IDsc, Fecha, Cantidad, [Remitente(PK)], [Receptor(PK)], FirmaTransaccion) VALUES(?,?,?,?,?,?)";
 	        
 	        try (Connection conn =  connect();
 	                PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -573,11 +584,12 @@ public class databaseControl {
 	            pstmt.setInt(3, cantidad);
 	            pstmt.setString(4, pK_remitente);
 	            pstmt.setString(5, pK_receptor);
+	            pstmt.setString(6, pFirma.toString());
 	            pstmt.executeUpdate();
 	            pstmt.close();
 	            conn.close();
 	        } catch (SQLException e) {
-	            //System.out.println(e.getMessage());
+	            System.out.println(e.getMessage());
 	        }
 		}
 		
@@ -596,6 +608,7 @@ public class databaseControl {
 		        		sc.setPK_receptor(rs.getString("Receptor(PK)"));
 		        		sc.setFecha(rs.getLong("Fecha"));
 		        		sc.setCantidad(rs.getInt("Cantidad"));
+		        		sc.setFirmaTransaccion(rs.getBytes("FirmaTransaccion"));
 		        		contratos.add(sc);
 		        	 }
 		        	 rs.close();
@@ -624,9 +637,53 @@ public class databaseControl {
 		        }
 		 }
 		
-		public static boolean existePK() {
+		public static boolean existePK(String pID) {
+			String sql = "SELECT [Remitente(PK)], [Receptor(PK)] FROM smartContract WHERE IDsc ='"+ pID +"';";
+			String remitente = ""; 
+			String receptor = "";
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		remitente = rs.getString("Remitente(PK)");
+		        		receptor = rs.getString("Receptor(PK)");
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {
+		        	//System.out.println(se.getMessage());
+		        }
+
+			if(recuperarPK(remitente) && recuperarPK(receptor))
+				return true;
+			else
+				return false;
+		}
+		
+		public static boolean recuperarPK(String pClave) {
 			//TODO
 			
-			return false;
+			String sql = "SELECT clavePublica FROM cartera WHERE clavePublica ='"+ pClave +"';";
+			String clave = null;
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		clave = rs.getString("clavePublica");
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {
+		        	//System.out.println(se.getMessage());
+		        }
+
+			if(clave != null)
+				return true;
+			else
+				return false;
 		}
 } 

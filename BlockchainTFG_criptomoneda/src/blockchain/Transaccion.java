@@ -99,6 +99,7 @@ public class Transaccion {
 			firma = StringUtils.applyQTESLASig(pClavePrivada, datos);
 		}
 		
+		
 		public boolean verificarFirma() {
 			String datos = StringUtils.getStringClave(remitente) + StringUtils.getStringClave(receptor) + Float.toString(valor)	;
 			return StringUtils.verifyQTESLASig(remitente, datos, firma);

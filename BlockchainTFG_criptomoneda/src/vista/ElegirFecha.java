@@ -10,6 +10,7 @@ import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 import blockchain.ProgramaPrincipal;
 import blockchain.SmartContract;
+import blockchain.Transaccion;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,6 +26,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.security.PublicKey;
 import java.awt.event.ActionEvent;
 
 /**
@@ -113,8 +115,11 @@ public class ElegirFecha extends JFrame {
         		long marcaTemp = fecha.getTime();
         		
         		SmartContract sc = new SmartContract(marcaTemp, cantidad, PK_remitente, PK_receptor);
+        		sc.generarFirmaTransaccionContract(VentanaLogin.getCarteraActual().getClavePrivada(), (PublicKey) StringUtils.getClaveDesdeString(PK_remitente, true), (PublicKey) StringUtils.getClaveDesdeString(PK_receptor, true) , (float) cantidad); 
         		ProgramaPrincipal.getContratos().add(sc);
-        		databaseControl.crearContrato(sc.getID(), PK_receptor, cantidad, PK_remitente, marcaTemp);
+        		databaseControl.crearContrato(sc.getID(), PK_receptor, cantidad, PK_remitente, marcaTemp, sc.getFirmaTransaccion());
+        		
+        		dispose();
         	}
         });
         panel_1.add(btnNewButton);

@@ -37,7 +37,7 @@ public class ProgramaPrincipal{
 					databaseControl.tablaTransaccion();
 					databaseControl.tablaBloque();
 					databaseControl.tablaOutputs();
-					//TODO FALTA TABLA SMART CONTRACTS!!!!!!
+					databaseControl.tablaSmartContracts();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -206,7 +206,7 @@ public class ProgramaPrincipal{
 			}
 			
 		}
-		JOptionPane.showMessageDialog(null, "El blockchain es válido.", "", JOptionPane.PLAIN_MESSAGE);
+		//JOptionPane.showMessageDialog(null, "El blockchain es válido.", "", JOptionPane.PLAIN_MESSAGE);
 		return true;
 	}
 	
@@ -216,6 +216,14 @@ public class ProgramaPrincipal{
 		
 		if(esCadenaValida());
 			return true;
+	}
+	
+	public static void borrarContrato(String pID) {
+
+		for(int i=0; i<listaContratos.size(); i++) {
+			if(listaContratos.get(i).getID().equals(pID)) 
+				listaContratos.remove(i);
+		}
 	}
 
 	public static HashMap<String, SalidaTransaccion> getTransaccionesNoGastadas() {

@@ -1,10 +1,10 @@
 package blockchain;
 
+import java.security.PrivateKey;
 import java.security.PublicKey;
-
+import java.util.ArrayList;
 import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
-import vista.VentanaLogin;
 
 public class SmartContract{
 
@@ -13,10 +13,13 @@ public class SmartContract{
 	private int cantidad;
 	private String PK_remitente;
 	private String PK_receptor;
+	private byte[] firmaTransaccion;
 	
 	protected void ejecutarContrato() {
 		//falta borrarlo si el remitente o receptor ya no están!!!!
 		
+		if(databaseControl.existePK(IDsmartContract)) { //Si e remitente y el receptor siguen existiendo
+			
 			Bloque bl = null;
 			try {
 				bl = new Bloque(databaseControl.getHashUltimoBloque());
@@ -24,9 +27,14 @@ public class SmartContract{
 				e1.printStackTrace();
 			}
 			
-			Transaccion tranTemp = VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(PK_receptor, true), cantidad);
+			Cartera carteraRemitente = new Cartera();
+			carteraRemitente.setClavePublica((PublicKey) StringUtils.getClaveDesdeString(PK_remitente, true));
+			
+			Transaccion tranTemp = carteraRemitente.enviarFondosSmartContract((PublicKey) 
+					StringUtils.getClaveDesdeString(PK_receptor, true), cantidad, firmaTransaccion, IDsmartContract);
 			if(tranTemp != null) { //Si la transaccion es correcta
-				bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(PK_receptor, true), cantidad));
+				bl.anadirTransaccion(carteraRemitente.enviarFondosSmartContract((PublicKey) 
+						StringUtils.getClaveDesdeString(PK_receptor, true), cantidad, firmaTransaccion, IDsmartContract));
 			
 				if(bl.getTransacciones().size() > 0) //anadir tran a la lista de transacciones
 					ProgramaPrincipal.getTransacciones().add(bl.getTransacciones().get(0));
@@ -45,8 +53,8 @@ public class SmartContract{
 				}
 			}
 			else { //si la transaccion NO es correcta (supera el saldo de la cartera...)
-				bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) 
-						StringUtils.getClaveDesdeString(PK_receptor, true), 0)); //enviar cero
+				bl.anadirTransaccion(carteraRemitente.enviarFondosSmartContract((PublicKey) 
+						StringUtils.getClaveDesdeString(PK_receptor, true), 0, firmaTransaccion, IDsmartContract)); //enviar cero
 			
 				if(bl.getTransacciones().size() > 0) //anadir tran a la lista de transacciones
 					ProgramaPrincipal.getTransacciones().add(bl.getTransacciones().get(0));
@@ -64,7 +72,17 @@ public class SmartContract{
 					ProgramaPrincipal.getBlockchain().remove(bl);
 				}					
 			}
-
+			
+		} //Fin if principal
+		
+			
+		//Si se ha ejecutado correctamente o no, hay que borrarlo del programa y de la BD
+		ProgramaPrincipal.borrarContrato(this.IDsmartContract);
+		//Borrarlo de la BD
+		try {
+			databaseControl.borrarContrato(this.IDsmartContract);
+		} catch (Exception e) {}
+			
 	}
 
 	public SmartContract(long pFecha, int pCant, String pRemitente, String pReceptor) {
@@ -73,6 +91,11 @@ public class SmartContract{
 		cantidad = pCant;
 		PK_remitente = pRemitente;
 		PK_receptor = pReceptor;
+	}
+	
+	public void generarFirmaTransaccionContract(PrivateKey pClavePrivada, PublicKey pRemitente, PublicKey pReceptor, float pValor) {
+		String datos = StringUtils.getStringClave(pRemitente) + StringUtils.getStringClave(pReceptor) + Float.toString(pValor)	;
+		this.firmaTransaccion = StringUtils.applyQTESLASig(pClavePrivada, datos);
 	}
 	
 	public SmartContract() {}
@@ -119,6 +142,14 @@ public class SmartContract{
 
 	public void setPK_receptor(String pK_receptor) {
 		PK_receptor = pK_receptor;
+	}
+	
+	public byte[] getFirmaTransaccion(){
+		return firmaTransaccion;
+	}
+
+	public void setFirmaTransaccion(byte[] pFirma) {
+		this.firmaTransaccion = pFirma;		
 	}
 	
 }

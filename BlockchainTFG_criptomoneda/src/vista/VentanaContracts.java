@@ -163,12 +163,12 @@ public class VentanaContracts extends JDialog {
 				panelBotones.add(btnCopiarMiClave);
 				btnCopiarMiClave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						int cantidad = (int) spinner.getValue();
+						int cant = (int) spinner.getValue();
 						
 						if(databaseControl.comprobarCartera((textField.getText().toString().trim()))) {
 							if(textField.getText().toString().trim().equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())))
 								JOptionPane.showMessageDialog(null, "Usted no puede mandarse monedas a sí mismo.", "Error", JOptionPane.ERROR_MESSAGE);
-							else if(cantidad < 1)
+							else if(cant < 1)
 								JOptionPane.showMessageDialog(null, "La cantidad de monedas que desea mandar no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
 							else { //TODO_BIEN, PASAR A ELEGIR FECHA
 								PK_receptor = textField.getText().toString().trim();
