@@ -61,7 +61,6 @@ public class VentanaContracts extends JDialog {
 	 */
 	public VentanaContracts() {
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		setAlwaysOnTop(true);
 		initialize();
 	}
 
@@ -207,6 +206,8 @@ public class VentanaContracts extends JDialog {
 						VentanaDatos.setVentanaFecha(new ElegirFecha());
 						dispose();
 						VentanaDatos.setVentanaContracts(new VentanaContracts());
+						VentanaDatos vD = new VentanaDatos();
+						vD.setVisible(true);
 					}
 				});
 			}

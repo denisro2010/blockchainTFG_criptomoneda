@@ -61,14 +61,13 @@ public class VentanaDatos extends JDialog {
 	 */
 	public VentanaDatos() {
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		setAlwaysOnTop(true);
 		initialize();
 	}
 
 	private void initialize() {
 		setIconImage(
 				Toolkit.getDefaultToolkit().getImage(VentanaDatos.class.getResource("/resources/ico32.png")));
-		setSize(new Dimension(700, 160));
+		setSize(new Dimension(750, 160));
 		setTitle("Mi cartera");
 		setResizable(false);
 		// setBounds(100, 100, 800, 800);
@@ -209,6 +208,21 @@ public class VentanaDatos extends JDialog {
 				panelDatos.add(lblclavePblicaDel, gbc_lblclavePblicaDel);
 			}
 			{
+				JButton btnResetearCampos = new JButton("Resetear campos");
+				GridBagConstraints gbc_btnResetearCampos = new GridBagConstraints();
+				gbc_btnResetearCampos.insets = new Insets(0, 0, 5, 5);
+				gbc_btnResetearCampos.gridx = 14;
+				gbc_btnResetearCampos.gridy = 3;
+				panelDatos.add(btnResetearCampos, gbc_btnResetearCampos);
+				btnResetearCampos.addActionListener(new ActionListener() {
+
+					public void actionPerformed(ActionEvent e) {
+						spinner.setValue(0);
+						textField.setText("");
+					}
+				});
+			}
+			{
 				JLabel lblMiSaldo = new JLabel("Mi saldo: ");
 				GridBagConstraints gbc_lblMiSaldo = new GridBagConstraints();
 				gbc_lblMiSaldo.insets = new Insets(0, 0, 5, 5);
@@ -246,6 +260,7 @@ public class VentanaDatos extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						//VentanaContracts vC = new VentanaContracts();
 						vC.setVisible(true);
+						dispose();
 					}
 				});
 				panelBotones.add(btnCrearSmartContract);
@@ -254,7 +269,16 @@ public class VentanaDatos extends JDialog {
 				JButton btnVerMisContratos = new JButton("Ver mis contratos");
 				btnVerMisContratos.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						//TODO
+						VentanaTablaContratos tabla = new VentanaTablaContratos();
+						tabla.setVisible(true);
+						
+						if(vC.isVisible())
+							vC.dispose();
+						
+						if(eF.isVisible())
+							eF.dispose();
+						
+						dispose();
 					}
 				});
 				panelBotones.add(btnVerMisContratos);
@@ -275,6 +299,11 @@ public class VentanaDatos extends JDialog {
 								
 								e1.printStackTrace();
 							}
+							if(vC.isVisible())
+								vC.dispose();
+							
+							if(eF.isVisible())
+								eF.dispose();
 							dispose();
 						}
 					}

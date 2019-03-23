@@ -8,7 +8,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
 import algoritmosCriptograficos.Aes;
 import algoritmosCriptograficos.StringUtils;
 import blockchain.Bloque;
@@ -17,6 +21,7 @@ import blockchain.ProgramaPrincipal;
 import blockchain.SalidaTransaccion;
 import blockchain.SmartContract;
 import blockchain.Transaccion;
+import vista.VentanaLogin;
  
 public class databaseControl {
     
@@ -663,7 +668,6 @@ public class databaseControl {
 		}
 		
 		public static boolean recuperarPK(String pClave) {
-			//TODO
 			
 			String sql = "SELECT clavePublica FROM cartera WHERE clavePublica ='"+ pClave +"';";
 			String clave = null;
@@ -685,5 +689,80 @@ public class databaseControl {
 				return true;
 			else
 				return false;
+		}
+		
+		public static String getNombreRemitente() {
+			String sql = "SELECT usuario FROM smartContract LEFT JOIN cartera ON smartContract.Remitente = cartera.clavePublica";
+			String nombre = "";
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 nombre = rs.getString("usuario");
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 return nombre;
+		}
+		
+		public static String getNombreUsuario(String pClavePublica) {
+			String sql = "SELECT usuario FROM cartera WHERE clavePublica='" + pClavePublica + "';";
+			String nombre = "";
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 nombre = rs.getString("usuario");
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 return nombre;
+		}
+		
+		public static ArrayList<String> rellenarTablaRemitente() {
+			
+			String sql = "SELECT usuario, Fecha, Cantidad, IDsc FROM smartContract LEFT JOIN cartera ON smartContract.Receptor = cartera.clavePublica;";
+			ArrayList<String> lista = new ArrayList<String>();
+			String remitente = getNombreRemitente();
+			Integer i = 0;
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		i = i+1;
+		        		lista.add(i.toString());
+		        		String receptor = rs.getString("usuario");
+		        		receptor = receptor.substring(0, 1).toUpperCase() + receptor.substring(1);
+		        		lista.add(receptor);
+		        		remitente = remitente.substring(0, 1).toUpperCase() + remitente.substring(1);
+		        		lista.add(remitente);
+		        		
+		        		long marcaTemp;
+		        		marcaTemp = rs.getLong("Fecha");
+		                DateFormat simple = new SimpleDateFormat("dd MMM yyyy HH:mm:ss"); 
+		                Date fecha = new Date(marcaTemp); 
+		        		lista.add(simple.format(fecha));
+		        		
+		        		Integer c = rs.getInt("Cantidad");
+		        		lista.add(c.toString() + " monedas");
+		        		
+		        		//Hay que coger el ID aunque no se muestre, para poder borrar el contrato.
+		        		lista.add(rs.getString("IDsc"));
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {}
+			 
+			 return lista;
 		}
 } 

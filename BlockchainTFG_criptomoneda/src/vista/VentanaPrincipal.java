@@ -29,15 +29,13 @@ public class VentanaPrincipal extends JFrame {
 	// private JPanel panelBotones;
 	private JPanelBackground panelBotones;
 	private JButton btnJugar;
-	private JButton btnAyuda;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JButton btnCreditos;
-	private Component horizontalGlue;
-	private Component horizontalGlue_1;
 	private Component verticalGlue_1;
 	private Component verticalStrut;
 	private JButton buttonStart;
 	private JButton btnNewButton;
+	private JButton btnNewButton_1;
 	
 	//protected static boolean espanol = false;
 	
@@ -92,48 +90,35 @@ public class VentanaPrincipal extends JFrame {
 		gbc_verticalStrut.gridx = 1;
 		gbc_verticalStrut.gridy = 0;
 		panelBotones.add(getVerticalStrut(), gbc_verticalStrut);
-		GridBagConstraints gbc_buttonStart = new GridBagConstraints();
-		gbc_buttonStart.fill = GridBagConstraints.HORIZONTAL;
-		gbc_buttonStart.insets = new Insets(0, 0, 5, 5);
-		gbc_buttonStart.gridx = 1;
-		gbc_buttonStart.gridy = 4;
-		panelBotones.add(getButtonStart(), gbc_buttonStart);
-		GridBagConstraints gbc_btnJugar = new GridBagConstraints();
-		gbc_btnJugar.fill = GridBagConstraints.BOTH;
-		gbc_btnJugar.insets = new Insets(0, 0, 5, 5);
-		gbc_btnJugar.gridx = 1;
-		gbc_btnJugar.gridy = 5;
-		panelBotones.add(getBtnJugar(), gbc_btnJugar);
-		GridBagConstraints gbc_horizontalGlue = new GridBagConstraints();
-		gbc_horizontalGlue.fill = GridBagConstraints.HORIZONTAL;
-		gbc_horizontalGlue.insets = new Insets(0, 0, 5, 5);
-		gbc_horizontalGlue.gridx = 0;
-		gbc_horizontalGlue.gridy = 6;
-		panelBotones.add(getHorizontalGlue_1(), gbc_horizontalGlue);
-		GridBagConstraints gbc_horizontalGlue_1 = new GridBagConstraints();
-		gbc_horizontalGlue_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_horizontalGlue_1.insets = new Insets(0, 0, 5, 0);
-		gbc_horizontalGlue_1.gridx = 2;
-		gbc_horizontalGlue_1.gridy = 6;
-		panelBotones.add(getHorizontalGlue_1_1(), gbc_horizontalGlue_1);
-		GridBagConstraints gbc_btnAyuda = new GridBagConstraints();
-		gbc_btnAyuda.fill = GridBagConstraints.BOTH;
-		gbc_btnAyuda.insets = new Insets(0, 0, 5, 5);
-		gbc_btnAyuda.gridx = 1;
-		gbc_btnAyuda.gridy = 7;
-		panelBotones.add(getBtnAyuda(), gbc_btnAyuda);
-		GridBagConstraints gbc_btnCreditos = new GridBagConstraints();
-		gbc_btnCreditos.fill = GridBagConstraints.BOTH;
-		gbc_btnCreditos.insets = new Insets(0, 0, 5, 5);
-		gbc_btnCreditos.gridx = 1;
-		gbc_btnCreditos.gridy = 8;
-		panelBotones.add(getBtnCreditos(), gbc_btnCreditos);
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnNewButton.insets = new Insets(0, 0, 5, 5);
 		gbc_btnNewButton.gridx = 1;
 		gbc_btnNewButton.gridy = 9;
-		panelBotones.add(getBtnNewButton(), gbc_btnNewButton);
+		GridBagConstraints gbc_buttonStart = new GridBagConstraints();
+		gbc_buttonStart.fill = GridBagConstraints.HORIZONTAL;
+		gbc_buttonStart.insets = new Insets(0, 0, 5, 5);
+		gbc_buttonStart.gridx = 1;
+		gbc_buttonStart.gridy = 3;
+		panelBotones.add(getButtonStart(), gbc_buttonStart);
+		GridBagConstraints gbc_btnJugar = new GridBagConstraints();
+		gbc_btnJugar.fill = GridBagConstraints.BOTH;
+		gbc_btnJugar.insets = new Insets(0, 0, 5, 5);
+		gbc_btnJugar.gridx = 1;
+		gbc_btnJugar.gridy = 4;
+		panelBotones.add(getBtnJugar(), gbc_btnJugar);
+		GridBagConstraints gbc_btnCreditos = new GridBagConstraints();
+		gbc_btnCreditos.fill = GridBagConstraints.BOTH;
+		gbc_btnCreditos.insets = new Insets(0, 0, 5, 5);
+		gbc_btnCreditos.gridx = 1;
+		gbc_btnCreditos.gridy = 5;
+		panelBotones.add(getBtnCreditos(), gbc_btnCreditos);
+		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
+		gbc_btnNewButton_1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 5);
+		gbc_btnNewButton_1.gridx = 1;
+		gbc_btnNewButton_1.gridy = 6;
+		panelBotones.add(getBtnNewButton_1(), gbc_btnNewButton_1);
 		GridBagConstraints gbc_verticalGlue_1 = new GridBagConstraints();
 		gbc_verticalGlue_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_verticalGlue_1.insets = new Insets(0, 0, 0, 5);
@@ -170,47 +155,18 @@ public class VentanaPrincipal extends JFrame {
 		return btnJugar;
 	}
 
-	private JButton getBtnAyuda() {
-		if (btnAyuda == null) {
-			btnAyuda = new JButton("Ayuda");
-			btnAyuda.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					//VentanaAyudaEN vA = new VentanaAyudaEN();
-					//vA.setVisible(true);
-				}
-			});
-			buttonGroup.add(btnAyuda);
-		}
-		return btnAyuda;
-	}
-
 	private JButton getBtnCreditos() {
 		if (btnCreditos == null) {
 			btnCreditos = new JButton("Créditos");
 			btnCreditos.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					//VentanaCreditosEN vC = new VentanaCreditosEN();
-					//vC.setVisible(true);
-					//dispose();
+					VentanaCreditos vCred = new VentanaCreditos();
+					vCred.setVisible(true);
 				}
 			});
 			buttonGroup.add(btnCreditos);
 		}
 		return btnCreditos;
-	}
-
-	private Component getHorizontalGlue_1() {
-		if (horizontalGlue == null) {
-			horizontalGlue = Box.createHorizontalGlue();
-		}
-		return horizontalGlue;
-	}
-
-	private Component getHorizontalGlue_1_1() {
-		if (horizontalGlue_1 == null) {
-			horizontalGlue_1 = Box.createHorizontalGlue();
-		}
-		return horizontalGlue_1;
 	}
 
 	private Component getVerticalGlue_1_1() {
@@ -247,16 +203,17 @@ public class VentanaPrincipal extends JFrame {
 		}
 		return buttonStart;
 	}
-	private JButton getBtnNewButton() {
-		if (btnNewButton == null) {
-			btnNewButton = new JButton("Cerrar el programa");
+
+	private JButton getBtnNewButton_1() {
+		if (btnNewButton_1 == null) {
+			btnNewButton_1 = new JButton("Cerrar programa");
+			btnNewButton_1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+					System.exit(0);
+				}
+			});
 		}
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-				System.exit(0);
-			}
-		});
-		return btnNewButton;
+		return btnNewButton_1;
 	}
 }

@@ -122,6 +122,10 @@ public class ElegirFecha extends JFrame {
         		databaseControl.crearContrato(sc.getID(), PK_receptor, cantidad, PK_remitente, marcaTemp, sc.getFirmaTransaccion());
         		
         		dispose();
+        		VentanaDatos.setVentanaContracts(new VentanaContracts());
+        		VentanaDatos vD = new VentanaDatos();
+        		vD.setVisible(true);
+        		VentanaDatos.setVentanaFecha(new ElegirFecha());
         	}
         });
         panel_1.add(btnNewButton);
@@ -132,6 +136,8 @@ public class ElegirFecha extends JFrame {
         		VentanaDatos.setVentanaContracts(new VentanaContracts());
         		dispose();
         		VentanaDatos.setVentanaFecha(new ElegirFecha());
+        		VentanaDatos vD = new VentanaDatos();
+        		vD.setVisible(true);
         	}
         });
         panel_1.add(btnNewButton_1);
