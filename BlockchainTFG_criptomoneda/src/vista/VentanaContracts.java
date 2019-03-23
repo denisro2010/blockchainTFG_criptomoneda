@@ -38,6 +38,7 @@ public class VentanaContracts extends JDialog {
 	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera();
 	private static JLabel lblMonedas;
 	private JSpinner spinner;
+	//private ElegirFecha eF = new ElegirFecha();
 
 
 	/**
@@ -65,7 +66,7 @@ public class VentanaContracts extends JDialog {
 		setIconImage(
 				Toolkit.getDefaultToolkit().getImage(VentanaContracts.class.getResource("/resources/ico32.png")));
 		setSize(new Dimension(600, 160));
-		setTitle("Mi cartera");
+		setTitle("Crear smart contract");
 		setResizable(false);
 		// setBounds(100, 100, 800, 800);
 		getContentPane().setLayout(new BorderLayout());
@@ -157,22 +158,49 @@ public class VentanaContracts extends JDialog {
 			JPanel panelBotones = new JPanel();
 			getContentPane().add(panelBotones, BorderLayout.SOUTH);
 			{
-				JButton btnCopiarMiClave = new JButton("Elegir fecha");
+				JButton btnCopiarMiClave = new JButton("Siguiente paso -> elegir fecha");
 				panelBotones.add(btnCopiarMiClave);
 				btnCopiarMiClave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						ElegirFecha eF = new ElegirFecha();
-						eF.setVisible(true);
-						//lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
+						int cantidad = (int) spinner.getValue();
+						
+						if(databaseControl.comprobarCartera((textField.getText().toString().trim()))) {
+							if(textField.getText().toString().trim().equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())))
+								JOptionPane.showMessageDialog(null, "Usted no puede mandarse monedas a sí mismo.", "Error", JOptionPane.ERROR_MESSAGE);
+							else if(cantidad < 1)
+								JOptionPane.showMessageDialog(null, "La cantidad de monedas que desea mandar no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
+							else { //TODO_BIEN, PASAR A ELEGIR FECHA
+								dispose();
+								VentanaDatos.getVentanaFecha().setVisible(true);
+							}
+						}
+						else { //Cartera no válida
+							JOptionPane.showMessageDialog(null, "La cartera que ha introducido no existe.", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+						
+					   lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
 					}
 				});
+			}
+			{
+				JButton btnResetearCampos = new JButton("Resetear campos");
+				panelBotones.add(btnResetearCampos);
+				btnResetearCampos.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						spinner.setValue(0);
+						textField.setText("");
+					}
+					});
 			}
 			{
 				JButton btnCancelar = new JButton("Cancelar");
 				panelBotones.add(btnCancelar);
 				btnCancelar.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(ActionEvent e) {	
+						VentanaDatos.getVentanaFecha().dispose();
+						VentanaDatos.setVentanaFecha(new ElegirFecha());
 						dispose();
+						VentanaDatos.setVentanaContracts(new VentanaContracts());
 					}
 				});
 			}

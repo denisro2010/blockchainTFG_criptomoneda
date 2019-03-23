@@ -190,6 +190,8 @@ public class VentanaLogin extends JDialog {
 							//carteraActual.getTransaccionesNoGastadas().put(key, value);
 							carteraDB = null;
 							VentanaDatos v = new VentanaDatos();
+							VentanaDatos.setVentanaContracts(new VentanaContracts());
+							VentanaDatos.setVentanaFecha(new ElegirFecha());
 							v.setVisible(true);
 							
 							//testing

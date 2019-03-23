@@ -38,6 +38,8 @@ public class VentanaDatos extends JDialog {
 	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera();
 	private static JLabel lblMonedas;
 	private JSpinner spinner;
+	private static VentanaContracts vC = new VentanaContracts();
+	private static ElegirFecha eF = new ElegirFecha();
 
 
 	/**
@@ -240,7 +242,7 @@ public class VentanaDatos extends JDialog {
 				JButton btnCrearSmartContract = new JButton("Crear contrato");
 				btnCrearSmartContract.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						VentanaContracts vC = new VentanaContracts();
+						//VentanaContracts vC = new VentanaContracts();
 						vC.setVisible(true);
 					}
 				});
@@ -260,7 +262,7 @@ public class VentanaDatos extends JDialog {
 				panelBotones.add(btnBorrarCuenta);
 				btnBorrarCuenta.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						int opcion = JOptionPane.showConfirmDialog(null, "¿Estás seguro? Esta acción no es reversible.", "Aviso", JOptionPane.YES_NO_OPTION);
+						int opcion = JOptionPane.showConfirmDialog(null, "¿Está seguro de que quiere BORRAR su cartera?", "Aviso", JOptionPane.YES_NO_OPTION);
 
 						if (opcion == 0) {
 							try {
@@ -281,6 +283,13 @@ public class VentanaDatos extends JDialog {
 				panelBotones.add(btnCancelar);
 				btnCancelar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						
+						if(vC.isVisible())
+							vC.dispose();
+						
+						if(eF.isVisible())
+							eF.dispose();
+						
 						VentanaLogin.setCarteraActual(null);
 						dispose();
 					}
@@ -292,6 +301,25 @@ public class VentanaDatos extends JDialog {
 	
 	public static void setLblMonedasText(String pTexto) {
 		lblMonedas.setText(pTexto);
+	}
+
+
+	public static ElegirFecha getVentanaFecha() {
+		return eF;
+	}
+	
+	public static VentanaContracts getVentanaContracts() {
+		return vC;
+	}
+
+
+	public static void setVentanaContracts(VentanaContracts vC) {
+		VentanaDatos.vC = vC;
+	}
+
+
+	public static void setVentanaFecha(ElegirFecha eF) {
+		VentanaDatos.eF = eF;
 	}
 
 }
