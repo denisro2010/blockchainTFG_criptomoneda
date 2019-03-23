@@ -38,7 +38,8 @@ public class VentanaContracts extends JDialog {
 	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera();
 	private static JLabel lblMonedas;
 	private JSpinner spinner;
-	//private ElegirFecha eF = new ElegirFecha();
+	private String PK_receptor = null;
+	private int cantidad = 0;
 
 
 	/**
@@ -170,6 +171,9 @@ public class VentanaContracts extends JDialog {
 							else if(cantidad < 1)
 								JOptionPane.showMessageDialog(null, "La cantidad de monedas que desea mandar no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
 							else { //TODO_BIEN, PASAR A ELEGIR FECHA
+								PK_receptor = textField.getText().toString().trim();
+								cantidad = (int) spinner.getValue();
+								
 								dispose();
 								VentanaDatos.getVentanaFecha().setVisible(true);
 							}
@@ -210,6 +214,16 @@ public class VentanaContracts extends JDialog {
 	
 	public static void setLblMonedasText(String pTexto) {
 		lblMonedas.setText(pTexto);
+	}
+
+
+	public String getPK_receptor() {
+		return PK_receptor;
+	}
+
+
+	public int getCantidad() {
+		return cantidad;
 	}
 
 }

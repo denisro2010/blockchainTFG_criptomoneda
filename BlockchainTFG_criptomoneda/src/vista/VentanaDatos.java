@@ -118,9 +118,9 @@ public class VentanaDatos extends JDialog {
 									e1.printStackTrace();
 								}
 								
-								Transaccion tranTemp = VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), cantidad);
+								Transaccion tranTemp = VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString().trim(), true), cantidad);
 								if(tranTemp != null) { //Si la transaccion es correcta
-									bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString(), true), cantidad));
+									bl.anadirTransaccion(VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString().trim(), true), cantidad));
 								
 									if(bl.getTransacciones().size() > 0) //anadir tran a la lista de transacciones
 										ProgramaPrincipal.getTransacciones().add(bl.getTransacciones().get(0));

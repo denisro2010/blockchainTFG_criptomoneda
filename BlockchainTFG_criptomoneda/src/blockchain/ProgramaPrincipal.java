@@ -27,25 +27,23 @@ public class ProgramaPrincipal{
 	private static Transaccion t1;
 	private static ArrayList<Transaccion> transacciones;
 	private static int posBlockchain; //despues de abrir y cerrar el programa solo recorre la lista a partir de los nuevos bloques que se crean en esa ejecución
+	private static ArrayList<SmartContract> listaContratos = new ArrayList<SmartContract>();
 	
 	public static void main(String[] args) {
 				Security.addProvider(new BouncyCastlePQCProvider()); //Setup Bouncey castle as a Security Provider (POST-QUANTUM SUPPORT)
-				
-				//Comprobar smart contracts cada minuto
-				ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-		        Runnable task = new SmartContract();
-		        int initialDelay = 0;
-		        int periodicDelay = 1;
-		        scheduler.scheduleAtFixedRate(task, initialDelay, periodicDelay, TimeUnit.MINUTES);
-				
+
 				try {
-					databaseControl.tablaBloque();
 					databaseControl.tablaCartera();
-					databaseControl.tablaOutputs();
 					databaseControl.tablaTransaccion();
+					databaseControl.tablaBloque();
+					databaseControl.tablaOutputs();
+					//TODO FALTA TABLA SMART CONTRACTS!!!!!!
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
+				//Get contratos de la BD
+				listaContratos = databaseControl.getContratosBD();
 				
 				t1 = databaseControl.getTranGenesis();
 				
@@ -80,6 +78,13 @@ public class ProgramaPrincipal{
 				else
 					posBlockchain = 1;
 
+				//Comprobar smart contracts cada minuto
+				ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+		        Runnable task = new ComprobarContratos();
+		        int initialDelay = 0;
+		        int periodicDelay = 1;
+		        scheduler.scheduleAtFixedRate(task, initialDelay, periodicDelay, TimeUnit.MINUTES);
+				
 				VentanaPrincipal v = new VentanaPrincipal();
 				v.setVisible(true);		
 				
@@ -229,5 +234,8 @@ public class ProgramaPrincipal{
 		return blockchain;
 	}
 
+	public static ArrayList<SmartContract> getContratos() {
+		return listaContratos;
+	}
 }
 

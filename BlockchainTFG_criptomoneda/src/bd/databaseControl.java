@@ -19,6 +19,7 @@ import blockchain.Bloque;
 import blockchain.Cartera;
 import blockchain.ProgramaPrincipal;
 import blockchain.SalidaTransaccion;
+import blockchain.SmartContract;
 import blockchain.Transaccion;
  
 public class databaseControl {
@@ -559,5 +560,73 @@ public class databaseControl {
 		        }
 
 			return t;
+		}
+
+		public static void crearContrato(String ID, String pK_receptor, int cantidad, String pK_remitente, long marcaTemp) {
+			
+			String sql = "INSERT INTO smartContract(IDsc, Fecha, Cantidad, Remitente(PK), Receptor(PK)) VALUES(?,?,?,?,?)";
+	        
+	        try (Connection conn =  connect();
+	                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	            pstmt.setString(1, ID);
+	            pstmt.setLong(2, marcaTemp);
+	            pstmt.setInt(3, cantidad);
+	            pstmt.setString(4, pK_remitente);
+	            pstmt.setString(5, pK_receptor);
+	            pstmt.executeUpdate();
+	            pstmt.close();
+	            conn.close();
+	        } catch (SQLException e) {
+	            //System.out.println(e.getMessage());
+	        }
+		}
+		
+		public static ArrayList<SmartContract> getContratosBD() {
+			String sql = "SELECT * FROM smartContract;";
+			ArrayList<SmartContract> contratos = new ArrayList<SmartContract>();
+			SmartContract sc; 
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		sc = new SmartContract();
+		        		sc.setIDsmartContract(rs.getString("IDsc"));
+		        		sc.setPK_remitente(rs.getString("Remitente(PK)"));
+		        		sc.setPK_receptor(rs.getString("Receptor(PK)"));
+		        		sc.setFecha(rs.getLong("Fecha"));
+		        		sc.setCantidad(rs.getInt("Cantidad"));
+		        		contratos.add(sc);
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {
+		        	//  System.out.println(se.getMessage());
+		        }
+
+			return contratos;
+		}
+		
+		public static void borrarContrato(String pID) throws Exception {
+			 String sql = "DELETE FROM smartContract WHERE IDsc='"+pID+"';";
+	    	 
+		        try (Connection conn =  connect();
+		                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		 
+		            // execute the delete statement
+		            pstmt.executeUpdate();
+		            pstmt.close();
+		            conn.close();
+		            
+		        } catch (SQLException e) {
+		        	//  System.out.println(e.getMessage());
+		        }
+		 }
+		
+		public static boolean existePK() {
+			//TODO
+			
+			return false;
 		}
 } 

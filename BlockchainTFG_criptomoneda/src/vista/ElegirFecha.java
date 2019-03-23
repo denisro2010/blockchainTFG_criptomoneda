@@ -2,17 +2,24 @@ package vista;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
-import com.github.lgooddatepicker.components.DateTimePicker;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.components.TimePickerSettings.TimeArea;
-import com.github.lgooddatepicker.zinternaltools.InternalUtilities;
+
+import algoritmosCriptograficos.StringUtils;
+import bd.databaseControl;
+import blockchain.ProgramaPrincipal;
+import blockchain.SmartContract;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.JPanel;
@@ -94,7 +101,20 @@ public class ElegirFecha extends JFrame {
         JButton btnNewButton = new JButton("Confirmar contrato");
         btnNewButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent arg0) {
-        		//TODO
+        		String PK_receptor = VentanaDatos.getVentanaContracts().getPK_receptor();
+        		int cantidad =  VentanaDatos.getVentanaContracts().getCantidad();
+        		String PK_remitente = StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica());
+        		
+        		LocalDate d = datePicker1.getDate();
+        		LocalTime t = timePicker2.getTime();
+        		
+        		Instant instant = d.atTime(t).atZone(ZoneId.systemDefault()).toInstant();
+        		Date fecha = Date.from(instant);
+        		long marcaTemp = fecha.getTime();
+        		
+        		SmartContract sc = new SmartContract(marcaTemp, cantidad, PK_remitente, PK_receptor);
+        		ProgramaPrincipal.getContratos().add(sc);
+        		databaseControl.crearContrato(sc.getID(), PK_receptor, cantidad, PK_remitente, marcaTemp);
         	}
         });
         panel_1.add(btnNewButton);
