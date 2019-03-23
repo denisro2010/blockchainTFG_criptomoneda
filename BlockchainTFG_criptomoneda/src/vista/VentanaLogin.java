@@ -80,6 +80,7 @@ public class VentanaLogin extends JDialog {
 	 * Create the dialog.
 	 */
 	public VentanaLogin() {
+		setAlwaysOnTop(true);
 		initialize();
 	}
 

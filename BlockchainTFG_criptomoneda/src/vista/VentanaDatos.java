@@ -48,7 +48,7 @@ public class VentanaDatos extends JDialog {
 	public static void main(String[] args) {
 		try {
 			VentanaDatos dialog = new VentanaDatos();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -60,6 +60,8 @@ public class VentanaDatos extends JDialog {
 	 * Create the dialog.
 	 */
 	public VentanaDatos() {
+		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setAlwaysOnTop(true);
 		initialize();
 	}
 

@@ -50,6 +50,8 @@ public class VentanaRegistro extends JDialog {
 	 * Create the dialog.
 	 */
 	public VentanaRegistro() {
+		setAlwaysOnTop(true);
+		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		initialize();
 	}
 

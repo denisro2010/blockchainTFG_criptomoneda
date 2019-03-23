@@ -70,7 +70,7 @@ public class VentanaPrincipal extends JFrame {
 	private void initialize() {
 		// setIconImage(Toolkit.getDefaultToolkit().getImage(VentanaPrincipal.class.getResource("/resources/radar.png")));
 		setTitle("Blockchain TFG");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 800, 800);
 		// panelBotones = new JPanel();
 		panelBotones = new JPanelBackground();

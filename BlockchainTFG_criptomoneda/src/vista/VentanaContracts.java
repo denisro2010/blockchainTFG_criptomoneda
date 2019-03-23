@@ -60,6 +60,8 @@ public class VentanaContracts extends JDialog {
 	 * Create the dialog.
 	 */
 	public VentanaContracts() {
+		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setAlwaysOnTop(true);
 		initialize();
 	}
 

@@ -59,6 +59,8 @@ public class ElegirFecha extends JFrame {
      * Default Constructor.
      */
     public ElegirFecha() {
+    	setResizable(false);
+    	setAlwaysOnTop(true);
         initializeComponents();
     }
 
@@ -71,7 +73,7 @@ public class ElegirFecha extends JFrame {
     	
         // Set up the form which holds the date picker components. 
         setTitle("Elegir fecha y hora del contrato");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         getContentPane().setLayout(new FlowLayout());
         setSize(new Dimension(400, 120));
         setLocationRelativeTo(null);
