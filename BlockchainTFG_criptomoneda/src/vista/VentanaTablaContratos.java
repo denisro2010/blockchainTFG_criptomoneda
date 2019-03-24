@@ -158,20 +158,21 @@ public class VentanaTablaContratos extends JFrame {
 								(databaseControl.getNombreUsuario(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())).toLowerCase())){
 							
 							int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro que quiere borrar este contrato?", "Aviso", JOptionPane.YES_NO_OPTION);
-	
+							
 							if (opcion == 0) {
 								//Borrar de la bd
 								try {
-									databaseControl.borrarContrato(listaContratos.get(fila+5));
+									databaseControl.borrarContrato(listaContratos.get((fila*6)+5));
 								} catch (Exception e1) {}
 								//borrar del programa
-								ProgramaPrincipal.borrarContrato(listaContratos.get(fila+5));
+								ProgramaPrincipal.borrarContrato(listaContratos.get((fila*6)+5));
 								for(int i=5+(fila*6); i<(fila*6); i--) {
 									listaContratos.remove(i);
 								}
 								JOptionPane.showMessageDialog(null, "El contrato se ha borrado correctamente.");
 								dispose();
 								VentanaTablaContratos vent = new VentanaTablaContratos();
+								listaContratos = databaseControl.rellenarTablaRemitente();
 								vent.setVisible(true);
 							}
 						}

@@ -16,7 +16,7 @@ public class ComprobarContratos implements Runnable {
 		for(int i=0; i<lista.size(); i++) {
 			SmartContract sc = lista.get(i);
 			
-			if(sc.getFecha() >= marcaActual) 
+			if(sc.getFecha() <= marcaActual) 
 				sc.ejecutarContrato();	
 		}
 				

@@ -258,8 +258,8 @@ public class VentanaDatos extends JDialog {
 				JButton btnCrearSmartContract = new JButton("Crear contrato");
 				btnCrearSmartContract.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						//VentanaContracts vC = new VentanaContracts();
 						vC.setVisible(true);
+						VentanaContracts.setLblMonedasText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
 						dispose();
 					}
 				});
