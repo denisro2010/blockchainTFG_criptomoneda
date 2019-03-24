@@ -21,7 +21,6 @@ import blockchain.ProgramaPrincipal;
 import blockchain.SalidaTransaccion;
 import blockchain.SmartContract;
 import blockchain.Transaccion;
-import vista.VentanaLogin;
  
 public class databaseControl {
     
@@ -149,7 +148,7 @@ public class databaseControl {
 	        }
 	    }
 	 
-	 public static void crearTransaccion(String pIDtran, String pRemitente, String pReceptor, float pValor, String pFirma, int pSecuencia) throws Exception {
+	 public static void crearTransaccion(String pIDtran, String pRemitente, String pReceptor, float pValor, byte[] pFirma, int pSecuencia) throws Exception {
 	        String sql = "INSERT INTO transaccion(IDtran, remitente, receptor, valor, firma, secuencia) VALUES(?,?,?,?,?,?)";
 	        
 	        try (Connection conn =  connect();
@@ -159,7 +158,7 @@ public class databaseControl {
 		            pstmt.setString(2, pRemitente);
 		            pstmt.setString(3, pReceptor);
 		            pstmt.setFloat(4, pValor);
-		            pstmt.setString(5, pFirma);
+		            pstmt.setBytes(5, pFirma);
 		            pstmt.setInt(6, pSecuencia);
 		            pstmt.executeUpdate();
 		            pstmt.close();
@@ -431,7 +430,7 @@ public class databaseControl {
 	            pstmt.setString(2, StringUtils.getStringClave(pTran.getRemitente()));
 	            pstmt.setString(3, StringUtils.getStringClave(pTran.getReceptor()));
 	            pstmt.setFloat(4, pTran.getValor());
-	            pstmt.setString(5, pTran.getFirma().toString());
+	            pstmt.setBytes(5, pTran.getFirma());
 	            pstmt.setInt(6, pTran.getSecuencia());
 	            pstmt.executeUpdate();
 	            pstmt.close();
@@ -589,12 +588,12 @@ public class databaseControl {
 	            pstmt.setInt(3, cantidad);
 	            pstmt.setString(4, pK_remitente);
 	            pstmt.setString(5, pK_receptor);
-	            pstmt.setString(6, pFirma.toString());
+	            pstmt.setBytes(6, pFirma);
 	            pstmt.executeUpdate();
 	            pstmt.close();
 	            conn.close();
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	            //System.out.println(e.getMessage());
 	        }
 		}
 		
@@ -620,7 +619,7 @@ public class databaseControl {
 		        	 stmt.close();
 		             conn.close();
 		        } catch (SQLException se) {
-		        	//  System.out.println(se.getMessage());
+		        	//System.out.println(se.getMessage());
 		        }
 
 			return contratos;
@@ -651,8 +650,8 @@ public class databaseControl {
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
-		        		remitente = rs.getString("Remitente(PK)");
-		        		receptor = rs.getString("Receptor(PK)");
+		        		remitente = rs.getString("Remitente");
+		        		receptor = rs.getString("Receptor");
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();

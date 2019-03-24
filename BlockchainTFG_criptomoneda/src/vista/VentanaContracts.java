@@ -171,6 +171,9 @@ public class VentanaContracts extends JDialog {
 								JOptionPane.showMessageDialog(null, "Usted no puede mandarse monedas a sí mismo.", "Error", JOptionPane.ERROR_MESSAGE);
 							else if(cant < 1)
 								JOptionPane.showMessageDialog(null, "La cantidad de monedas que desea mandar no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
+							else if(cant > VentanaLogin.getCarteraActual().getBalanceCartera()) {
+								JOptionPane.showMessageDialog(null, "Usted no tiene saldo suficiente como para ejecutar este contrato.", "Error", JOptionPane.ERROR_MESSAGE);
+							}
 							else { //TODO_BIEN, PASAR A ELEGIR FECHA
 								PK_receptor = textField.getText().toString().trim();
 								cantidad = (int) spinner.getValue();

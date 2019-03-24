@@ -71,13 +71,13 @@ public class StringUtils {
 		
 		//Verifica una firma
 		public static boolean verifyQTESLASig(PublicKey pCalvePublica, String pDatos, byte[] pFirma) {
-			QTESLASigner signer = new QTESLASigner();
+			//QTESLASigner signer = new QTESLASigner();
 			
 			try {
-				Signature ecdsaVerify = Signature.getInstance("qTESLA", "BCPQC");
-				ecdsaVerify.initVerify(pCalvePublica);
-				ecdsaVerify.update(pDatos.getBytes());
-				return ecdsaVerify.verify(pFirma);
+				Signature qTeslaVerify = Signature.getInstance("qTESLA", "BCPQC");
+				qTeslaVerify.initVerify(pCalvePublica);
+				qTeslaVerify.update(pDatos.getBytes());
+				return qTeslaVerify.verify(pFirma);
 			}catch(Exception e) {
 				throw new RuntimeException(e);
 			}

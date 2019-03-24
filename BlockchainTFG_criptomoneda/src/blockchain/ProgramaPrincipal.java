@@ -39,18 +39,15 @@ public class ProgramaPrincipal{
 					databaseControl.tablaOutputs();
 					databaseControl.tablaSmartContracts();
 				} catch (Exception e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
-				
-				//Get contratos de la BD
-				listaContratos = databaseControl.getContratosBD();
-				
+
 				t1 = databaseControl.getTranGenesis();
 				
 				try {
 					databaseControl.getOutputsMain();
 				} catch (Exception e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 
 				SalidaTransaccion out; //= new SalidaTransaccion();
@@ -70,7 +67,7 @@ public class ProgramaPrincipal{
 				try {
 					blockchain = databaseControl.getBloques();
 				} catch (Exception e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 				
 				if(blockchain.size() > 1)
@@ -78,6 +75,9 @@ public class ProgramaPrincipal{
 				else
 					posBlockchain = 1;
 
+				//Get contratos de la BD
+				listaContratos = databaseControl.getContratosBD();
+				
 				//Comprobar smart contracts cada minuto
 				ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 		        Runnable task = new ComprobarContratos();
@@ -110,7 +110,7 @@ public class ProgramaPrincipal{
 		
 		VentanaDatos.setLblMonedasText(VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
 		try {
-			databaseControl.crearTransaccion(transaccionGenesis.getIDtransaccion(), StringUtils.getStringClave(transaccionGenesis.getRemitente()), StringUtils.getStringClave(transaccionGenesis.getReceptor()), transaccionGenesis.getValor(), transaccionGenesis.getFirma().toString(), transaccionGenesis.getSecuencia());
+			databaseControl.crearTransaccion(transaccionGenesis.getIDtransaccion(), StringUtils.getStringClave(transaccionGenesis.getRemitente()), StringUtils.getStringClave(transaccionGenesis.getReceptor()), transaccionGenesis.getValor(), transaccionGenesis.getFirma(), transaccionGenesis.getSecuencia());
 			databaseControl.crearOutput(outputManual.getId(), outputManual.getCantidad(), outputManual.getIDtransaccion(), StringUtils.getStringClave(outputManual.getReceptor()));
 			databaseControl.insertarBloque(genesis);
 		} catch (Exception e) {

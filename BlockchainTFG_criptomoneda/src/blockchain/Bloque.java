@@ -55,7 +55,6 @@ public class Bloque {
 				return false;		
 			if((!"0".equals(hashAnterior))) {
 				if((pTransaccion.procesarTransaccion() != true)) {
-					//System.out.println("La transacción no se ha procesado correctamente, por lo que se ha descartado.");
 					JOptionPane.showMessageDialog(null, "La transacción no se ha procesado correctamente, por lo que se ha descartado.", "Error", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}

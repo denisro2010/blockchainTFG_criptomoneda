@@ -15,6 +15,14 @@ public class SmartContract{
 	private String PK_receptor;
 	private byte[] firmaTransaccion;
 	
+	public SmartContract(long pFecha, int pCant, String pRemitente, String pReceptor) {
+		IDsmartContract = StringUtils.applySha3_256(pFecha + pCant + pRemitente + pReceptor);
+		fecha = pFecha;
+		cantidad = pCant;
+		PK_remitente = pRemitente;
+		PK_receptor = pReceptor;
+	}
+	
 	protected void ejecutarContrato() {
 		//falta borrarlo si el remitente o receptor ya no están!!!!
 		
@@ -23,9 +31,7 @@ public class SmartContract{
 			Bloque bl = null;
 			try {
 				bl = new Bloque(databaseControl.getHashUltimoBloque());
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
+			} catch (Exception e1) {}
 			
 			Cartera carteraRemitente = new Cartera();
 			carteraRemitente.setClavePublica((PublicKey) StringUtils.getClaveDesdeString(PK_remitente, true));
@@ -33,8 +39,7 @@ public class SmartContract{
 			Transaccion tranTemp = carteraRemitente.enviarFondosSmartContract((PublicKey) 
 					StringUtils.getClaveDesdeString(PK_receptor, true), cantidad, firmaTransaccion, IDsmartContract);
 			if(tranTemp != null) { //Si la transaccion es correcta
-				bl.anadirTransaccion(carteraRemitente.enviarFondosSmartContract((PublicKey) 
-						StringUtils.getClaveDesdeString(PK_receptor, true), cantidad, firmaTransaccion, IDsmartContract));
+				bl.anadirTransaccion(tranTemp);
 			
 				if(bl.getTransacciones().size() > 0) //anadir tran a la lista de transacciones
 					ProgramaPrincipal.getTransacciones().add(bl.getTransacciones().get(0));
@@ -72,7 +77,7 @@ public class SmartContract{
 					ProgramaPrincipal.getBlockchain().remove(bl);
 				}					
 			}
-			
+			System.out.println("Se acaba de ejecutar un smart contract.");	
 		} //Fin if principal
 		
 			
@@ -84,17 +89,9 @@ public class SmartContract{
 		} catch (Exception e) {}
 			
 	}
-
-	public SmartContract(long pFecha, int pCant, String pRemitente, String pReceptor) {
-		IDsmartContract = StringUtils.applySha3_256(pFecha + pCant + pRemitente + pReceptor);
-		fecha = pFecha;
-		cantidad = pCant;
-		PK_remitente = pRemitente;
-		PK_receptor = pReceptor;
-	}
 	
-	public void generarFirmaTransaccionContract(PrivateKey pClavePrivada, PublicKey pRemitente, PublicKey pReceptor, float pValor) {
-		String datos = StringUtils.getStringClave(pRemitente) + StringUtils.getStringClave(pReceptor) + Float.toString(pValor)	;
+	public void generarFirmaTransaccionContract(PrivateKey pClavePrivada, String pRemitente, String pReceptor, float pValor) {
+		String datos = pRemitente + pReceptor + Float.toString(pValor);
 		this.firmaTransaccion = StringUtils.applyQTESLASig(pClavePrivada, datos);
 	}
 	

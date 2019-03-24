@@ -60,7 +60,6 @@ public class ElegirFecha extends JFrame {
      */
     public ElegirFecha() {
     	setResizable(false);
-    	setAlwaysOnTop(true);
         initializeComponents();
     }
 
@@ -117,7 +116,7 @@ public class ElegirFecha extends JFrame {
         		long marcaTemp = fecha.getTime();
         		
         		SmartContract sc = new SmartContract(marcaTemp, cantidad, PK_remitente, PK_receptor);
-        		sc.generarFirmaTransaccionContract(VentanaLogin.getCarteraActual().getClavePrivada(), (PublicKey) StringUtils.getClaveDesdeString(PK_remitente, true), (PublicKey) StringUtils.getClaveDesdeString(PK_receptor, true) , (float) cantidad); 
+        		sc.generarFirmaTransaccionContract(VentanaLogin.getCarteraActual().getClavePrivada(), PK_remitente, PK_receptor, cantidad); 
         		ProgramaPrincipal.getContratos().add(sc);
         		databaseControl.crearContrato(sc.getID(), PK_receptor, cantidad, PK_remitente, marcaTemp, sc.getFirmaTransaccion());
         		
