@@ -119,12 +119,9 @@ public class Cartera {
 		public Transaccion enviarFondosSmartContract(PublicKey pReceptor, float pCantidad, byte[] pFirma, String pIDcontrato) {
 			
 			if(getBalanceCartera() < pCantidad) {
-				JOptionPane.showMessageDialog(null,
-					    "El remitente del smart contract no tiene suficientes fondos. El contrato se ha descartado.",
-					    "Error",
-					    JOptionPane.ERROR_MESSAGE);
+				//JOptionPane.showMessageDialog(null, "El remitente del smart contract no tiene suficientes fondos. El contrato se ha descartado.", "Error", JOptionPane.ERROR_MESSAGE);
 				
-				try { 
+				/*try { 
 					databaseControl.borrarContrato(pIDcontrato); 
 				} 
 				catch (Exception e) {}
@@ -133,7 +130,7 @@ public class Cartera {
 					if(ProgramaPrincipal.getContratos().get(i).getIDsmartContract().equals(pIDcontrato)) {
 						ProgramaPrincipal.getContratos().remove(i);
 					}
-				}
+				}*/
 				
 				return null;
 			}

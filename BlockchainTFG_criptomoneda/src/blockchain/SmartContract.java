@@ -56,6 +56,7 @@ public class SmartContract{
 					ProgramaPrincipal.getTransacciones().remove(bl.getTransacciones().get(0));
 					ProgramaPrincipal.getBlockchain().remove(bl);
 				}
+				System.out.println("Se acaba de ejecutar un smart contract.");
 			}
 			else { //si la transaccion NO es correcta (supera el saldo de la cartera...)
 				bl.anadirTransaccion(carteraRemitente.enviarFondosSmartContract((PublicKey) 
@@ -75,9 +76,9 @@ public class SmartContract{
 				else { //si no es valida, no añadir a la bd y borrar bloque y tran de las listas en tiempo de ejecucion
 					ProgramaPrincipal.getTransacciones().remove(bl.getTransacciones().get(0));
 					ProgramaPrincipal.getBlockchain().remove(bl);
-				}					
+				}	
+				System.out.println("El remitente del smart contract no tiene saldo suficiente. La transacción se ha descartado.");	
 			}
-			System.out.println("Se acaba de ejecutar un smart contract.");	
 		} //Fin if principal
 		
 			
