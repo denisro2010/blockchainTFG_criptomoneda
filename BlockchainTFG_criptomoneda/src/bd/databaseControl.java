@@ -690,22 +690,22 @@ public class databaseControl {
 				return false;
 		}
 		
-		public static String getNombreRemitente() {
+		public static ArrayList<String> getNombreRemitentes() {
 			String sql = "SELECT usuario FROM smartContract LEFT JOIN cartera ON smartContract.Remitente = cartera.clavePublica";
-			String nombre = "";
+			ArrayList<String> nombres = new ArrayList<String>();
 			
 			 try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
-		        		 nombre = rs.getString("usuario");
+		        		 nombres.add(rs.getString("usuario"));
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
 		             conn.close();
 		        	} catch (SQLException se) {}
 			 
-			 return nombre;
+			 return nombres;
 		}
 		
 		public static String getNombreUsuario(String pClavePublica) {
@@ -730,8 +730,9 @@ public class databaseControl {
 			
 			String sql = "SELECT usuario, Fecha, Cantidad, IDsc FROM smartContract LEFT JOIN cartera ON smartContract.Receptor = cartera.clavePublica;";
 			ArrayList<String> lista = new ArrayList<String>();
-			String remitente = getNombreRemitente();
-			Integer i = 0;
+			ArrayList<String> remitentes = getNombreRemitentes();
+			Integer i = 0; //Numero del contrato
+			int j = 0;
 			
 			 try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
@@ -742,12 +743,14 @@ public class databaseControl {
 		        		String receptor = rs.getString("usuario");
 		        		receptor = receptor.substring(0, 1).toUpperCase() + receptor.substring(1);
 		        		lista.add(receptor);
-		        		remitente = remitente.substring(0, 1).toUpperCase() + remitente.substring(1);
+		        		
+		        		String remitente = remitentes.get(j).substring(0, 1).toUpperCase() + remitentes.get(j).substring(1);
 		        		lista.add(remitente);
+		        		j = j+1;
 		        		
 		        		long marcaTemp;
 		        		marcaTemp = rs.getLong("Fecha");
-		                DateFormat simple = new SimpleDateFormat("dd MMM yyyy HH:mm:ss"); 
+		                DateFormat simple = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss"); 
 		                Date fecha = new Date(marcaTemp); 
 		        		lista.add(simple.format(fecha));
 		        		
@@ -756,7 +759,7 @@ public class databaseControl {
 		        		
 		        		//Hay que coger el ID aunque no se muestre, para poder borrar el contrato.
 		        		lista.add(rs.getString("IDsc"));
-		        	 }
+		        	 }	        	 
 		        	 rs.close();
 		        	 stmt.close();
 		             conn.close();
