@@ -750,7 +750,7 @@ public class databaseControl {
 		        		
 		        		long marcaTemp;
 		        		marcaTemp = rs.getLong("Fecha");
-		                DateFormat simple = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss"); 
+		                DateFormat simple = new SimpleDateFormat("dd MMM yyyy HH:mm"); 
 		                Date fecha = new Date(marcaTemp); 
 		        		lista.add(simple.format(fecha));
 		        		

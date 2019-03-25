@@ -5,52 +5,39 @@ import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.components.TimePickerSettings.TimeArea;
-
 import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 import blockchain.ProgramaPrincipal;
 import blockchain.SmartContract;
-import blockchain.Transaccion;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
-
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.security.PublicKey;
 import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
-/**
- * BasicDemo,
- *
- * This class demonstrates the most basic usage of the date and time picker components. More
- * specifically, this class only demonstrates how to create the components and add them to a form.
- * For a more extensive demonstration of all library components and their various optional settings,
- * see "FullDemo.java".
- */
 public class ElegirFecha extends JFrame {
 
     /**
      * main, This is the entry point for the basic demo.
      */
     public static void main(String[] args) {
-        // Use the standard swing code to start this demo inside a swing thread.
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                // Create an instance of the demo.
-            	ElegirFecha basicDemo = new ElegirFecha();
-                // Make the demo visible on the screen.
-                basicDemo.setVisible(true);
+            	ElegirFecha ventana = new ElegirFecha();
+                ventana.setVisible(true);
             }
         });
     }
@@ -59,6 +46,7 @@ public class ElegirFecha extends JFrame {
      * Default Constructor.
      */
     public ElegirFecha() {
+    	setIconImage(Toolkit.getDefaultToolkit().getImage(ElegirFecha.class.getResource("/resources/ico32.png")));
     	setResizable(false);
         initializeComponents();
     }
@@ -74,7 +62,7 @@ public class ElegirFecha extends JFrame {
         setTitle("Elegir fecha y hora del contrato");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         getContentPane().setLayout(new FlowLayout());
-        setSize(new Dimension(400, 120));
+        setSize(new Dimension(500, 150));
         setLocationRelativeTo(null);
 
         // Create a date picker, and add it to the form.
@@ -120,6 +108,7 @@ public class ElegirFecha extends JFrame {
         		ProgramaPrincipal.getContratos().add(sc);
         		databaseControl.crearContrato(sc.getID(), PK_receptor, cantidad, PK_remitente, marcaTemp, sc.getFirmaTransaccion());
         		
+        		JOptionPane.showMessageDialog(null, "El contrato se ha definido correctamente.");
         		dispose();
         		VentanaDatos.setVentanaContracts(new VentanaContracts());
         		VentanaDatos vD = new VentanaDatos();
@@ -140,5 +129,8 @@ public class ElegirFecha extends JFrame {
         	}
         });
         panel_1.add(btnNewButton_1);
+        
+        JLabel lblSiALa = new JLabel("Si a la hora de ejecutarse este contrato no posee saldo suficiente, \u00E9ste se cancelar\u00E1.");
+        getContentPane().add(lblSiALa);
     }
 }
