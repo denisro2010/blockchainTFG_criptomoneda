@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
 import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 import blockchain.ProgramaPrincipal;
+import blockchain.SmartContract;
 
 import java.awt.event.ActionListener;
 import java.util.ArrayList;

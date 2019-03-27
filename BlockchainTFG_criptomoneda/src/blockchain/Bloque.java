@@ -16,24 +16,30 @@ public class Bloque {
 	private int nonce; //"number used once"
 	private String merkleRoot;
 	private ArrayList<Transaccion> transacciones = new ArrayList<Transaccion>();
-
-	//Constructor
-	public Bloque(String pHashAnterior ) {
+	private ArrayList<SmartContract> contratos = new ArrayList<SmartContract>();
+	private String contratoEjecutado = "";
+	private String contratoConfirmado = "";
+	
+	public Bloque(String pHashAnterior) {
 		this.hashAnterior = pHashAnterior;
 		this.marcaTemporal = new Date().getTime();
 		this.hash = calcularHash(); 
 	}
 	
-	public Bloque() {}
+	public Bloque() {
+	}
 	
 	public String calcularHash() {
 		String hash;
 		
-		/*
-		 * Debemos calcular el hash de todas las partes del bloque que no queremos que se alteren. 
-		 * Entonces, para nuestro bloque incluiremos el Hash del bloque anterior, los datos y la marca temporal.
-		 */
-		hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + merkleRoot);
+		if(transacciones.size() > 0 && contratos.size() > 0)
+			hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + transacciones.get(0).getIDtransaccion() + contratos.get(0).getIDsmartContract() + contratoEjecutado + contratoConfirmado);
+		else if(transacciones.size() == 0 && contratos.size() > 0)
+			hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + contratos.get(0).getIDsmartContract() + contratoEjecutado + contratoConfirmado);
+		else if(transacciones.size() > 0 && contratos.size() == 0)
+			hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + transacciones.get(0).getIDtransaccion());
+		else
+			hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce));
 		
 		return hash;
 	}
@@ -61,7 +67,19 @@ public class Bloque {
 			}
 
 			transacciones.add(pTransaccion);
+			this.hash = calcularHash();
 			System.out.println("La transacción se ha añadido correctamente al bloque.");
+			return true;
+		}
+		
+		public boolean anadirContrato(SmartContract pContract) {
+			
+			if(pContract == null) 
+				return false;		
+
+			contratos.add(pContract);
+			this.hash = calcularHash();
+			System.out.println("El contrato se ha añadido correctamente al bloque.");
 			return true;
 		}
 
@@ -112,7 +130,29 @@ public class Bloque {
 		public void setTransacciones(ArrayList<Transaccion> transacciones) {
 			this.transacciones = transacciones;
 		}
-		
-		
 
+		public ArrayList<SmartContract> getContratos() {
+			return contratos;
+		}
+
+		public String getContratoEjecutado() {
+			return contratoEjecutado;
+		}
+
+		public void setContratoEjecutado(String contratoEjecutado) {
+			this.contratoEjecutado = contratoEjecutado;
+		}
+
+		public String getContratoConfirmado() {
+			return contratoConfirmado;
+		}
+
+		public void setContratoConfirmado(String contratoConfirmado) {
+			this.contratoConfirmado = contratoConfirmado;
+		}
+
+		public void setContratos(ArrayList<SmartContract> contratos) {
+			this.contratos = contratos;
+		}
+		
 }

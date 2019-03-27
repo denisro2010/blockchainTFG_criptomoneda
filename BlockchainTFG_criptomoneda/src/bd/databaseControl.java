@@ -169,8 +169,8 @@ public class databaseControl {
 	        }
 	    }
 	 
-	 public static void crearBloque(String pHash, String pHashAnterior, long pMarcaTemp, int pNonce, String pMerkleRoot, String pTransaccion) throws Exception {
-	        String sql = "INSERT INTO bloque(hash, hashAnterior, marcaTemporal, nonce, merkleRoot, transaccion) VALUES(?,?,?,?,?,?)";
+	 /*public static void crearBloque(String pHash, String pHashAnterior, long pMarcaTemp, int pNonce, String pMerkleRoot, String pTransaccion, String pContract) throws Exception {
+	        String sql = "INSERT INTO bloque(hash, hashAnterior, marcaTemporal, nonce, merkleRoot, transaccion) VALUES(?,?,?,?,?,?,?)";
 	        
 	        try (Connection conn =  connect();
 	            PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -181,6 +181,7 @@ public class databaseControl {
 		            pstmt.setInt(4, pNonce);
 		            pstmt.setString(5, pMerkleRoot);
 		            pstmt.setString(6, pTransaccion);
+		            pstmt.setString(7, pContract);
 		            pstmt.executeUpdate();
 		            pstmt.close();
 		            conn.close();
@@ -188,7 +189,7 @@ public class databaseControl {
 	        } catch (SQLException e) {
 	        	// System.out.println(e.getMessage());
 	        }
-	    }
+	    }*/
 	 
 	 public static void crearOutput(String pID, float pCant, String pIDtran, String pIDcartera) throws Exception {
 	        String sql = "INSERT INTO outputs(IDoutput, cantidad, IDtransaccion, IDcartera) VALUES(?,?,?,?)";
@@ -403,7 +404,7 @@ public class databaseControl {
 	   }
     
 	 public static void insertarBloque(Bloque pBloque) throws Exception {
-	        String sql = "INSERT INTO bloque(hash, hashAnterior, marcaTemporal, nonce, merkleRoot, transaccion) VALUES(?,?,?,?,?,?)";
+	        String sql = "INSERT INTO bloque(hash, hashAnterior, marcaTemporal, nonce, transaccion, contrato, contratoConfirmado, contratoEjecutado) VALUES(?,?,?,?,?,?,?,?)";
 	        
 	        try (Connection conn =  connect();
 	                PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -411,14 +412,20 @@ public class databaseControl {
 	            pstmt.setString(2, pBloque.getHashAnterior());
 	            pstmt.setLong(3, pBloque.getMarcaTemporal());
 	            pstmt.setInt(4, pBloque.getNonce());
-	            pstmt.setString(5, pBloque.getMerkleRoot());
-	            pstmt.setString(6, pBloque.getTransacciones().get(0).getIDtransaccion());
+	            if( pBloque.getTransacciones().size() != 0)
+	            	pstmt.setString(5, pBloque.getTransacciones().get(0).getIDtransaccion());
+	            else
+	            	pstmt.setString(5, "");
+	            if(pBloque.getContratos().size() != 0)
+	            	pstmt.setString(6, pBloque.getContratos().get(0).getIDsmartContract());
+	            else
+	            	pstmt.setString(6, "");
+	            pstmt.setString(7, pBloque.getContratoConfirmado());
+	            pstmt.setString(8, pBloque.getContratoEjecutado());
 	            pstmt.executeUpdate();
 	            pstmt.close();
 	            conn.close();
-	        } catch (SQLException e) {
-	        	// System.out.println(e.getMessage());
-	        }
+	        } catch (SQLException e) {}
 	    }
 	 
 	 public static void insertarTransaccion(Transaccion pTran) throws Exception {
@@ -469,6 +476,7 @@ public class databaseControl {
 		 	Bloque b;
 		 	ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
 		 	ArrayList<Transaccion> transacciones = new ArrayList<Transaccion>();
+		 	ArrayList<SmartContract> contratos = new ArrayList<SmartContract>();
 	   	 
 		        try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
@@ -484,17 +492,23 @@ public class databaseControl {
 		        			b.setHash(rs.getString("hash"));
 		        			b.setMarcaTemporal(rs.getInt("marcaTemporal"));
 		        			b.setNonce(rs.getInt("nonce"));
-		        			b.setMerkleRoot(rs.getString("merkleRoot"));
-		        			transacciones.add(getTransaccion(rs.getString("transaccion")));
-		        			b.setTransacciones(transacciones);
+		        			if(!rs.getString("transaccion").equals("")) {
+		        				transacciones.add(getTransaccion(rs.getString("transaccion")));
+		        				b.setTransacciones(transacciones);
+		        			}
+		        			if(!rs.getString("contrato").equals("")) {
+		        				contratos.add(getContrato(rs.getString("contrato")));
+		        				b.setContratos(contratos);
+		        	 		}
+		        			b.setContratoConfirmado(rs.getString("contratoConfirmado"));
+		        			b.setContratoEjecutado(rs.getString("contratoEjecutado"));
 		        			blockchain.add(b);
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
 		             conn.close();
-		        } catch (SQLException se) {
-		        	// System.out.println(se.getMessage());
-		        }
+		        } catch (SQLException se) {}
+		        
 		    return blockchain;
 	    }
 
@@ -522,6 +536,30 @@ public class databaseControl {
 		        }
 
 			return t;
+		}
+		
+		public static SmartContract getContrato(String pID) {
+			String sql = "SELECT * FROM smartContract WHERE IDsc = '" + pID + "';";
+			SmartContract sc = null;
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		sc  = new SmartContract();
+		        		sc.setIDsmartContract(rs.getString("IDsc"));
+		        		sc.setFecha(rs.getInt("Fecha"));
+		        		sc.setCantidad(rs.getInt("Cantidad"));
+		        		sc.setPK_remitente(rs.getString("Remitente"));
+		        		sc.setPK_receptor(rs.getString("Receptor"));
+		        		sc.setFirmaTransaccion(rs.getBytes("FirmaTransaccion"));
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        } catch (SQLException se) {}
+
+			return sc;
 		}
 		
 		public static ArrayList<Transaccion> getTransacciones() {
@@ -577,7 +615,7 @@ public class databaseControl {
 			return t;
 		}
 
-		public static void crearContrato(String ID, String pK_receptor, int cantidad, String pK_remitente, long marcaTemp, byte[] pFirma) {
+		public static void insertarContrato(String ID, String pK_receptor, int cantidad, String pK_remitente, long marcaTemp, byte[] pFirma) {
 			
 			String sql = "INSERT INTO smartContract(IDsc, Fecha, Cantidad, Remitente, Receptor, FirmaTransaccion) VALUES(?,?,?,?,?,?)";
 	        
@@ -728,7 +766,7 @@ public class databaseControl {
 		
 		public static ArrayList<String> rellenarTablaRemitente() {
 			
-			String sql = "SELECT usuario, Fecha, Cantidad, IDsc FROM smartContract LEFT JOIN cartera ON smartContract.Receptor = cartera.clavePublica;";
+			String sql = "SELECT usuario, Fecha, Cantidad, IDsc FROM smartContract INNER JOIN cartera ON smartContract.Receptor = cartera.clavePublica;";
 			ArrayList<String> lista = new ArrayList<String>();
 			ArrayList<String> remitentes = getNombreRemitentes();
 			Integer i = 0; //Numero del contrato
@@ -766,5 +804,72 @@ public class databaseControl {
 		        } catch (SQLException se) {}
 			 
 			 return lista;
+		}
+
+		public static boolean haSidoConfirmado(String pIDsmartContract) {
+			String sql = "SELECT contratoConfirmado FROM bloque WHERE contrato='" + pIDsmartContract + "';";
+			ArrayList<String> conf = new ArrayList<String>();
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 conf.add(rs.getString("contratoConfirmado"));
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 boolean confirmado = false;
+			 for(String c: conf) {
+				 if(c.equals("true"))
+					 confirmado = true;
+			 }
+			 return confirmado;
+		}
+		
+		public static boolean haSidoEjecutado(String pIDsmartContract) {
+			String sql = "SELECT contratoEjecutado FROM bloque WHERE contrato='" + pIDsmartContract + "';";
+			ArrayList<String> ejec = new ArrayList<String>();
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 ejec.add(rs.getString("contratoEjecutado"));
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 boolean ejecutado = true;
+			 for(String c: ejec) {
+				 if(c.equals("false"))
+					 ejecutado = false;
+			 }
+			 return ejecutado;
+		}
+		
+		public static ArrayList<String> contratosPendientes(String pNombreReceptor) {
+			String sql = "SELECT contrato, remitente, fecha, cantidad FROM bloque INNER JOIN smartContract ON bloque.contrato = smartContract.IDsc WHERE bloque.contratoConfirmado = 'false' AND smartContract.Receptor = '" + pNombreReceptor + "';";
+			ArrayList<String> datos = new ArrayList<String>();
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 datos.add(rs.getString("contrato"));
+		        		 datos.add(rs.getString("remitente"));
+		        		 datos.add(rs.getString("fecha"));
+		        		 datos.add(rs.getString("cantidad"));
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 return datos;
 		}
 } 

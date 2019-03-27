@@ -24,13 +24,17 @@ public class SmartContract{
 	}
 	
 	protected void ejecutarContrato() {
-		//falta borrarlo si el remitente o receptor ya no están!!!!
+		
+		if(databaseControl.haSidoConfirmado(this.IDsmartContract) && !databaseControl.haSidoEjecutado(this.IDsmartContract)) {
 		
 		if(databaseControl.existePK(IDsmartContract)) { //Si e remitente y el receptor siguen existiendo
 			
 			Bloque bl = null;
 			try {
 				bl = new Bloque(databaseControl.getHashUltimoBloque());
+				bl.setContratoConfirmado("true");
+				bl.setContratoEjecutado("true");
+				bl.anadirContrato(this);
 			} catch (Exception e1) {}
 			
 			Cartera carteraRemitente = new Cartera();
@@ -77,9 +81,10 @@ public class SmartContract{
 					ProgramaPrincipal.getTransacciones().remove(bl.getTransacciones().get(0));
 					ProgramaPrincipal.getBlockchain().remove(bl);
 				}	
-				System.out.println("El remitente del smart contract no tiene saldo suficiente. La transacción se ha descartado.");	
-			}
+			}			
 		} //Fin if principal
+		
+		}// Fin if ha sido confirmado y no ejecutado
 		
 			
 		//Si se ha ejecutado correctamente o no, hay que borrarlo del programa y de la BD
@@ -94,6 +99,7 @@ public class SmartContract{
 	public void generarFirmaTransaccionContract(PrivateKey pClavePrivada, String pRemitente, String pReceptor, float pValor) {
 		String datos = pRemitente + pReceptor + Float.toString(pValor);
 		this.firmaTransaccion = StringUtils.applyQTESLASig(pClavePrivada, datos);
+		this.IDsmartContract = StringUtils.applySha3_256(fecha + cantidad + pRemitente + pReceptor + firmaTransaccion); //evitar la manipulacion de la firma en la BD
 	}
 	
 	public SmartContract() {}

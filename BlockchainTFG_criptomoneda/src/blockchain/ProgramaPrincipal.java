@@ -114,7 +114,7 @@ public class ProgramaPrincipal{
 			databaseControl.crearOutput(outputManual.getId(), outputManual.getCantidad(), outputManual.getIDtransaccion(), StringUtils.getStringClave(outputManual.getReceptor()));
 			databaseControl.insertarBloque(genesis);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -140,14 +140,14 @@ public class ProgramaPrincipal{
 			
 			if(!bloqueActual.getHash().equals(bloqueActual.calcularHash()) ) {
 				//System.out.println("Las funciones hash actuales no coinciden.");
-				JOptionPane.showMessageDialog(null, "Las funciones hash actuales no coinciden.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Las funciones hash de un bloque no coinciden.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 			
 			//comprobar que la función hash cumple las condiciones
 			if(!bloqueActual.getHash().substring( 0, dificultad).equals(meta)) {
 				//System.out.println("Este bloque NO se ha minado.");
-				JOptionPane.showMessageDialog(null, "Este bloque no se ha minado.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Un bloque no se ha minado.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 			
@@ -194,7 +194,7 @@ public class ProgramaPrincipal{
 				
 				if( transaccionActual.getSalidas().get(0).getReceptor() != transaccionActual.getReceptor()) {
 					//System.out.println("El receptor de la transacción (" + t + ") no es quien debería ser.");
-					JOptionPane.showMessageDialog(null, "El receptor de la transacción no es quien debería ser.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "El receptor de una transacción no es quien debería ser.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
 				if( transaccionActual.getSalidas().get(1).getReceptor() != transaccionActual.getRemitente()) {
@@ -206,7 +206,7 @@ public class ProgramaPrincipal{
 			}
 			
 		}
-		//JOptionPane.showMessageDialog(null, "El blockchain es válido.", "", JOptionPane.PLAIN_MESSAGE);
+		System.out.println("Blockchain válido.");
 		return true;
 	}
 	

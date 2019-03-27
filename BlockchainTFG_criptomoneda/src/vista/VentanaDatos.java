@@ -25,6 +25,7 @@ import blockchain.Transaccion;
 
 import java.awt.event.ActionListener;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JSpinner;
 
@@ -40,6 +41,7 @@ public class VentanaDatos extends JDialog {
 	private JSpinner spinner;
 	private static VentanaContracts vC = new VentanaContracts();
 	private static ElegirFecha eF = new ElegirFecha();
+	private ArrayList<String> contratosSinConfirmar = databaseControl.contratosPendientes(databaseControl.getNombreUsuario(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())));
 
 
 	/**
@@ -65,6 +67,10 @@ public class VentanaDatos extends JDialog {
 	}
 
 	private void initialize() {
+		if(contratosSinConfirmar.size() != 0) { //Si hay contracts sin confirmar abrir ventana confirmar
+			
+		}
+		
 		setIconImage(
 				Toolkit.getDefaultToolkit().getImage(VentanaDatos.class.getResource("/resources/ico32.png")));
 		setSize(new Dimension(750, 160));
@@ -116,7 +122,7 @@ public class VentanaDatos extends JDialog {
 								try {
 									bl = new Bloque(databaseControl.getHashUltimoBloque());
 								} catch (Exception e1) {
-									e1.printStackTrace();
+									//e1.printStackTrace();
 								}
 								
 								Transaccion tranTemp = VentanaLogin.getCarteraActual().enviarFondos((PublicKey) StringUtils.getClaveDesdeString(textField.getText().toString().trim(), true), cantidad);
@@ -131,7 +137,7 @@ public class VentanaDatos extends JDialog {
 											databaseControl.insertarTransaccion(bl.getTransacciones().get(0));
 											databaseControl.insertarBloque(bl);
 										} catch (Exception exc) {
-											exc.printStackTrace();
+											//exc.printStackTrace();
 										}
 									}
 									else { //si no es valida, no añadir a la bd y borrar bloque y tran de las listas en tiempo de ejecucion
@@ -151,7 +157,7 @@ public class VentanaDatos extends JDialog {
 											databaseControl.insertarTransaccion(bl.getTransacciones().get(0));
 											databaseControl.insertarBloque(bl);
 										} catch (Exception exc) {
-											exc.printStackTrace();
+											//exc.printStackTrace();
 										}
 									}
 									else { //si no es valida, no añadir a la bd y borrar bloque y tran de las listas en tiempo de ejecucion
@@ -351,6 +357,11 @@ public class VentanaDatos extends JDialog {
 
 	public static void setVentanaFecha(ElegirFecha eF) {
 		VentanaDatos.eF = eF;
+	}
+
+
+	public ArrayList<String> getContratosSinConfirmar() {
+		return contratosSinConfirmar;
 	}
 
 }

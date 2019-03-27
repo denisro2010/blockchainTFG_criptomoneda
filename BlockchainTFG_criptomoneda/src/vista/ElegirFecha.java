@@ -7,6 +7,7 @@ import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.components.TimePickerSettings.TimeArea;
 import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
+import blockchain.Bloque;
 import blockchain.ProgramaPrincipal;
 import blockchain.SmartContract;
 import java.awt.Color;
@@ -105,10 +106,27 @@ public class ElegirFecha extends JFrame {
         		
         		SmartContract sc = new SmartContract(marcaTemp, cantidad, PK_remitente, PK_receptor);
         		sc.generarFirmaTransaccionContract(VentanaLogin.getCarteraActual().getClavePrivada(), PK_remitente, PK_receptor, cantidad); 
-        		ProgramaPrincipal.getContratos().add(sc);
-        		databaseControl.crearContrato(sc.getID(), PK_receptor, cantidad, PK_remitente, marcaTemp, sc.getFirmaTransaccion());
+        		Bloque bl = null;
+        		try {
+					bl = new Bloque(databaseControl.getHashUltimoBloque());
+	        		bl.setContratoConfirmado("false");
+	        		bl.setContratoEjecutado("false");
+	        		bl.anadirContrato(sc);
+				} catch (Exception e1) {}
         		
-        		JOptionPane.showMessageDialog(null, "El contrato se ha definido correctamente.");
+        		if(ProgramaPrincipal.anadirBloque(bl)) {
+            		ProgramaPrincipal.getContratos().add(sc);
+	        		try {
+						databaseControl.insertarBloque(bl);
+						databaseControl.insertarContrato(sc.getID(), PK_receptor, cantidad, PK_remitente, marcaTemp, sc.getFirmaTransaccion());
+					} catch (Exception e) {}
+	        		JOptionPane.showMessageDialog(null, "El contrato se ha definido correctamente. Si el receptor lo acepta, entonces se ejecutará el " + d + " a las " + t);
+        		}
+        		else {
+        			ProgramaPrincipal.getBlockchain().remove(bl);
+        			JOptionPane.showMessageDialog(null, "Ha habido un error al definir el contrato. Blockchain no válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        		}
+        		
         		dispose();
         		VentanaDatos.setVentanaContracts(new VentanaContracts());
         		VentanaDatos vD = new VentanaDatos();
@@ -130,7 +148,7 @@ public class ElegirFecha extends JFrame {
         });
         panel_1.add(btnNewButton_1);
         
-        JLabel lblSiALa = new JLabel("Si a la hora de ejecutarse este contrato no posee saldo suficiente, \u00E9ste se cancelar\u00E1.");
+        JLabel lblSiALa = new JLabel("Los fondos que defina en este contrato se reservarán para el mismo.");
         getContentPane().add(lblSiALa);
     }
 }
