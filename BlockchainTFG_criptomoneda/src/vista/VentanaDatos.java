@@ -41,7 +41,7 @@ public class VentanaDatos extends JDialog {
 	private JSpinner spinner;
 	private static VentanaContracts vC = new VentanaContracts();
 	private static ElegirFecha eF = new ElegirFecha();
-	private ArrayList<String> contratosSinConfirmar = databaseControl.contratosPendientes(databaseControl.getNombreUsuario(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())));
+	private ArrayList<String> contratosSinConfirmar = databaseControl.contratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 
 
 	/**
@@ -68,7 +68,15 @@ public class VentanaDatos extends JDialog {
 
 	private void initialize() {
 		if(contratosSinConfirmar.size() != 0) { //Si hay contracts sin confirmar abrir ventana confirmar
-			
+			for(int i=0; i<contratosSinConfirmar.size(); i++) {
+				if(i % 2 == 0) {
+					if(contratosSinConfirmar.get(i).equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()))) {
+						//TODO ABRIR VENTANA
+						VentanaContractsConfirmar v = new VentanaContractsConfirmar();
+						v.setVisible(true);
+					}	
+				}
+			}
 		}
 		
 		setIconImage(

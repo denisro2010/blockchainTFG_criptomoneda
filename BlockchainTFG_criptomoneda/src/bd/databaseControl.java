@@ -852,8 +852,8 @@ public class databaseControl {
 			 return ejecutado;
 		}
 		
-		public static ArrayList<String> contratosPendientes(String pNombreReceptor) {
-			String sql = "SELECT contrato, remitente, fecha, cantidad FROM bloque INNER JOIN smartContract ON bloque.contrato = smartContract.IDsc WHERE bloque.contratoConfirmado = 'false' AND smartContract.Receptor = '" + pNombreReceptor + "';";
+		public static ArrayList<String> contratosPendientes(String pReceptor) {
+			String sql = "SELECT contrato, remitente, receptor, fecha, cantidad FROM bloque INNER JOIN smartContract ON bloque.contrato = smartContract.IDsc WHERE bloque.contratoConfirmado = 'false' AND smartContract.Receptor = '" + pReceptor + "';";
 			ArrayList<String> datos = new ArrayList<String>();
 			
 			 try (Connection conn =  connect();
@@ -862,6 +862,7 @@ public class databaseControl {
 		        	 while (rs.next()) {
 		        		 datos.add(rs.getString("contrato"));
 		        		 datos.add(rs.getString("remitente"));
+		        		 datos.add(rs.getString("receptor"));
 		        		 datos.add(rs.getString("fecha"));
 		        		 datos.add(rs.getString("cantidad"));
 		        	 }
