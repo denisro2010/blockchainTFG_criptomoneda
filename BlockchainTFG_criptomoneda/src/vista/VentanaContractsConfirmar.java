@@ -15,10 +15,14 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
+import blockchain.Bloque;
+import blockchain.ProgramaPrincipal;
+
 import javax.swing.JButton;
 
 public class VentanaContractsConfirmar extends JFrame {
@@ -28,8 +32,6 @@ public class VentanaContractsConfirmar extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	// private static VentanaContractsConfirmar frame;
-	// private static JPanel jp = new JPanel();
 	private JPanel panelBotones;
 	private JButton btnConfirmar;
 	private JButton btnRechazar;
@@ -56,7 +58,12 @@ public class VentanaContractsConfirmar extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaContractsConfirmar() {
+		setTitle("Contratos pendientes");
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ElegirFecha.class.getResource("/resources/ico32.png")));
 		initialize();
+		if(checkboxes.size() == 0) {
+			dispose();
+		}
 	}
 
 	private void initialize() {
@@ -123,6 +130,36 @@ public class VentanaContractsConfirmar extends JFrame {
 		if (btnConfirmar == null) {
 			btnConfirmar = new JButton("Confirmar");
 		}
+		btnConfirmar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int contSelected = 0;
+				if (checkboxes.size() > 0) {
+					for (int i = 0; i < checkboxes.size(); i++) {
+						if (checkboxes.get(i).isSelected()) {
+							contSelected = contSelected + 1;
+							Bloque bl = null;
+							try {
+								bl = new Bloque(databaseControl.getHashUltimoBloque());
+								bl.setContratoConfirmado("true");
+								bl.setContratoEjecutado("false");
+								bl.anadirContrato(databaseControl.getContrato(idContracts.get(i)));
+								if(ProgramaPrincipal.anadirBloque(bl)) {
+									databaseControl.insertarBloque(bl);
+								}
+							} catch (Exception e1) {}
+							checkboxes.remove(i);
+							idContracts.remove(i);
+						}
+					}
+					if(checkboxes.size() > 0 && contSelected > 0) {
+						VentanaContractsConfirmar v = new VentanaContractsConfirmar();
+						v.setVisible(true);
+					}
+					if(contSelected > 0)
+						dispose();
+				}
+			}
+		});
 		return btnConfirmar;
 	}
 
@@ -132,9 +169,11 @@ public class VentanaContractsConfirmar extends JFrame {
 		}
 		btnRechazar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				int contSelected = 0;
 				if (checkboxes.size() > 0) {
 					for (int i = 0; i < checkboxes.size(); i++) {
 						if (checkboxes.get(i).isSelected()) {
+							contSelected = contSelected + 1;
 							try {
 								databaseControl.borrarContrato(idContracts.get(i).toString());
 							} catch (Exception e1) {
@@ -143,11 +182,12 @@ public class VentanaContractsConfirmar extends JFrame {
 							idContracts.remove(i);
 						}
 					}
-					if (checkboxes.size() > 0) {
+					if(checkboxes.size() > 0 && contSelected > 0) {
 						VentanaContractsConfirmar v = new VentanaContractsConfirmar();
 						v.setVisible(true);
 					}
-					dispose();
+					if(contSelected > 0)
+						dispose();
 				}
 			}
 		});

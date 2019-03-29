@@ -120,7 +120,7 @@ public class ElegirFecha extends JFrame {
 						databaseControl.insertarBloque(bl);
 						databaseControl.insertarContrato(sc.getID(), PK_receptor, cantidad, PK_remitente, marcaTemp, sc.getFirmaTransaccion());
 					} catch (Exception e) {}
-	        		JOptionPane.showMessageDialog(null, "El contrato se ha definido correctamente. Si el receptor lo acepta, entonces se ejecutará el " + d + " a las " + t);
+	        		JOptionPane.showMessageDialog(null, "El contrato se ha definido correctamente. Si el receptor lo acepta antes de la fecha, entonces se ejecutará el " + d + " a las " + t);
         		}
         		else {
         			ProgramaPrincipal.getBlockchain().remove(bl);

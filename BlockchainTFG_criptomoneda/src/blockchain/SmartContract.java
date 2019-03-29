@@ -2,7 +2,6 @@ package blockchain;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.ArrayList;
 import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 
@@ -53,7 +52,7 @@ public class SmartContract{
 						databaseControl.insertarTransaccion(bl.getTransacciones().get(0));
 						databaseControl.insertarBloque(bl);
 					} catch (Exception exc) {
-						exc.printStackTrace();
+						//exc.printStackTrace();
 					}
 				}
 				else { //si no es valida, no añadir a la bd y borrar bloque y tran de las listas en tiempo de ejecucion

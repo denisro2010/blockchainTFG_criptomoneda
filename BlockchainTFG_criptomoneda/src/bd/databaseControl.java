@@ -860,11 +860,14 @@ public class databaseControl {
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
-		        		 datos.add(rs.getString("contrato"));
-		        		 datos.add(rs.getString("remitente"));
-		        		 datos.add(rs.getString("receptor"));
-		        		 datos.add(rs.getString("fecha"));
-		        		 datos.add(rs.getString("cantidad"));
+		        		 String id = rs.getString("contrato");
+		     			 if(!haSidoConfirmado(id)) {
+			        		 datos.add(rs.getString("contrato"));
+			        		 datos.add(rs.getString("remitente"));
+			        		 datos.add(rs.getString("receptor"));
+			        		 datos.add(rs.getString("fecha"));
+			        		 datos.add(rs.getString("cantidad"));
+		     			 }
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
@@ -873,4 +876,5 @@ public class databaseControl {
 			 
 			 return datos;
 		}
+
 } 
