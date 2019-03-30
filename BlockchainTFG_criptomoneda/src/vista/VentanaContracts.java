@@ -35,7 +35,7 @@ public class VentanaContracts extends JDialog {
 	 */
 	private static final long serialVersionUID = 5735550625691210170L;
 	private JTextField textField;
-	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera();
+	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 	private static JLabel lblMonedas;
 	private JSpinner spinner;
 	private String PK_receptor = null;
@@ -171,7 +171,7 @@ public class VentanaContracts extends JDialog {
 								JOptionPane.showMessageDialog(null, "Usted no puede mandarse monedas a sí mismo.", "Error", JOptionPane.ERROR_MESSAGE);
 							else if(cant < 1)
 								JOptionPane.showMessageDialog(null, "La cantidad de monedas que desea mandar no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
-							else if(cant > VentanaLogin.getCarteraActual().getBalanceCartera()) {
+							else if(cant > VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()))) {
 								JOptionPane.showMessageDialog(null, "Usted no tiene saldo suficiente como para ejecutar este contrato.", "Error", JOptionPane.ERROR_MESSAGE);
 							}
 							else { //TODO_BIEN, PASAR A ELEGIR FECHA
@@ -186,7 +186,7 @@ public class VentanaContracts extends JDialog {
 							JOptionPane.showMessageDialog(null, "La cartera que ha introducido no existe.", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 						
-					   lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
+					   lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
 					}
 				});
 			}

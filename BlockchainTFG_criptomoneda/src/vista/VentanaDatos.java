@@ -36,7 +36,7 @@ public class VentanaDatos extends JDialog {
 	 */
 	private static final long serialVersionUID = 5735550625691210170L;
 	private JTextField textField;
-	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera();
+	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 	private static JLabel lblMonedas;
 	private JSpinner spinner;
 	private static VentanaContracts vC = new VentanaContracts();
@@ -174,7 +174,7 @@ public class VentanaDatos extends JDialog {
 									}					
 								}
 								
-								lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas"); //actualizar saldo
+								lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas"); //actualizar saldo
 								
 							} // FIN ELSE PRINCIPAL
 						}
@@ -264,7 +264,7 @@ public class VentanaDatos extends JDialog {
 						Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 						StringSelection stringSelection = new StringSelection(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 						clipboard.setContents(stringSelection, null);
-						lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
+						lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
 					}
 				});
 			}
@@ -273,7 +273,7 @@ public class VentanaDatos extends JDialog {
 				btnCrearSmartContract.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						vC.setVisible(true);
-						VentanaContracts.setLblMonedasText((int) VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
+						VentanaContracts.setLblMonedasText((int) VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
 						dispose();
 					}
 				});

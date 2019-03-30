@@ -108,7 +108,7 @@ public class ProgramaPrincipal{
 		genesis.anadirTransaccion(transaccionGenesis);
 		anadirBloque(genesis);
 		
-		VentanaDatos.setLblMonedasText(VentanaLogin.getCarteraActual().getBalanceCartera() + " monedas");
+		VentanaDatos.setLblMonedasText(VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
 		try {
 			databaseControl.crearTransaccion(transaccionGenesis.getIDtransaccion(), StringUtils.getStringClave(transaccionGenesis.getRemitente()), StringUtils.getStringClave(transaccionGenesis.getReceptor()), transaccionGenesis.getValor(), transaccionGenesis.getFirma(), transaccionGenesis.getSecuencia());
 			databaseControl.crearOutput(outputManual.getId(), outputManual.getCantidad(), outputManual.getIDtransaccion(), StringUtils.getStringClave(outputManual.getReceptor()));

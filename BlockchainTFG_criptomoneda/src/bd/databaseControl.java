@@ -876,5 +876,23 @@ public class databaseControl {
 			 
 			 return datos;
 		}
+		
+		public static int misContratosPendientes(String pClavePublica) {
+			String sql = "SELECT Cantidad from smartContract where Remitente = '" + pClavePublica + "';";
+			int suma = 0;
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+			        	suma = rs.getInt("Cantidad") + suma;
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 return suma;
+		}
 
 } 

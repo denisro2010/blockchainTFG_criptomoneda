@@ -2,6 +2,9 @@ package blockchain;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+
+import javax.swing.JOptionPane;
+
 import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 
@@ -14,6 +17,10 @@ public class SmartContract{
 	private String PK_receptor;
 	private byte[] firmaTransaccion;
 	
+	public SmartContract() {
+		
+	}
+	
 	public SmartContract(long pFecha, int pCant, String pRemitente, String pReceptor) {
 		IDsmartContract = StringUtils.applySha3_256(pFecha + pCant + pRemitente + pReceptor);
 		fecha = pFecha;
@@ -24,9 +31,7 @@ public class SmartContract{
 	
 	protected void ejecutarContrato() {
 		
-		if(databaseControl.haSidoConfirmado(this.IDsmartContract) && !databaseControl.haSidoEjecutado(this.IDsmartContract)) {
-		
-		if(databaseControl.existePK(IDsmartContract)) { //Si e remitente y el receptor siguen existiendo
+		if(databaseControl.haSidoConfirmado(this.IDsmartContract) && !databaseControl.haSidoEjecutado(this.IDsmartContract) && esContratoValido() && databaseControl.existePK(IDsmartContract)) {
 			
 			Bloque bl = null;
 			try {
@@ -73,7 +78,7 @@ public class SmartContract{
 						databaseControl.insertarTransaccion(bl.getTransacciones().get(0));
 						databaseControl.insertarBloque(bl);
 					} catch (Exception exc) {
-						exc.printStackTrace();
+						//exc.printStackTrace();
 					}
 				}
 				else { //si no es valida, no añadir a la bd y borrar bloque y tran de las listas en tiempo de ejecucion
@@ -81,11 +86,11 @@ public class SmartContract{
 					ProgramaPrincipal.getBlockchain().remove(bl);
 				}	
 			}			
-		} //Fin if principal
+		}// Fin if ha sido confirmado, no ejecutado, los actores siguen existiendo y es valido
+		else if(!esContratoValido()) {
+			JOptionPane.showMessageDialog(null, "El registro de los smart contracts ha sido manipulado.", "Error", JOptionPane.ERROR_MESSAGE);
+		}
 		
-		}// Fin if ha sido confirmado y no ejecutado
-		
-			
 		//Si se ha ejecutado correctamente o no, hay que borrarlo del programa y de la BD
 		ProgramaPrincipal.borrarContrato(this.IDsmartContract);
 		//Borrarlo de la BD
@@ -101,7 +106,16 @@ public class SmartContract{
 		this.IDsmartContract = StringUtils.applySha3_256(fecha + cantidad + pRemitente + pReceptor + firmaTransaccion); //evitar la manipulacion de la firma en la BD
 	}
 	
-	public SmartContract() {}
+	public boolean esContratoValido() {
+		String id = StringUtils.applySha3_256(fecha + cantidad + PK_remitente + PK_receptor);
+		
+		if(id.equals(IDsmartContract)) {
+			return true;
+		}
+		else
+			return false;
+	}
+	
 
 	public String getID() {
 		return IDsmartContract;
