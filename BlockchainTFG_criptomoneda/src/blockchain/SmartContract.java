@@ -31,13 +31,15 @@ public class SmartContract{
 	
 	protected void ejecutarContrato() {
 		
-		if(databaseControl.haSidoConfirmado(this.IDsmartContract) && !databaseControl.haSidoEjecutado(this.IDsmartContract) && esContratoValido() && databaseControl.existePK(IDsmartContract)) {
+		if(databaseControl.haSidoConfirmado(this.IDsmartContract) && !databaseControl.haSidoEjecutado(this.IDsmartContract) && esContratoValido() 
+				&& databaseControl.existePK(IDsmartContract)) {
 			
 			Bloque bl = null;
 			try {
 				bl = new Bloque(databaseControl.getHashUltimoBloque());
 				bl.setContratoConfirmado("true");
 				bl.setContratoEjecutado("true");
+				bl.setContratoPorEliminar("false");
 				bl.anadirContrato(this);
 			} catch (Exception e1) {}
 			

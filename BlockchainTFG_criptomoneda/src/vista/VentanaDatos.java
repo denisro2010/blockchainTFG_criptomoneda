@@ -36,12 +36,12 @@ public class VentanaDatos extends JDialog {
 	 */
 	private static final long serialVersionUID = 5735550625691210170L;
 	private JTextField textField;
-	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
+	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientesCantidad(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 	private static JLabel lblMonedas;
 	private JSpinner spinner;
 	private static VentanaContracts vC = new VentanaContracts();
 	private static ElegirFecha eF = new ElegirFecha();
-	private ArrayList<String> contratosSinConfirmar = databaseControl.contratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
+	private ArrayList<String> contratosSinConfirmar = databaseControl.contratosPendientesConfirmar(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 
 
 	/**
@@ -67,15 +67,35 @@ public class VentanaDatos extends JDialog {
 	}
 
 	private void initialize() {
+		boolean confirmar = false;
+		boolean eliminar = false;
+		
 		if(contratosSinConfirmar.size() != 0) { //Si hay contracts sin confirmar abrir ventana confirmar
 			for(int i=0; i<contratosSinConfirmar.size(); i++) {
 				if(i % 2 == 0) {
-					if(contratosSinConfirmar.get(i).equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()))) {
-						//TODO ABRIR VENTANA
-						VentanaContractsConfirmar v = new VentanaContractsConfirmar();
-						v.setVisible(true);
-					}	
+					if(contratosSinConfirmar.get(i).equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()))) 
+						confirmar = true;
 				}
+			}
+		}
+		
+		if(confirmar) {
+			VentanaContractsConfirmar v = new VentanaContractsConfirmar();
+			if(v.comprobarValidez())
+				v.setVisible(true);
+			else
+				v.dispose();
+		}
+		else if(!confirmar) {
+			ArrayList<String> contratos1 = databaseControl
+					.contratosPendientesEliminarReceptor(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
+			ArrayList<String> contratos2 = databaseControl
+					.contratosPendientesEliminarRemitente(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
+			if(contratos1.size() > 0 || contratos2.size() > 0)
+				eliminar = true;
+			if(eliminar) {
+				VentanaContractsEliminar v2 = new VentanaContractsEliminar();
+				v2.setVisible(true);
 			}
 		}
 		
@@ -84,7 +104,6 @@ public class VentanaDatos extends JDialog {
 		setSize(new Dimension(750, 160));
 		setTitle("Mi cartera");
 		setResizable(false);
-		// setBounds(100, 100, 800, 800);
 		getContentPane().setLayout(new BorderLayout());
 
 		// Colocar ventana en el centro
@@ -174,7 +193,7 @@ public class VentanaDatos extends JDialog {
 									}					
 								}
 								
-								lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas"); //actualizar saldo
+								lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientesCantidad(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas"); //actualizar saldo
 								
 							} // FIN ELSE PRINCIPAL
 						}
@@ -264,7 +283,7 @@ public class VentanaDatos extends JDialog {
 						Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 						StringSelection stringSelection = new StringSelection(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 						clipboard.setContents(stringSelection, null);
-						lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
+						lblMonedas.setText((int) VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientesCantidad(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
 					}
 				});
 			}
@@ -273,7 +292,7 @@ public class VentanaDatos extends JDialog {
 				btnCrearSmartContract.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						vC.setVisible(true);
-						VentanaContracts.setLblMonedasText((int) VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
+						VentanaContracts.setLblMonedasText((int) VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientesCantidad(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
 						dispose();
 					}
 				});

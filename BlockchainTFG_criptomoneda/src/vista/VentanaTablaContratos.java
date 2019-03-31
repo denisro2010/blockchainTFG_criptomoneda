@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 
 import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
+import blockchain.Bloque;
 import blockchain.ProgramaPrincipal;
 import blockchain.SmartContract;
 
@@ -155,12 +156,39 @@ public class VentanaTablaContratos extends JFrame {
 					if(fila == -1)
 						JOptionPane.showMessageDialog(null, "Primero tiene que seleccionar un contrato.", "Error", JOptionPane.ERROR_MESSAGE);
 					else {
-						if(listaContratos.get( (6*fila)+2 ).toString().toLowerCase().equals //Si el usuario logueado es el remitente entonces puede borrar el contrato
-								(databaseControl.getNombreUsuario(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())).toLowerCase())){
+						//if(listaContratos.get( (6*fila)+2 ).toString().toLowerCase().equals //Si el usuario logueado es el remitente entonces puede borrar el contrato
+								//(databaseControl.getNombreUsuario(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())).toLowerCase())){
 							
-							int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro que quiere borrar este contrato?", "Aviso", JOptionPane.YES_NO_OPTION);
+							int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro que quiere mandarle al otro usuario la petición de cancelar el contrato?", "Aviso", JOptionPane.YES_NO_OPTION);
+							
+							SmartContract sc = databaseControl.getContrato(listaContratos.get((fila*6)+5));
 							
 							if (opcion == 0) {
+								if(databaseControl.sePuedeEliminarContrato(listaContratos.get((fila*6)+5)) && sc.esContratoValido()) { //Si el otro no ha rechazado la peticion
+									Bloque bl = null;
+									try {
+										bl = new Bloque(databaseControl.getHashUltimoBloque());
+										bl.setContratoConfirmado("true");
+										bl.setContratoEjecutado("false");
+										if(sc.getPK_receptor().equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()))) //para saber quien quiere cancelarlo
+											bl.setContratoPorEliminar("Receptor.true");
+										else
+											bl.setContratoPorEliminar("Remitente.true");
+										bl.anadirContrato(sc);
+										if(ProgramaPrincipal.anadirBloque(bl)) {
+											databaseControl.insertarBloque(bl);
+										}
+									} catch (Exception e1) {}
+									JOptionPane.showMessageDialog(null, "La petición se ha realizado correctamente. Si el otro usuario involucrado la acepta, el contrato se cancelará.");
+								}
+								else if(!databaseControl.sePuedeEliminarContrato(listaContratos.get((fila*6)+5))) {
+									JOptionPane.showMessageDialog(null, "El otro usuario ya ha rechazado la petición de cancelación.", "Error", JOptionPane.ERROR_MESSAGE);
+								}
+								else if(!sc.esContratoValido()) {
+									JOptionPane.showMessageDialog(null, "El contrato que desea cancelar ha sido manipulado.", "Error", JOptionPane.ERROR_MESSAGE);
+								}
+								
+								/*
 								//Borrar de la bd
 								try {
 									databaseControl.borrarContrato(listaContratos.get((fila*6)+5));
@@ -175,11 +203,12 @@ public class VentanaTablaContratos extends JFrame {
 								VentanaTablaContratos vent = new VentanaTablaContratos();
 								listaContratos = databaseControl.rellenarTablaRemitente();
 								vent.setVisible(true);
+								*/							
 							}
-						}
-							else {
+						//}
+							/*else {
 								JOptionPane.showMessageDialog(null, "No puede borrar un contrato que no es suyo. Póngase en contacto con el remitente.", "Error", JOptionPane.ERROR_MESSAGE);
-							}
+							}*/
 					}
 				} //fin action performed
 			});

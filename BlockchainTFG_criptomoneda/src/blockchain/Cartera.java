@@ -83,7 +83,7 @@ public class Cartera {
 		
 		public Transaccion enviarFondos(PublicKey pReceptor, float pCantidad) {
 			
-			if((getBalanceCartera() - databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()))) < pCantidad) {
+			if((getBalanceCartera() - databaseControl.misContratosPendientesCantidad(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()))) < pCantidad) {
 				//System.out.println("No hay fondos suficientes como para enviar esta cantidad. La transacción se ha descartado.");
 				JOptionPane.showMessageDialog(null,
 					    "No hay fondos suficientes como para enviar esta cantidad. La transacción se ha descartado.",
@@ -121,7 +121,7 @@ public class Cartera {
 		
 		public Transaccion enviarFondosSmartContract(PublicKey pReceptor, float pCantidad, byte[] pFirma, String pIDcontrato) {
 			
-			if((getBalanceCartera() + databaseControl.misContratosPendientes(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()))) < pCantidad) {
+			if((getBalanceCartera() + databaseControl.misContratosPendientesCantidad(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()))) < pCantidad) {
 				//JOptionPane.showMessageDialog(null, "El remitente del smart contract no tiene suficientes fondos. El contrato se ha descartado.", "Error", JOptionPane.ERROR_MESSAGE);
 				
 				/*try { 

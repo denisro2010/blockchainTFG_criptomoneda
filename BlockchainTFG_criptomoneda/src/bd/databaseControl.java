@@ -404,7 +404,7 @@ public class databaseControl {
 	   }
     
 	 public static void insertarBloque(Bloque pBloque) throws Exception {
-	        String sql = "INSERT INTO bloque(hash, hashAnterior, marcaTemporal, nonce, transaccion, contrato, contratoConfirmado, contratoEjecutado) VALUES(?,?,?,?,?,?,?,?)";
+	        String sql = "INSERT INTO bloque(hash, hashAnterior, marcaTemporal, nonce, transaccion, contrato, contratoConfirmado, contratoEjecutado, contratoPorEliminar) VALUES(?,?,?,?,?,?,?,?,?)";
 	        
 	        try (Connection conn =  connect();
 	                PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -422,6 +422,7 @@ public class databaseControl {
 	            	pstmt.setString(6, "");
 	            pstmt.setString(7, pBloque.getContratoConfirmado());
 	            pstmt.setString(8, pBloque.getContratoEjecutado());
+	            pstmt.setString(9, pBloque.getContratoPorEliminar());
 	            pstmt.executeUpdate();
 	            pstmt.close();
 	            conn.close();
@@ -443,7 +444,7 @@ public class databaseControl {
 	            pstmt.close();
 	            conn.close();
 	        } catch (SQLException e) {
-	            System.out.println(e.getMessage());
+	           // System.out.println(e.getMessage());
 	        }
 	    }
 	 
@@ -502,6 +503,7 @@ public class databaseControl {
 		        	 		}
 		        			b.setContratoConfirmado(rs.getString("contratoConfirmado"));
 		        			b.setContratoEjecutado(rs.getString("contratoEjecutado"));
+		        			b.setContratoEjecutado(rs.getString("contratoPorEliminar"));
 		        			blockchain.add(b);
 		        	 }
 		        	 rs.close();
@@ -548,7 +550,7 @@ public class databaseControl {
 		        	 while (rs.next()) {
 		        		sc  = new SmartContract();
 		        		sc.setIDsmartContract(rs.getString("IDsc"));
-		        		sc.setFecha(rs.getInt("Fecha"));
+		        		sc.setFecha(rs.getLong("Fecha"));
 		        		sc.setCantidad(rs.getInt("Cantidad"));
 		        		sc.setPK_remitente(rs.getString("Remitente"));
 		        		sc.setPK_receptor(rs.getString("Receptor"));
@@ -852,7 +854,7 @@ public class databaseControl {
 			 return ejecutado;
 		}
 		
-		public static ArrayList<String> contratosPendientes(String pReceptor) {
+		public static ArrayList<String> contratosPendientesConfirmar(String pReceptor) {
 			String sql = "SELECT contrato, remitente, receptor, fecha, cantidad FROM bloque INNER JOIN smartContract ON bloque.contrato = smartContract.IDsc WHERE bloque.contratoConfirmado = 'false' AND smartContract.Receptor = '" + pReceptor + "';";
 			ArrayList<String> datos = new ArrayList<String>();
 			
@@ -877,7 +879,7 @@ public class databaseControl {
 			 return datos;
 		}
 		
-		public static int misContratosPendientes(String pClavePublica) {
+		public static int misContratosPendientesCantidad(String pClavePublica) {
 			String sql = "SELECT Cantidad from smartContract where Remitente = '" + pClavePublica + "';";
 			int suma = 0;
 			
@@ -893,6 +895,79 @@ public class databaseControl {
 		        	} catch (SQLException se) {}
 			 
 			 return suma;
+		}
+
+		public static boolean sePuedeEliminarContrato(String pIDsmartContract) {
+			String sql = "SELECT contratoPorEliminar FROM bloque WHERE contrato='" + pIDsmartContract + "';";
+			ArrayList<String> elim = new ArrayList<String>();
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 elim.add(rs.getString("contratoPorEliminar"));
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 boolean sePuede = true;
+			 for(String c: elim) {
+				 if(c.equals("false"))
+					 sePuede = false;
+			 }
+			 return sePuede;
+		}
+		
+		public static ArrayList<String> contratosPendientesEliminarReceptor(String pClaveUsuario) { //el receptor lo quiere cancelar
+			String sql = "SELECT contrato, remitente, receptor, fecha, cantidad FROM bloque INNER JOIN smartContract ON bloque.contrato = smartContract.IDsc WHERE bloque.contratoPorEliminar = 'Receptor.true' AND smartContract.Remitente = '" + pClaveUsuario + "';";
+			ArrayList<String> datos = new ArrayList<String>();
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 String id = rs.getString("contrato");
+		     			 if(sePuedeEliminarContrato(id)) {
+			        		 datos.add(rs.getString("contrato"));
+			        		 datos.add(rs.getString("remitente"));
+			        		 datos.add(rs.getString("receptor"));
+			        		 datos.add(rs.getString("fecha"));
+			        		 datos.add(rs.getString("cantidad"));
+		     			 }
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 return datos;
+		}
+		
+		public static ArrayList<String> contratosPendientesEliminarRemitente(String pClaveUsuario) {
+			String sql = "SELECT contrato, remitente, receptor, fecha, cantidad FROM bloque INNER JOIN smartContract ON bloque.contrato = smartContract.IDsc WHERE bloque.contratoPorEliminar = 'Remitente.true' AND smartContract.Receptor = '" + pClaveUsuario + "';";
+			ArrayList<String> datos = new ArrayList<String>();
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 String id = rs.getString("contrato");
+		     			 if(sePuedeEliminarContrato(id)) {
+			        		 datos.add(rs.getString("contrato"));
+			        		 datos.add(rs.getString("remitente"));
+			        		 datos.add(rs.getString("receptor"));
+			        		 datos.add(rs.getString("fecha"));
+			        		 datos.add(rs.getString("cantidad"));
+		     			 }
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 return datos;
 		}
 
 } 

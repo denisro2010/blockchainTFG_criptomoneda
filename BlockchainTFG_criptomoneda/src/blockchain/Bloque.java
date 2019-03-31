@@ -19,6 +19,7 @@ public class Bloque {
 	private ArrayList<SmartContract> contratos = new ArrayList<SmartContract>();
 	private String contratoEjecutado = "";
 	private String contratoConfirmado = "";
+	private String contratoPorEliminar = "";
 	
 	public Bloque(String pHashAnterior) {
 		this.hashAnterior = pHashAnterior;
@@ -33,9 +34,9 @@ public class Bloque {
 		String hash;
 		
 		if(transacciones.size() > 0 && contratos.size() > 0)
-			hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + transacciones.get(0).getIDtransaccion() + contratos.get(0).getIDsmartContract() + contratoEjecutado + contratoConfirmado);
+			hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + transacciones.get(0).getIDtransaccion() + contratos.get(0).getIDsmartContract() + contratoEjecutado + contratoConfirmado + contratoPorEliminar);
 		else if(transacciones.size() == 0 && contratos.size() > 0)
-			hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + contratos.get(0).getIDsmartContract() + contratoEjecutado + contratoConfirmado);
+			hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + contratos.get(0).getIDsmartContract() + contratoEjecutado + contratoConfirmado + contratoPorEliminar);
 		else if(transacciones.size() > 0 && contratos.size() == 0)
 			hash = StringUtils.applySha3_256(hashAnterior + Long.toString(marcaTemporal) + Integer.toString(nonce) + transacciones.get(0).getIDtransaccion());
 		else
@@ -153,6 +154,14 @@ public class Bloque {
 
 		public void setContratos(ArrayList<SmartContract> contratos) {
 			this.contratos = contratos;
+		}
+
+		public String getContratoPorEliminar() {
+			return contratoPorEliminar;
+		}
+
+		public void setContratoPorEliminar(String contratoPorEliminar) {
+			this.contratoPorEliminar = contratoPorEliminar;
 		}
 		
 }
