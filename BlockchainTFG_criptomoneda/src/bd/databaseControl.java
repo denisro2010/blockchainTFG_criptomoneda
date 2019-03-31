@@ -2,6 +2,7 @@ package bd;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -21,6 +22,7 @@ import blockchain.ProgramaPrincipal;
 import blockchain.SalidaTransaccion;
 import blockchain.SmartContract;
 import blockchain.Transaccion;
+import vista.VentanaLogin;
  
 public class databaseControl {
     
@@ -52,7 +54,7 @@ public class databaseControl {
 	
 	 public static void tablaBloque() throws Exception {
 	    	
-	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS bloque (hash TEXT PRIMARY KEY NOT NULL, hashAnterior TEXT NOT NULL UNIQUE, marcaTemporal BIGINT NOT NULL, nonce INTEGER NOT NULL, merkleRoot STRING, transaccion STRING REFERENCES transaccion (IDtran) NOT NULL);";
+	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS bloque (hash TEXT PRIMARY KEY NOT NULL, hashAnterior TEXT NOT NULL UNIQUE, marcaTemporal BIGINT NOT NULL, nonce INTEGER NOT NULL, transaccion STRING REFERENCES transaccion (IDtran), contrato STRING REFERENCES smartContract (IDsc), contratoConfirmado STRING, contratoEjecutado STRING, contratoPorEliminar STRING);";
 	    	
 	    	 try (Connection conn = connect();
 	    	    Statement stmt = conn.createStatement()){
@@ -112,7 +114,7 @@ public class databaseControl {
 	 
 	 public static void tablaSmartContracts() throws Exception {
 	    	
-	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS smartContract (IDsc TEXT PRIMARY KEY, Fecha BIGINT NOT NULL, Cantidad INT NOT NULL, Remitente TEXT REFERENCES cartera (clavePublica), Receptor TEXT REFERENCES cartera (clavePublica), FirmaTransaccion TEXT UNIQUE NOT NULL);";
+	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS smartContract (IDsc TEXT PRIMARY KEY, Fecha BIGINT NOT NULL, Cantidad INT NOT NULL, Remitente TEXT REFERENCES cartera (clavePublica), Receptor TEXT REFERENCES cartera (clavePublica), FirmaTransaccion BLOB UNIQUE NOT NULL, id INT);";
 	    	
 	    	 try (Connection conn = connect();
 	    	    Statement stmt = conn.createStatement()){
@@ -540,8 +542,8 @@ public class databaseControl {
 			return t;
 		}
 		
-		public static SmartContract getContrato(String pID) {
-			String sql = "SELECT * FROM smartContract WHERE IDsc = '" + pID + "';";
+		public static SmartContract getContrato(String pHash) {
+			String sql = "SELECT * FROM smartContract WHERE IDsc = '" + pHash + "';";
 			SmartContract sc = null;
 			
 			 try (Connection conn =  connect();
@@ -555,6 +557,7 @@ public class databaseControl {
 		        		sc.setPK_remitente(rs.getString("Remitente"));
 		        		sc.setPK_receptor(rs.getString("Receptor"));
 		        		sc.setFirmaTransaccion(rs.getBytes("FirmaTransaccion"));
+		        		sc.setId(rs.getInt("id"));
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
@@ -617,10 +620,10 @@ public class databaseControl {
 			return t;
 		}
 
-		public static void insertarContrato(String ID, String pK_receptor, int cantidad, String pK_remitente, long marcaTemp, byte[] pFirma) {
+		public static void insertarContrato(String ID, String pK_receptor, int cantidad, String pK_remitente, long marcaTemp, byte[] pFirma, int pNumID) {
 			
-			String sql = "INSERT INTO smartContract(IDsc, Fecha, Cantidad, Remitente, Receptor, FirmaTransaccion) VALUES(?,?,?,?,?,?)";
-	        
+			String sql = "INSERT INTO smartContract(IDsc, Fecha, Cantidad, Remitente, Receptor, FirmaTransaccion, id) VALUES(?,?,?,?,?,?,?)";
+			
 	        try (Connection conn =  connect();
 	                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	            pstmt.setString(1, ID);
@@ -629,6 +632,7 @@ public class databaseControl {
 	            pstmt.setString(4, pK_remitente);
 	            pstmt.setString(5, pK_receptor);
 	            pstmt.setBytes(6, pFirma);
+	            pstmt.setInt(7, pNumID);
 	            pstmt.executeUpdate();
 	            pstmt.close();
 	            conn.close();
@@ -653,6 +657,7 @@ public class databaseControl {
 		        		sc.setFecha(rs.getLong("Fecha"));
 		        		sc.setCantidad(rs.getInt("Cantidad"));
 		        		sc.setFirmaTransaccion(rs.getBytes("FirmaTransaccion"));
+		        		sc.setId(rs.getInt("id"));
 		        		contratos.add(sc);
 		        	 }
 		        	 rs.close();
@@ -900,6 +905,8 @@ public class databaseControl {
 		public static boolean sePuedeEliminarContrato(String pIDsmartContract) {
 			String sql = "SELECT contratoPorEliminar FROM bloque WHERE contrato='" + pIDsmartContract + "';";
 			ArrayList<String> elim = new ArrayList<String>();
+			SmartContract sc = databaseControl.getContrato(pIDsmartContract);
+			boolean soyReceptor = sc.getPK_receptor().equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 			
 			 try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
@@ -914,7 +921,9 @@ public class databaseControl {
 			 
 			 boolean sePuede = true;
 			 for(String c: elim) {
-				 if(c.equals("false"))
+				 if(c.equals("Receptor.false") && soyReceptor)
+					 sePuede = false;
+				 else if(c.equals("Remitente.false") && !soyReceptor)
 					 sePuede = false;
 			 }
 			 return sePuede;
@@ -928,14 +937,14 @@ public class databaseControl {
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
-		        		 String id = rs.getString("contrato");
+		        		 String id = rs.getString("contrato");      		 
 		     			 if(sePuedeEliminarContrato(id)) {
 			        		 datos.add(rs.getString("contrato"));
 			        		 datos.add(rs.getString("remitente"));
 			        		 datos.add(rs.getString("receptor"));
 			        		 datos.add(rs.getString("fecha"));
 			        		 datos.add(rs.getString("cantidad"));
-		     			 }
+		     			}
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
@@ -954,13 +963,13 @@ public class databaseControl {
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
 		        		 String id = rs.getString("contrato");
-		     			 if(sePuedeEliminarContrato(id)) {
+		     			if(sePuedeEliminarContrato(id)) {
 			        		 datos.add(rs.getString("contrato"));
 			        		 datos.add(rs.getString("remitente"));
 			        		 datos.add(rs.getString("receptor"));
 			        		 datos.add(rs.getString("fecha"));
 			        		 datos.add(rs.getString("cantidad"));
-		     			 }
+		     			}
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
@@ -969,5 +978,64 @@ public class databaseControl {
 			 
 			 return datos;
 		}
+		
+		public static boolean contratoCancelarTrueRemitente(String pIDcontrato) { //el receptor lo quiere cancelar
+			String sql = "SELECT contratoPorEliminar FROM bloque WHERE contratoPorEliminar = 'Remitente.true' AND contrato = '" + pIDcontrato + "';";
+			String dato = "";
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		dato = rs.getString("contratoPorEliminar"); 
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 if(dato.equals("")) 
+				 return false;
+			 else
+				 return true;
+		}
+		
+		public static boolean contratoCancelarTrueReceptor(String pIDcontrato) { //el receptor lo quiere cancelar
+			String sql = "SELECT contratoPorEliminar FROM bloque WHERE contratoPorEliminar = 'Receptor.true' AND contrato = '" + pIDcontrato + "';";
+			String dato = "";
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		dato = rs.getString("contratoPorEliminar"); 
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {}
+			 
+			 if(dato.equals("")) 
+				 return false;
+			 else
+				 return true;
+		}
 
+		 public static boolean contratoHashExiste(String pIDsc) throws Exception { //Por si hay mas contracts con el mismo hash
+			 	String sql = "SELECT contrato FROM bloque WHERE contrato = '" + pIDsc + "';";
+			 	boolean existe = false;
+		   	 
+			        try (Connection conn =  connect();
+			             PreparedStatement stmt  = conn.prepareStatement(sql);
+			             ResultSet rs    = stmt.executeQuery()){
+			        	 while (rs.next()) {
+			        		rs.getString("contrato");
+			        		existe = true;
+			        	 }
+			        	 rs.close();
+			        	 stmt.close();
+			             conn.close();
+			        } catch (SQLException se) {}
+			    return existe;
+		   }
 } 

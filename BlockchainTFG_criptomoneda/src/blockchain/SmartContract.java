@@ -16,6 +16,7 @@ public class SmartContract{
 	private String PK_remitente;
 	private String PK_receptor;
 	private byte[] firmaTransaccion;
+	private int id;
 	
 	public SmartContract() {
 		
@@ -27,6 +28,12 @@ public class SmartContract{
 		cantidad = pCant;
 		PK_remitente = pRemitente;
 		PK_receptor = pReceptor;
+		try {
+			while(databaseControl.contratoHashExiste(IDsmartContract)) {
+				id = id + 1;
+				IDsmartContract = StringUtils.applySha3_256(pFecha + pCant + pRemitente + pReceptor + this.id);
+			}
+		} catch (Exception e) {}
 	}
 	
 	protected void ejecutarContrato() {
@@ -105,11 +112,11 @@ public class SmartContract{
 	public void generarFirmaTransaccionContract(PrivateKey pClavePrivada, String pRemitente, String pReceptor, float pValor) {
 		String datos = pRemitente + pReceptor + Float.toString(pValor);
 		this.firmaTransaccion = StringUtils.applyQTESLASig(pClavePrivada, datos);
-		this.IDsmartContract = StringUtils.applySha3_256(fecha + cantidad + pRemitente + pReceptor + firmaTransaccion); //evitar la manipulacion de la firma en la BD
+		//this.IDsmartContract = StringUtils.applySha3_256(fecha + cantidad + pRemitente + pReceptor + firmaTransaccion); //evitar la manipulacion de la firma en la BD
 	}
 	
 	public boolean esContratoValido() {
-		String id = StringUtils.applySha3_256(fecha + cantidad + PK_remitente + PK_receptor);
+		String id = StringUtils.applySha3_256(fecha + cantidad + PK_remitente + PK_receptor + this.id);
 		
 		if(id.equals(IDsmartContract)) {
 			return true;
@@ -169,6 +176,14 @@ public class SmartContract{
 
 	public void setFirmaTransaccion(byte[] pFirma) {
 		this.firmaTransaccion = pFirma;		
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 }

@@ -55,7 +55,7 @@ public class VentanaContractsEliminar extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaContractsEliminar() {
-		setTitle("Contratos pendientes");
+		setTitle("ELIMINAR contrato(s)");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ElegirFecha.class.getResource("/resources/ico32.png")));
 		initialize();
 		if(checkboxes.size() == 0) {
@@ -70,7 +70,7 @@ public class VentanaContractsEliminar extends JFrame {
 				.contratosPendientesEliminarRemitente(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 		setAlwaysOnTop(true);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 300, (contratos1.size() + contratos2.size()) * 50);
+		setBounds(100, 100, 550, (contratos1.size() + contratos2.size()) * 50);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -103,8 +103,9 @@ public class VentanaContractsEliminar extends JFrame {
 						receptor = contratos1.get(i + 2);
 						remitente = contratos1.get(i+1);
 						cantidad = Integer.parseInt(contratos1.get(i + 4));
-						String datos = databaseControl.getNombreUsuario(receptor) + " desea cancelar el contrato: " + cantidad + " de " + remitente + " a " 
-						+ receptor + " en la fecha: " + sdf;
+						String datos = databaseControl.getNombreUsuario(receptor) + " desea cancelar el contrato: " + cantidad + " monedas de " + 
+						databaseControl.getNombreUsuario(remitente) + " a " 
+						+ databaseControl.getNombreUsuario(receptor) + " en la fecha: " + sdf;
 	
 						JCheckBox box = new JCheckBox(datos);
 						checkboxes.add(box);
@@ -128,8 +129,8 @@ public class VentanaContractsEliminar extends JFrame {
 						receptor = contratos2.get(i + 2);
 						remitente = contratos2.get(i+1);
 						cantidad = Integer.parseInt(contratos2.get(i + 4));
-						String datos = databaseControl.getNombreUsuario(remitente) + " desea cancelar el contrato: " + cantidad + " de " + remitente + " a " 
-						+ receptor + " en la fecha: " + sdf;
+						String datos = databaseControl.getNombreUsuario(remitente) + " desea cancelar el contrato: " + cantidad + " monedas de " + databaseControl.getNombreUsuario(remitente) + " a " 
+						+ databaseControl.getNombreUsuario(receptor) + " en la fecha: " + sdf;
 	
 						JCheckBox box = new JCheckBox(datos);
 						checkboxes.add(box);
@@ -198,12 +199,16 @@ public class VentanaContractsEliminar extends JFrame {
 						if (checkboxes.get(i).isSelected()) {
 							contSelected = contSelected + 1;
 							SmartContract sc = databaseControl.getContrato(idContracts.get(i));
+							boolean soyReceptor = sc.getPK_receptor().equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 							Bloque bl = null;
 							try {
 								bl = new Bloque(databaseControl.getHashUltimoBloque());
 								bl.setContratoConfirmado("true");
 								bl.setContratoEjecutado("false");
-								bl.setContratoPorEliminar("false");
+								if(soyReceptor)
+									bl.setContratoPorEliminar("Receptor.false");
+								else
+									bl.setContratoPorEliminar("Remitente.false");
 								bl.anadirContrato(sc);
 								if(ProgramaPrincipal.anadirBloque(bl)) {
 									databaseControl.insertarBloque(bl);

@@ -162,15 +162,17 @@ public class VentanaTablaContratos extends JFrame {
 							int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro que quiere mandarle al otro usuario la petición de cancelar el contrato?", "Aviso", JOptionPane.YES_NO_OPTION);
 							
 							SmartContract sc = databaseControl.getContrato(listaContratos.get((fila*6)+5));
+							boolean soyReceptor = sc.getPK_receptor().equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 							
 							if (opcion == 0) {
-								if(databaseControl.sePuedeEliminarContrato(listaContratos.get((fila*6)+5)) && sc.esContratoValido()) { //Si el otro no ha rechazado la peticion
+								if(sc.esContratoValido() && ((soyReceptor && !databaseControl.contratoCancelarTrueReceptor(sc.getIDsmartContract())) 
+										|| (!soyReceptor && !databaseControl.contratoCancelarTrueRemitente(sc.getIDsmartContract())))) { //Si el otro no ha rechazado la peticion
 									Bloque bl = null;
 									try {
 										bl = new Bloque(databaseControl.getHashUltimoBloque());
-										bl.setContratoConfirmado("true");
+										bl.setContratoConfirmado("");
 										bl.setContratoEjecutado("false");
-										if(sc.getPK_receptor().equals(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()))) //para saber quien quiere cancelarlo
+										if(soyReceptor) //para saber quien quiere cancelarlo
 											bl.setContratoPorEliminar("Receptor.true");
 										else
 											bl.setContratoPorEliminar("Remitente.true");
@@ -181,7 +183,8 @@ public class VentanaTablaContratos extends JFrame {
 									} catch (Exception e1) {}
 									JOptionPane.showMessageDialog(null, "La petición se ha realizado correctamente. Si el otro usuario involucrado la acepta, el contrato se cancelará.");
 								}
-								else if(!databaseControl.sePuedeEliminarContrato(listaContratos.get((fila*6)+5))) {
+								else if(((soyReceptor && databaseControl.contratoCancelarTrueReceptor(sc.getIDsmartContract())) 
+												|| (!soyReceptor && databaseControl.contratoCancelarTrueRemitente(sc.getIDsmartContract())))){
 									JOptionPane.showMessageDialog(null, "El otro usuario ya ha rechazado la petición de cancelación.", "Error", JOptionPane.ERROR_MESSAGE);
 								}
 								else if(!sc.esContratoValido()) {

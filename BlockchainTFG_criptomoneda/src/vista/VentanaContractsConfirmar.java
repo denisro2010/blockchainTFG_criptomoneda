@@ -64,7 +64,7 @@ public class VentanaContractsConfirmar extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaContractsConfirmar() {
-		setTitle("Contratos pendientes");
+		setTitle("CONFIRMAR contrato(s)");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ElegirFecha.class.getResource("/resources/ico32.png")));
 		initialize();
 		if(contratos1.size() > 0 || contratos2.size() > 0)
