@@ -478,14 +478,16 @@ public class databaseControl {
 		 	String sql = "SELECT * FROM bloque;";
 		 	Bloque b;
 		 	ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
-		 	ArrayList<Transaccion> transacciones = new ArrayList<Transaccion>();
-		 	ArrayList<SmartContract> contratos = new ArrayList<SmartContract>();
+		 	ArrayList<Transaccion> transacciones; 
+		 	ArrayList<SmartContract> contratos;
 	   	 
 		        try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
 		        		b = new Bloque();
+		        		transacciones =  new ArrayList<Transaccion>();
+		        		contratos = new ArrayList<SmartContract>();
 		        		if(blockchain.size() == 0) {
 		        			b.setHashAnterior("0");
 		        		}
@@ -493,25 +495,36 @@ public class databaseControl {
 		        			b.setHashAnterior(blockchain.get(blockchain.size() - 1).getHash());
 		        		}
 		        			b.setHash(rs.getString("hash"));
-		        			b.setMarcaTemporal(rs.getInt("marcaTemporal"));
+		        			b.setMarcaTemporal(rs.getLong("marcaTemporal"));
 		        			b.setNonce(rs.getInt("nonce"));
-		        			if(!rs.getString("transaccion").equals("")) {
+		        			if(!(rs.getString("transaccion") == null)) {
 		        				transacciones.add(getTransaccion(rs.getString("transaccion")));
-		        				b.setTransacciones(transacciones);
+		        				if(!rs.getString("transaccion").equals(""))
+		        					b.setTransacciones(transacciones);
 		        			}
-		        			if(!rs.getString("contrato").equals("")) {
-		        				contratos.add(getContrato(rs.getString("contrato")));
-		        				b.setContratos(contratos);
+		        			if(!(rs.getString("contrato") == null)) {
+		        				if(getContrato(rs.getString("contrato")) == null) {
+		        					SmartContract sc = new SmartContract();
+		        					sc.setIDsmartContract(rs.getString("contrato"));
+		        					contratos.add(sc);
+		        				}
+		        				else
+		        					contratos.add(getContrato(rs.getString("contrato")));
+		        				
+		        				if(!rs.getString("contrato").equals(""))
+		        					b.setContratos(contratos);
 		        	 		}
 		        			b.setContratoConfirmado(rs.getString("contratoConfirmado"));
 		        			b.setContratoEjecutado(rs.getString("contratoEjecutado"));
-		        			b.setContratoEjecutado(rs.getString("contratoPorEliminar"));
+		        			b.setContratoPorEliminar(rs.getString("contratoPorEliminar"));
 		        			blockchain.add(b);
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
 		             conn.close();
-		        } catch (SQLException se) {}
+		        } catch (SQLException se) {
+		        	System.out.println(se.getMessage());
+		        }
 		        
 		    return blockchain;
 	    }

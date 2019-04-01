@@ -180,7 +180,9 @@ public class VentanaTablaContratos extends JFrame {
 										if(ProgramaPrincipal.anadirBloque(bl)) {
 											databaseControl.insertarBloque(bl);
 										}
-									} catch (Exception e1) {}
+									} catch (Exception e1) {
+										e1.printStackTrace();
+									}
 									JOptionPane.showMessageDialog(null, "La petición se ha realizado correctamente. Si el otro usuario involucrado la acepta, el contrato se cancelará.");
 								}
 								else if(((soyReceptor && databaseControl.contratoCancelarTrueReceptor(sc.getIDsmartContract())) 

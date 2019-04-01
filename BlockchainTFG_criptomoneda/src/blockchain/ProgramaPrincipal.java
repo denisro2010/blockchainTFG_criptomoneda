@@ -26,7 +26,6 @@ public class ProgramaPrincipal{
 	public static Transaccion transaccionGenesis;
 	private static Transaccion t1;
 	private static ArrayList<Transaccion> transacciones;
-	private static int posBlockchain; //despues de abrir y cerrar el programa solo recorre la lista a partir de los nuevos bloques que se crean en esa ejecución
 	private static ArrayList<SmartContract> listaContratos = new ArrayList<SmartContract>();
 	
 	public static void main(String[] args) {
@@ -69,11 +68,6 @@ public class ProgramaPrincipal{
 				} catch (Exception e) {
 					//e.printStackTrace();
 				}
-				
-				if(blockchain.size() > 1)
-					posBlockchain = blockchain.size();
-				else
-					posBlockchain = 1;
 
 				//Get contratos de la BD
 				listaContratos = databaseControl.getContratosBD();
@@ -84,9 +78,15 @@ public class ProgramaPrincipal{
 		        int initialDelay = 0;
 		        int periodicDelay = 1;
 		        scheduler.scheduleAtFixedRate(task, initialDelay, periodicDelay, TimeUnit.MINUTES);
-				
-				VentanaPrincipal v = new VentanaPrincipal();
-				v.setVisible(true);		
+		        
+		        if(blockchainValido()) {
+					VentanaPrincipal v = new VentanaPrincipal();
+					v.setVisible(true);	
+		        }
+		        else {
+		        	JOptionPane.showMessageDialog(null, "La cadena de bloques ha sido manipulada.", "Error", JOptionPane.ERROR_MESSAGE);
+		        	System.exit(0);
+		        }
 				
 			} //FIN MAIN
 	
@@ -106,7 +106,10 @@ public class ProgramaPrincipal{
 		System.out.println("Creando y minando el bloque génesis... ");
 		Bloque genesis = new Bloque("0");
 		genesis.anadirTransaccion(transaccionGenesis);
-		anadirBloque(genesis);
+		genesis.minarBloque(dificultad);
+		blockchain.add(genesis);
+		
+		//anadirBloque(genesis);
 		
 		VentanaDatos.setLblMonedasText(VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientesCantidad(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
 		try {
@@ -118,24 +121,67 @@ public class ProgramaPrincipal{
 		}
 	}
 	
+	public static Boolean blockchainValido() {
+		Bloque bloqueActual; 
+		Bloque bloqueAnterior;
+		String meta = new String(new char[dificultad]).replace('\0', '0');
+		//comprobar hashes del blockchain
+				for(int i=1; i < blockchain.size(); i++) {
+					
+					bloqueActual = blockchain.get(i);
+					if(i > 0)
+						bloqueAnterior = blockchain.get(i-1);
+					else 
+						bloqueAnterior = null;
+					
+					//comparar el hash anterior registrado con el anterior calculado
+					if(i > 0) {
+						if(!bloqueAnterior.getHash().equals(bloqueActual.getHashAnterior()) ) {
+							System.out.println("Las funciones hash anteriores no coinciden.");
+							return false;
+						}
+					}
+					
+					if(!bloqueActual.getHash().equals(bloqueActual.calcularHash()) ) {
+						System.out.println("Las funciones hash actuales no coinciden.");
+						return false;
+					}
+					
+					//comprobar que la función hash cumple las condiciones
+					if(!bloqueActual.getHash().substring( 0, dificultad).equals(meta)) {
+						System.out.println("El bloque no se ha minado.");
+						return false;
+					}
+				}
+				System.out.println("Blockchain válido.");
+				return true;
+	}
+	
 	public static Boolean esCadenaValida() {
 		Bloque bloqueActual; 
 		Bloque bloqueAnterior;
 		String meta = new String(new char[dificultad]).replace('\0', '0');
 		HashMap<String,SalidaTransaccion> tranSinGastarTemp = new HashMap<String,SalidaTransaccion>(); //lista temporal de transacciones sin gastar
+		try {
 		tranSinGastarTemp.put(transaccionGenesis.getSalidas().get(0).getId(), transaccionGenesis.getSalidas().get(0));
+		}catch (Exception e) {}
 
 		//comprobar hashes del blockchain
-		for(int i=posBlockchain; i < blockchain.size(); i++) {
+		for(int i=1; i < blockchain.size(); i++) {
 			
 			bloqueActual = blockchain.get(i);
-			bloqueAnterior = blockchain.get(i-1);
+			if(i > 0)
+				bloqueAnterior = blockchain.get(i-1);
+			else 
+				bloqueAnterior = null;
 			
 			//comparar el hash anterior registrado con el anterior calculado
-			if(!bloqueAnterior.getHash().equals(bloqueActual.getHashAnterior()) ) {
-				//System.out.println("Las funciones hash anteriores no coinciden. " + bloqueActual.hashAnterior);
-				JOptionPane.showMessageDialog(null, "Las funciones hash anteriores no coinciden.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
-				return false;
+			if(i > 0) {
+				if(!bloqueAnterior.getHash().equals(bloqueActual.getHashAnterior()) ) {
+					//System.out.println("Las funciones hash anteriores no coinciden. " + bloqueActual.hashAnterior);
+					JOptionPane.showMessageDialog(null, "Las funciones hash anteriores no coinciden.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
 			}
 			
 			if(!bloqueActual.getHash().equals(bloqueActual.calcularHash()) ) {
@@ -150,6 +196,8 @@ public class ProgramaPrincipal{
 				JOptionPane.showMessageDialog(null, "Un bloque no se ha minado.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
+			
+			 try{ //por si se trata de un contract sin transacción
 			
 			//loop sobre las transacciones
 			SalidaTransaccion tempOutput;
@@ -202,8 +250,9 @@ public class ProgramaPrincipal{
 					JOptionPane.showMessageDialog(null, "El que recibe el cambio sobrante de la transacción NO es el remitente.", "Blockchain no válido", JOptionPane.ERROR_MESSAGE);
 					return false;
 				}
-				
-			}
+			} //end for
+			
+		}catch(Exception ex){}
 			
 		}
 		System.out.println("Blockchain válido.");

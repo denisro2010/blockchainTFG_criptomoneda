@@ -108,7 +108,7 @@ public class Cartera {
 				nuevaTransaccion = new Transaccion(clavePublica, pReceptor , pCantidad, entrantes, databaseControl.getSecuenciaMayor());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			nuevaTransaccion.generarFirma(clavePrivada);
 			

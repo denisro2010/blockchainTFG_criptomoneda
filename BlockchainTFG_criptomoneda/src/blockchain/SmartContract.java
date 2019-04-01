@@ -31,9 +31,9 @@ public class SmartContract{
 		try {
 			while(databaseControl.contratoHashExiste(IDsmartContract)) {
 				id = id + 1;
-				IDsmartContract = StringUtils.applySha3_256(pFecha + pCant + pRemitente + pReceptor + this.id);
 			}
 		} catch (Exception e) {}
+		IDsmartContract = StringUtils.applySha3_256(pFecha + pCant + pRemitente + pReceptor + this.id);
 	}
 	
 	protected void ejecutarContrato() {

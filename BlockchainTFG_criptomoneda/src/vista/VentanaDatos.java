@@ -81,8 +81,9 @@ public class VentanaDatos extends JDialog {
 		
 		if(confirmar) {
 			VentanaContractsConfirmar v = new VentanaContractsConfirmar();
-			if(v.comprobarValidez())
+			if(v.comprobarValidez()) {
 				v.setVisible(true);
+			}
 			else
 				v.dispose();
 		}

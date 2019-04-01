@@ -66,7 +66,7 @@ public class Transaccion {
 				try {
 					databaseControl.crearOutput(o.getId(), o.getCantidad(), o.getIDtransaccion(), StringUtils.getStringClave(o.getReceptor()));
 				} catch (Exception e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 			
@@ -77,7 +77,7 @@ public class Transaccion {
 					try {
 						databaseControl.borrarOutput(i.transaccionNoGastada.getId());
 					} catch (Exception e) {
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 			}
 			
