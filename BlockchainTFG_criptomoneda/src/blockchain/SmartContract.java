@@ -39,7 +39,7 @@ public class SmartContract{
 	protected void ejecutarContrato() {
 		
 		if(databaseControl.haSidoConfirmado(this.IDsmartContract) && !databaseControl.haSidoEjecutado(this.IDsmartContract) && esContratoValido() 
-				&& databaseControl.existePK(IDsmartContract)) {
+				&& databaseControl.existenRemitenteYReceptor(IDsmartContract)) {
 			
 			Bloque bl = null;
 			try {

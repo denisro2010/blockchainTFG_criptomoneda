@@ -686,7 +686,7 @@ public class databaseControl {
 		        }
 		 }
 		
-		public static boolean existePK(String pID) {
+		public static boolean existenRemitenteYReceptor(String pID) {
 			String sql = "SELECT Remitente, Receptor FROM smartContract WHERE IDsc ='"+ pID +"';";
 			String remitente = ""; 
 			String receptor = "";
