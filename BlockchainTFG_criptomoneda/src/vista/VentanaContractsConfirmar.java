@@ -184,8 +184,11 @@ public class VentanaContractsConfirmar extends JFrame {
 						v.setVisible(true);
 					}
 					
-					if(contSelected > 0 && !eliminar)
+					if(contSelected > 0 && !eliminar) {
 						dispose();
+						VentanaDatos vd = new VentanaDatos();
+						vd.setVisible(true);
+					}
 					else if(contSelected > 0 && eliminar) {
 						VentanaContractsEliminar v = new VentanaContractsEliminar();
 						v.setVisible(true);

@@ -83,6 +83,7 @@ public class VentanaDatos extends JDialog {
 			VentanaContractsConfirmar v = new VentanaContractsConfirmar();
 			if(v.comprobarValidez()) {
 				v.setVisible(true);
+				dispose();
 			}
 			else
 				v.dispose();
@@ -97,6 +98,7 @@ public class VentanaDatos extends JDialog {
 			if(eliminar) {
 				VentanaContractsEliminar v2 = new VentanaContractsEliminar();
 				v2.setVisible(true);
+				dispose();
 			}
 		}
 		

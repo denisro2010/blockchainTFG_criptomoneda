@@ -179,8 +179,11 @@ public class VentanaContractsEliminar extends JFrame {
 						VentanaContractsEliminar v = new VentanaContractsEliminar();
 						v.setVisible(true);
 					}
-					if(contSelected > 0)
+					if(contSelected > 0) {
 						dispose();
+						VentanaDatos vd = new VentanaDatos();
+						vd.setVisible(true);
+					}
 				}
 			}
 		});
