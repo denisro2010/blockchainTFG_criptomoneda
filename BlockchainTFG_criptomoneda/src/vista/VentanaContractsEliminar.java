@@ -226,6 +226,8 @@ public class VentanaContractsEliminar extends JFrame {
 						v.setVisible(true);
 					}
 					if(contSelected > 0) {
+						VentanaDatos vd = new VentanaDatos();
+						vd.setVisible(true);
 						dispose();
 					}
 				}

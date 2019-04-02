@@ -224,8 +224,11 @@ public class VentanaContractsConfirmar extends JFrame {
 						VentanaContractsConfirmar v = new VentanaContractsConfirmar();
 						v.setVisible(true);
 					}
-					if(contSelected > 0)
+					if(contSelected > 0) {
 						dispose();
+						VentanaDatos vd = new VentanaDatos();
+						vd.setVisible(true);
+					}
 				}
 			}
 		});

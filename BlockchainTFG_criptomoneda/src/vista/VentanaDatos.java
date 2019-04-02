@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -16,13 +15,11 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.border.TitledBorder;
-
 import algoritmosCriptograficos.StringUtils;
 import bd.databaseControl;
 import blockchain.Bloque;
 import blockchain.ProgramaPrincipal;
 import blockchain.Transaccion;
-
 import java.awt.event.ActionListener;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -31,9 +28,6 @@ import javax.swing.JSpinner;
 
 public class VentanaDatos extends JDialog {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5735550625691210170L;
 	private JTextField textField;
 	private float balance = VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientesCantidad(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
@@ -42,31 +36,23 @@ public class VentanaDatos extends JDialog {
 	private static VentanaContracts vC = new VentanaContracts();
 	private static ElegirFecha eF = new ElegirFecha();
 	private ArrayList<String> contratosSinConfirmar = databaseControl.contratosPendientesConfirmar(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
+	
 
-
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		try {
 			VentanaDatos dialog = new VentanaDatos();
 			dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) {}
 	}
 
-
-	/**
-	 * Create the dialog.
-	 */
 	public VentanaDatos() {
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		initialize();
+		if(!contratosPendientes())
+			initialize();
 	}
 
-	private void initialize() {
+	private boolean contratosPendientes() {
 		boolean confirmar = false;
 		boolean eliminar = false;
 		
@@ -83,7 +69,6 @@ public class VentanaDatos extends JDialog {
 			VentanaContractsConfirmar v = new VentanaContractsConfirmar();
 			if(v.comprobarValidez()) {
 				v.setVisible(true);
-				dispose();
 			}
 			else
 				v.dispose();
@@ -98,9 +83,16 @@ public class VentanaDatos extends JDialog {
 			if(eliminar) {
 				VentanaContractsEliminar v2 = new VentanaContractsEliminar();
 				v2.setVisible(true);
-				dispose();
 			}
 		}
+		
+		if(eliminar || confirmar)
+			return true;
+		else
+			return false;
+	}
+	
+	private void initialize() {
 		
 		setIconImage(
 				Toolkit.getDefaultToolkit().getImage(VentanaDatos.class.getResource("/resources/ico32.png")));
@@ -349,14 +341,13 @@ public class VentanaDatos extends JDialog {
 				JButton btnCancelar = new JButton("Salir (log out)");
 				panelBotones.add(btnCancelar);
 				btnCancelar.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						
+					public void actionPerformed(ActionEvent e) {	
 						if(vC.isVisible())
 							vC.dispose();
-						
+							
 						if(eF.isVisible())
 							eF.dispose();
-						
+							
 						VentanaLogin.setCarteraActual(null);
 						dispose();
 					}

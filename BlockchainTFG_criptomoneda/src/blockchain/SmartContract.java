@@ -16,14 +16,14 @@ public class SmartContract{
 	private String PK_remitente;
 	private String PK_receptor;
 	private byte[] firmaTransaccion;
-	private int id;
+	private int id = 0;
 	
 	public SmartContract() {
 		
 	}
 	
 	public SmartContract(long pFecha, int pCant, String pRemitente, String pReceptor) {
-		IDsmartContract = StringUtils.applySha3_256(pFecha + pCant + pRemitente + pReceptor);
+		IDsmartContract = StringUtils.applySha3_256(pFecha + pCant + pRemitente + pReceptor + this.id);
 		fecha = pFecha;
 		cantidad = pCant;
 		PK_remitente = pRemitente;
@@ -31,9 +31,9 @@ public class SmartContract{
 		try {
 			while(databaseControl.contratoHashExiste(IDsmartContract)) {
 				id = id + 1;
+				IDsmartContract = StringUtils.applySha3_256(pFecha + pCant + pRemitente + pReceptor + this.id);
 			}
 		} catch (Exception e) {}
-		IDsmartContract = StringUtils.applySha3_256(pFecha + pCant + pRemitente + pReceptor + this.id);
 	}
 	
 	protected void ejecutarContrato() {
