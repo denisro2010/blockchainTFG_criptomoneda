@@ -663,15 +663,18 @@ public class databaseControl {
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
-		        		sc = new SmartContract();
-		        		sc.setIDsmartContract(rs.getString("IDsc"));
-		        		sc.setPK_remitente(rs.getString("Remitente"));
-		        		sc.setPK_receptor(rs.getString("Receptor"));
-		        		sc.setFecha(rs.getLong("Fecha"));
-		        		sc.setCantidad(rs.getInt("Cantidad"));
-		        		sc.setFirmaTransaccion(rs.getBytes("FirmaTransaccion"));
-		        		sc.setId(rs.getInt("id"));
-		        		contratos.add(sc);
+		        		String id = rs.getString("IDsc");
+		        		if(!contratoEliminado(id)) {
+			        		sc = new SmartContract();
+			        		sc.setIDsmartContract(rs.getString("IDsc"));
+			        		sc.setPK_remitente(rs.getString("Remitente"));
+			        		sc.setPK_receptor(rs.getString("Receptor"));
+			        		sc.setFecha(rs.getLong("Fecha"));
+			        		sc.setCantidad(rs.getInt("Cantidad"));
+			        		sc.setFirmaTransaccion(rs.getBytes("FirmaTransaccion"));
+			        		sc.setId(rs.getInt("id"));
+			        		contratos.add(sc);
+		        		}
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
@@ -683,7 +686,7 @@ public class databaseControl {
 			return contratos;
 		}
 		
-		public static void borrarContrato(String pID) throws Exception {
+		/*public static void borrarContrato(String pID) throws Exception {
 			 String sql = "DELETE FROM smartContract WHERE IDsc='"+pID+"';";
 	    	 
 		        try (Connection conn =  connect();
@@ -697,7 +700,7 @@ public class databaseControl {
 		        } catch (SQLException e) {
 		        	//  System.out.println(e.getMessage());
 		        }
-		 }
+		 }*/
 		
 		public static boolean existenRemitenteYReceptor(String pID) {
 			String sql = "SELECT Remitente, Receptor FROM smartContract WHERE IDsc ='"+ pID +"';";
@@ -796,27 +799,30 @@ public class databaseControl {
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
-		        		i = i+1;
-		        		lista.add(i.toString());
-		        		String receptor = rs.getString("usuario");
-		        		receptor = receptor.substring(0, 1).toUpperCase() + receptor.substring(1);
-		        		lista.add(receptor);
-		        		
-		        		String remitente = remitentes.get(j).substring(0, 1).toUpperCase() + remitentes.get(j).substring(1);
-		        		lista.add(remitente);
-		        		j = j+1;
-		        		
-		        		long marcaTemp;
-		        		marcaTemp = rs.getLong("Fecha");
-		                DateFormat simple = new SimpleDateFormat("dd MMM yyyy HH:mm"); 
-		                Date fecha = new Date(marcaTemp); 
-		        		lista.add(simple.format(fecha));
-		        		
-		        		Integer c = rs.getInt("Cantidad");
-		        		lista.add(c.toString() + " monedas");
-		        		
-		        		//Hay que coger el ID aunque no se muestre, para poder borrar el contrato.
-		        		lista.add(rs.getString("IDsc"));
+		        		 String id = rs.getString("IDsc");
+		        		 if(!contratoEliminado(id)) {
+			        		i = i+1;
+			        		lista.add(i.toString());
+			        		String receptor = rs.getString("usuario");
+			        		receptor = receptor.substring(0, 1).toUpperCase() + receptor.substring(1);
+			        		lista.add(receptor);
+			        		
+			        		String remitente = remitentes.get(j).substring(0, 1).toUpperCase() + remitentes.get(j).substring(1);
+			        		lista.add(remitente);
+			        		j = j+1;
+			        		
+			        		long marcaTemp;
+			        		marcaTemp = rs.getLong("Fecha");
+			                DateFormat simple = new SimpleDateFormat("dd MMM yyyy HH:mm"); 
+			                Date fecha = new Date(marcaTemp); 
+			        		lista.add(simple.format(fecha));
+			        		
+			        		Integer c = rs.getInt("Cantidad");
+			        		lista.add(c.toString() + " monedas");
+			        		
+			        		//Hay que coger el ID aunque no se muestre, para poder borrar el contrato.
+			        		lista.add(rs.getString("IDsc"));
+		        		 }
 		        	 }	        	 
 		        	 rs.close();
 		        	 stmt.close();
@@ -864,25 +870,55 @@ public class databaseControl {
 		             conn.close();
 		        	} catch (SQLException se) {}
 			 
-			 boolean ejecutado = true;
+			 boolean ejecutado = false;
 			 for(String c: ejec) {
-				 if(c.equals("false"))
-					 ejecutado = false;
+				 if(c.equals("true"))
+					ejecutado = true;
 			 }
 			 return ejecutado;
 		}
 		
+		public static boolean contratoEliminado(String pIDsmartContract) {
+			String sql = "SELECT contratoPorEliminar FROM bloque WHERE contrato='" + pIDsmartContract + "';";
+			ArrayList<String> eliminados = new ArrayList<String>();
+			
+			 try (Connection conn =  connect();
+		             PreparedStatement stmt  = conn.prepareStatement(sql);
+		             ResultSet rs    = stmt.executeQuery()){
+		        	 while (rs.next()) {
+		        		 eliminados.add(rs.getString("contratoPorEliminar"));
+		        	 }
+		        	 rs.close();
+		        	 stmt.close();
+		             conn.close();
+		        	} catch (SQLException se) {
+		        		//System.out.println(se.getMessage());
+		        	}
+			 
+			 boolean elim = false;
+			 for(String c: eliminados) {
+				 if(c.equals("true"))
+					 elim = true;
+			 }
+			 return elim;
+		}
+		
 		public static ArrayList<String> contratosPendientesConfirmar(String pReceptor) {
-			String sql = "SELECT contrato, remitente, receptor, fecha, cantidad FROM bloque INNER JOIN smartContract ON bloque.contrato = smartContract.IDsc WHERE bloque.contratoConfirmado = 'false' AND smartContract.Receptor = '" + pReceptor + "';";
+			String sql = "SELECT contrato, remitente, receptor, fecha, cantidad FROM bloque INNER JOIN smartContract ON bloque.contrato = smartContract.IDsc WHERE smartContract.Receptor = '" + pReceptor + "';";
 			ArrayList<String> datos = new ArrayList<String>();
 			
 			 try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
+		        		 boolean repetido = false;
 		        		 String id = rs.getString("contrato");
-		     			 if(!haSidoConfirmado(id)) {
-			        		 datos.add(rs.getString("contrato"));
+		        		 for(String d: datos) { //no repetir el mismo contrato varias veces en la lista
+		        			 if(d.equals(id))
+		        				 repetido = true;
+		        		 }
+		     			 if(!haSidoConfirmado(id) && !contratoEliminado(id) && !repetido) {
+			        		 datos.add(id);
 			        		 datos.add(rs.getString("remitente"));
 			        		 datos.add(rs.getString("receptor"));
 			        		 datos.add(rs.getString("fecha"));
@@ -892,20 +928,25 @@ public class databaseControl {
 		        	 rs.close();
 		        	 stmt.close();
 		             conn.close();
-		        	} catch (SQLException se) {}
+		        	} catch (SQLException se) {
+		        		//System.out.println(se.getMessage());
+		        	}
 			 
 			 return datos;
 		}
 		
 		public static int misContratosPendientesCantidad(String pClavePublica) {
-			String sql = "SELECT Cantidad from smartContract where Remitente = '" + pClavePublica + "';";
+			String sql = "SELECT IDsc, Cantidad from smartContract where Remitente = '" + pClavePublica + "';";
 			int suma = 0;
+			String id;
 			
 			 try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
-			        	suma = rs.getInt("Cantidad") + suma;
+		        		id = rs.getString("IDsc");
+		        		if(!contratoEliminado(id))
+		        			suma = rs.getInt("Cantidad") + suma;
 		        	 }
 		        	 rs.close();
 		        	 stmt.close();
@@ -951,7 +992,7 @@ public class databaseControl {
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
 		        		 String id = rs.getString("contrato");      		 
-		     			 if(sePuedeEliminarContrato(id)) {
+		     			 if(sePuedeEliminarContrato(id) && !contratoEliminado(id)) {
 			        		 datos.add(rs.getString("contrato"));
 			        		 datos.add(rs.getString("remitente"));
 			        		 datos.add(rs.getString("receptor"));
@@ -976,7 +1017,7 @@ public class databaseControl {
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
 		        		 String id = rs.getString("contrato");
-		     			if(sePuedeEliminarContrato(id)) {
+		     			if(sePuedeEliminarContrato(id) && !contratoEliminado(id)) {
 			        		 datos.add(rs.getString("contrato"));
 			        		 datos.add(rs.getString("remitente"));
 			        		 datos.add(rs.getString("receptor"));

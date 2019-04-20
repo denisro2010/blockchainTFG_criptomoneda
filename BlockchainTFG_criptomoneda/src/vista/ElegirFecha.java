@@ -109,7 +109,7 @@ public class ElegirFecha extends JFrame {
         		Bloque bl = null;
         		try {
 					bl = new Bloque(databaseControl.getHashUltimoBloque());
-	        		bl.setContratoConfirmado("false");
+	        		bl.setContratoConfirmado("");
 	        		bl.setContratoEjecutado("false");
 	        		bl.setContratoPorEliminar("");
 	        		bl.anadirContrato(sc);

@@ -167,10 +167,22 @@ public class VentanaContractsEliminar extends JFrame {
 					for (int i = 0; i < checkboxes.size(); i++) {
 						if (checkboxes.get(i).isSelected()) {
 							contSelected = contSelected + 1;
+							SmartContract sc = databaseControl.getContrato(idContracts.get(i));				
+							Bloque bl = null;
 							try {
+								bl = new Bloque(databaseControl.getHashUltimoBloque());
+								bl.setContratoConfirmado("");
+								bl.setContratoEjecutado("");
+								bl.setContratoPorEliminar("true");
+								bl.anadirContrato(sc);
+								if(ProgramaPrincipal.anadirBloque(bl)) {
+									databaseControl.insertarBloque(bl);
+								}
+							} catch (Exception e1) {}
+							/*try {
 								databaseControl.borrarContrato(idContracts.get(i).toString());
 							} catch (Exception e1) {
-							}
+							}*/
 							checkboxes.remove(i);
 							idContracts.remove(i);
 						}

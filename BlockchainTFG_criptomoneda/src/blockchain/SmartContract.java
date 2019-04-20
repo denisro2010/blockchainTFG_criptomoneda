@@ -102,10 +102,11 @@ public class SmartContract{
 		
 		//Si se ha ejecutado correctamente o no, hay que borrarlo del programa y de la BD
 		ProgramaPrincipal.borrarContrato(this.IDsmartContract);
-		//Borrarlo de la BD
+		
+		/*//Borrarlo de la BD
 		try {
 			databaseControl.borrarContrato(this.IDsmartContract);
-		} catch (Exception e) {}
+		} catch (Exception e) {}*/
 			
 	}
 	
