@@ -111,8 +111,9 @@ public class ProgramaPrincipal{
 		
 		//anadirBloque(genesis);
 		
-		VentanaDatos.setLblMonedasText(VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientesCantidad(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
+		
 		try {
+			VentanaDatos.setLblMonedasText(VentanaLogin.getCarteraActual().getBalanceCartera() - databaseControl.misContratosPendientesCantidad(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica())) + " monedas");
 			databaseControl.crearTransaccion(transaccionGenesis.getIDtransaccion(), StringUtils.getStringClave(transaccionGenesis.getRemitente()), StringUtils.getStringClave(transaccionGenesis.getReceptor()), transaccionGenesis.getValor(), transaccionGenesis.getFirma(), transaccionGenesis.getSecuencia());
 			databaseControl.crearOutput(outputManual.getId(), outputManual.getCantidad(), outputManual.getIDtransaccion(), StringUtils.getStringClave(outputManual.getReceptor()));
 			databaseControl.insertarBloque(genesis);
@@ -294,5 +295,10 @@ public class ProgramaPrincipal{
 	public static ArrayList<SmartContract> getContratos() {
 		return listaContratos;
 	}
+
+	public static void setDificultad(int dificultad) {
+		ProgramaPrincipal.dificultad = dificultad;
+	}
+	
 }
 

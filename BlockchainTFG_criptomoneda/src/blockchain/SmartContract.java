@@ -36,7 +36,7 @@ public class SmartContract{
 		} catch (Exception e) {}
 	}
 	
-	protected void ejecutarContrato() {
+	public void ejecutarContrato() {
 		
 		if(databaseControl.haSidoConfirmado(this.IDsmartContract) && !databaseControl.haSidoEjecutado(this.IDsmartContract) && esContratoValido() 
 				&& databaseControl.existenRemitenteYReceptor(IDsmartContract)) {
