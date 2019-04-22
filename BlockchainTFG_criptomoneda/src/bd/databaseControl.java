@@ -99,7 +99,7 @@ public class databaseControl {
 	 
 	 public static void tablaTransaccion() throws Exception {
 	    	
-	    	String sqlUsers = "CREATE TABLE IF NOT EXISTS transaccion (IDtran TEXT PRIMARY KEY, remitente TEXT NOT NULL, receptor TEXT NOT NULL, valor DOUBLE NOT NULL, firma TEXT NOT NULL, secuencia INTEGER);";
+	    	String sqlUsers = "CREATE TABLE transaccion (IDtran TEXT PRIMARY KEY, remitente TEXT NOT NULL REFERENCES cartera (clavePublica), receptor TEXT NOT NULL REFERENCES cartera (clavePublica), valor DOUBLE NOT NULL, firma TEXT NOT NULL, secuencia INTEGER);";
 	    	
 	    	 try (Connection conn = connect();
 	    	    Statement stmt = conn.createStatement()){
