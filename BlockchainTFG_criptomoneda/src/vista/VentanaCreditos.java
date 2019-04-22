@@ -55,7 +55,7 @@ public class VentanaCreditos extends JDialog {
 		panelCreditos.setLayout(new FlowLayout());
 		panelCreditos.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(panelCreditos, BorderLayout.CENTER);
-		panelCreditos.setBackground(VentanaCreditos.class.getResource("/resources/creditsEN.png"));
+		panelCreditos.setBackground(VentanaCreditos.class.getResource("/resources/credits.png"));
 
 		// Centrar ventana
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
