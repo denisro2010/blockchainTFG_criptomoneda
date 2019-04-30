@@ -793,7 +793,7 @@ public class databaseControl {
 			ArrayList<String> lista = new ArrayList<String>();
 			ArrayList<String> remitentes = getNombreRemitentes();
 			Integer i = 0; //Numero del contrato
-			int j = 0;
+			int j = 0; //Mostrar el remitente según el orden de los SC
 			
 			 try (Connection conn =  connect();
 		             PreparedStatement stmt  = conn.prepareStatement(sql);
@@ -823,6 +823,8 @@ public class databaseControl {
 			        		//Hay que coger el ID aunque no se muestre, para poder borrar el contrato.
 			        		lista.add(rs.getString("IDsc"));
 		        		 }
+		        		 else
+		        			 j = j + 1;
 		        	 }	        	 
 		        	 rs.close();
 		        	 stmt.close();
