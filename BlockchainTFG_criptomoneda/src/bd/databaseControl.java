@@ -800,7 +800,7 @@ public class databaseControl {
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
 		        		 String id = rs.getString("IDsc");
-		        		 if(!contratoEliminado(id)) {
+		        		 if(!contratoEliminado(id) && !haSidoEjecutado(id)) {
 			        		i = i+1;
 			        		lista.add(i.toString());
 			        		String receptor = rs.getString("usuario");
@@ -917,7 +917,7 @@ public class databaseControl {
 		        			 if(d.equals(id))
 		        				 repetido = true;
 		        		 }
-		     			 if(!haSidoConfirmado(id) && !contratoEliminado(id) && !repetido) {
+		     			 if(!haSidoConfirmado(id) && !contratoEliminado(id) && !repetido && !haSidoEjecutado(id)) {
 			        		 datos.add(id);
 			        		 datos.add(rs.getString("remitente"));
 			        		 datos.add(rs.getString("receptor"));
@@ -992,7 +992,7 @@ public class databaseControl {
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
 		        		 String id = rs.getString("contrato");      		 
-		     			 if(sePuedeEliminarContrato(id) && !contratoEliminado(id)) {
+		     			 if(sePuedeEliminarContrato(id) && !contratoEliminado(id) && !haSidoEjecutado(id)) {
 			        		 datos.add(rs.getString("contrato"));
 			        		 datos.add(rs.getString("remitente"));
 			        		 datos.add(rs.getString("receptor"));
@@ -1017,7 +1017,7 @@ public class databaseControl {
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
 		        		 String id = rs.getString("contrato");
-		     			if(sePuedeEliminarContrato(id) && !contratoEliminado(id)) {
+		     			if(sePuedeEliminarContrato(id) && !contratoEliminado(id) && !haSidoEjecutado(id)) {
 			        		 datos.add(rs.getString("contrato"));
 			        		 datos.add(rs.getString("remitente"));
 			        		 datos.add(rs.getString("receptor"));
