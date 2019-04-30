@@ -158,9 +158,10 @@ public class VentanaContractsConfirmar extends JFrame {
 					if(checkboxes.size() > 0 && contSelected > 0) {
 						VentanaContractsConfirmar v = new VentanaContractsConfirmar();
 						v.setVisible(true);
+						dispose();
 					}
 					
-					if(contSelected > 0 && !eliminar) {
+					if(contSelected > 0 && !eliminar && checkboxes.size() == 0) {
 						dispose();
 						VentanaDatos vd = new VentanaDatos();
 						vd.setVisible(true);
@@ -211,8 +212,9 @@ public class VentanaContractsConfirmar extends JFrame {
 					if(checkboxes.size() > 0 && contSelected > 0) {
 						VentanaContractsConfirmar v = new VentanaContractsConfirmar();
 						v.setVisible(true);
+						dispose();
 					}
-					if(contSelected > 0) {
+					if(contSelected > 0 && checkboxes.size() == 0) {
 						dispose();
 						VentanaDatos vd = new VentanaDatos();
 						vd.setVisible(true);
