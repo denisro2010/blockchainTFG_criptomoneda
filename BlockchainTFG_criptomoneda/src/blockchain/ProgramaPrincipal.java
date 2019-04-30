@@ -20,7 +20,7 @@ public class ProgramaPrincipal{
 
 	private static ArrayList<Bloque> blockchain = new ArrayList<Bloque>();
 	private static HashMap<String, SalidaTransaccion> transaccionesNoGastadas = new HashMap<String, SalidaTransaccion>();
-	private static int dificultad = 3;
+	private static int dificultad = 2;
 	public static float transaccionMin = 0;
 	private static Cartera cartera1;
 	public static Transaccion transaccionGenesis;

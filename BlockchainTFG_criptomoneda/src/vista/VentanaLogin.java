@@ -181,20 +181,20 @@ public class VentanaLogin extends JDialog {
 							Cartera carteraDB = null;
 							try {
 								carteraDB = databaseControl.getCartera(textField.getText().toString().trim(), passwordField.getText().toString());
-							} catch (Exception e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+							} catch (Exception e1) {}
+							
 							carteraActual.setClavePublica(carteraDB.getClavePublica());
 							carteraActual.setClavePrivada(carteraDB.getClavePrivada());
-							//carteraActual.getTransaccionesNoGastadas().put(key, value);
 							carteraDB = null;
 							VentanaDatos v = new VentanaDatos();
 							VentanaDatos.setVentanaContracts(new VentanaContracts());
 							VentanaDatos.setVentanaFecha(new ElegirFecha());
-							v.setVisible(true);
+							boolean SCpendientes = v.contratosPendientes();
+							if(!SCpendientes)
+								v.setVisible(true);
+							else
+								v.dispose();
 							
-							//testing
 							if(ProgramaPrincipal.transaccionGenesis == null) {
 								if(ProgramaPrincipal.getT1().getIDtransaccion() == null)
 									ProgramaPrincipal.transGenesis(); 

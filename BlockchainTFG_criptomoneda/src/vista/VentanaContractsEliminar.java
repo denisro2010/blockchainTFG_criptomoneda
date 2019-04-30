@@ -218,7 +218,7 @@ public class VentanaContractsEliminar extends JFrame {
 							Bloque bl = null;
 							try {
 								bl = new Bloque(databaseControl.getHashUltimoBloque());
-								bl.setContratoConfirmado("true");
+								bl.setContratoConfirmado("");
 								bl.setContratoEjecutado("");
 								if(soyReceptor)
 									bl.setContratoPorEliminar("Receptor.false");

@@ -947,7 +947,7 @@ public class databaseControl {
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
 		        		id = rs.getString("IDsc");
-		        		if(!contratoEliminado(id))
+		        		if(!contratoEliminado(id) && !haSidoEjecutado(id))
 		        			suma = rs.getInt("Cantidad") + suma;
 		        	 }
 		        	 rs.close();

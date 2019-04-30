@@ -48,11 +48,11 @@ public class VentanaDatos extends JDialog {
 
 	public VentanaDatos() {
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		if(!contratosPendientes())
+		//if(!contratosPendientes())
 			initialize();
 	}
 
-	private boolean contratosPendientes() {
+	public boolean contratosPendientes() {
 		boolean confirmar = false;
 		boolean eliminar = false;
 		

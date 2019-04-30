@@ -24,9 +24,6 @@ import javax.swing.JButton;
 
 public class VentanaContractsConfirmar extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JPanel panelBotones;
@@ -42,27 +39,6 @@ public class VentanaContractsConfirmar extends JFrame {
 	static ArrayList<String> contratos2 = databaseControl
 			.contratosPendientesEliminarRemitente(StringUtils.getStringClave(VentanaLogin.getCarteraActual().getClavePublica()));
 
-/*
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				if(contratos1.size() > 0 || contratos2.size() > 0)
-					eliminar = true;
-				else
-					eliminar = false;
-				try {
-					VentanaContractsConfirmar frame = new VentanaContractsConfirmar();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					// e.printStackTrace();
-				}
-			}
-		});
-	}*/
-
-	/**
-	 * Create the frame.
-	 */
 	public VentanaContractsConfirmar() {
 		setTitle("CONFIRMAR contrato(s)");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ElegirFecha.class.getResource("/resources/ico32.png")));
@@ -189,11 +165,11 @@ public class VentanaContractsConfirmar extends JFrame {
 						VentanaDatos vd = new VentanaDatos();
 						vd.setVisible(true);
 					}
-					else if(contSelected > 0 && eliminar) {
+					/*else if(contSelected > 0 && eliminar) {
 						VentanaContractsEliminar v = new VentanaContractsEliminar();
 						v.setVisible(true);
 						dispose();
-					}
+					}*/
 						
 				}
 			}
