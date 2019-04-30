@@ -168,7 +168,7 @@ public class VentanaContractsConfirmar extends JFrame {
 							try {
 								bl = new Bloque(databaseControl.getHashUltimoBloque());
 								bl.setContratoConfirmado("true");
-								bl.setContratoEjecutado("false");
+								bl.setContratoEjecutado("");
 								bl.setContratoPorEliminar("");
 								bl.anadirContrato(sc);
 								if(ProgramaPrincipal.anadirBloque(bl)) {
@@ -216,8 +216,8 @@ public class VentanaContractsConfirmar extends JFrame {
 							Bloque bl = null;
 							try {
 								bl = new Bloque(databaseControl.getHashUltimoBloque());
-								bl.setContratoConfirmado("false");
-								bl.setContratoEjecutado("false");
+								bl.setContratoConfirmado("");
+								bl.setContratoEjecutado("");
 								bl.setContratoPorEliminar("true");
 								bl.anadirContrato(sc);
 								if(ProgramaPrincipal.anadirBloque(bl)) {

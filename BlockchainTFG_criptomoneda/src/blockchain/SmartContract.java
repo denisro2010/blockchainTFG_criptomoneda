@@ -39,14 +39,14 @@ public class SmartContract{
 	public void ejecutarContrato() {
 		
 		if(databaseControl.haSidoConfirmado(this.IDsmartContract) && !databaseControl.haSidoEjecutado(this.IDsmartContract) && esContratoValido() 
-				&& databaseControl.existenRemitenteYReceptor(IDsmartContract)) {
+				&& databaseControl.existenRemitenteYReceptor(this.IDsmartContract) && !databaseControl.contratoEliminado(this.IDsmartContract)) {
 			
 			Bloque bl = null;
 			try {
 				bl = new Bloque(databaseControl.getHashUltimoBloque());
-				bl.setContratoConfirmado("true");
+				bl.setContratoConfirmado("");
 				bl.setContratoEjecutado("true");
-				bl.setContratoPorEliminar("false");
+				bl.setContratoPorEliminar("");
 				bl.anadirContrato(this);
 			} catch (Exception e1) {}
 			
@@ -99,15 +99,23 @@ public class SmartContract{
 		else if(!esContratoValido()) {
 			JOptionPane.showMessageDialog(null, "El registro de los smart contracts ha sido manipulado.", "Error", JOptionPane.ERROR_MESSAGE);
 		}
+		else if(!databaseControl.existenRemitenteYReceptor(this.IDsmartContract)){
+			SmartContract sc = databaseControl.getContrato(this.IDsmartContract);
+			Bloque bl = null;
+			try {
+				bl = new Bloque(databaseControl.getHashUltimoBloque());
+				bl.setContratoConfirmado("");
+				bl.setContratoEjecutado("");
+				bl.setContratoPorEliminar("true");
+				bl.anadirContrato(sc);
+				if(ProgramaPrincipal.anadirBloque(bl)) {
+					databaseControl.insertarBloque(bl);
+				}
+			} catch (Exception e1) {}
+		}
 		
 		//Si se ha ejecutado correctamente o no, hay que borrarlo del programa y de la BD
-		ProgramaPrincipal.borrarContrato(this.IDsmartContract);
-		
-		/*//Borrarlo de la BD
-		try {
-			databaseControl.borrarContrato(this.IDsmartContract);
-		} catch (Exception e) {}*/
-			
+		ProgramaPrincipal.borrarContrato(this.IDsmartContract);		
 	}
 	
 	public void generarFirmaTransaccionContract(PrivateKey pClavePrivada, String pRemitente, String pReceptor, float pValor) {

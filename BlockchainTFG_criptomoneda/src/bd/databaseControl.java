@@ -664,7 +664,7 @@ public class databaseControl {
 		             ResultSet rs    = stmt.executeQuery()){
 		        	 while (rs.next()) {
 		        		String id = rs.getString("IDsc");
-		        		if(!contratoEliminado(id)) {
+		        		if(!contratoEliminado(id) && !haSidoEjecutado(id)) {
 			        		sc = new SmartContract();
 			        		sc.setIDsmartContract(rs.getString("IDsc"));
 			        		sc.setPK_remitente(rs.getString("Remitente"));
