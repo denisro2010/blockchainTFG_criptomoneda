@@ -99,7 +99,7 @@ public class SmartContract{
 		else if(!esContratoValido()) {
 			JOptionPane.showMessageDialog(null, "El registro de los smart contracts ha sido manipulado.", "Error", JOptionPane.ERROR_MESSAGE);
 		}
-		else if(!databaseControl.existenRemitenteYReceptor(this.IDsmartContract)){
+		else if(!databaseControl.existenRemitenteYReceptor(this.IDsmartContract) || !databaseControl.haSidoConfirmado(this.IDsmartContract)){
 			SmartContract sc = databaseControl.getContrato(this.IDsmartContract);
 			Bloque bl = null;
 			try {
